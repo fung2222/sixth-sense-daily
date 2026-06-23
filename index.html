@@ -13,7 +13,18 @@
 body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; padding: 20px; }
 .logo { text-align: center; font-size: 3em; font-weight: 900; background: linear-gradient(135deg, #ff6b9d, #c44569, #a29bfe, #6c5ce7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-top: 30px; letter-spacing: 4px; }
-.subtitle { text-align: center; font-size: 1.2em; font-weight: 700; background: linear-gradient(90deg, #ffd93d, #ff6b9d, #a29bfe, #6bff6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 8px 0 40px; }
+.subtitle { text-align: center; font-size: 1.2em; font-weight: 700; background: linear-gradient(90deg, #ffd93d, #ff6b9d, #a29bfe, #6bff6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 8px 0 20px; }
+.install-wrap { text-align: center; margin-bottom: 30px; }
+.install-btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; background: linear-gradient(135deg, #ff6b9d, #c44569); color: #fff; border: none; border-radius: 30px; font-size: 1.05em; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(255,107,157,0.35); transition: all 0.3s; text-decoration: none; }
+.install-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(255,107,157,0.5); }
+.install-btn .icon { font-size: 1.4em; }
+.install-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; }
+.install-modal.show { display: flex; }
+.install-modal .card { background: #1a1a2e; border-radius: 16px; padding: 30px; max-width: 360px; text-align: center; }
+.install-modal .card h3 { color: #ff6b9d; margin-bottom: 15px; }
+.install-modal .card p { color: #aaa; font-size: 0.9em; line-height: 1.6; margin-bottom: 10px; }
+.install-modal .card .step { color: #ffd93d; font-weight: 700; }
+.install-modal .card .close-btn { margin-top: 20px; padding: 10px 30px; background: rgba(255,255,255,0.1); border: none; border-radius: 20px; color: #fff; cursor: pointer; font-size: 0.9em; }
 .report-list { display: grid; gap: 15px; }
 .report-item { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 20px; border-left: 4px solid #ff6b9d; transition: transform 0.2s, box-shadow 0.2s; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #e0e0e0; }
 .report-item:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.4); border-left-color: #00d4ff; }
@@ -30,11 +41,58 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
   .report-item .date-num { font-size: 1.5em; min-width: 50px; }
 }
 </style>
+<script>
+let deferredPrompt;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isAndroid = /Android/.test(navigator.userAgent);
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBtn').style.background = 'linear-gradient(135deg, #6bff6b, #00d4ff)';
+});
+
+function showInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+    return;
+  }
+  var b = document.getElementById('modalBody');
+  if (isIOS) {
+    b.innerHTML = '<p>用 <span class="step">Safari</span> 開呢個網頁</p><p>撳底部 <span class="step">分享 ↑</span> 掣</p><p>揀 <span class="step">加入主畫面</span></p>';
+  } else if (isAndroid) {
+    b.innerHTML = '<p>撳右上角 <span class="step">⋮</span></p><p>揀 <span class="step">加到主畫面</span> 或 <span class="step">安裝應用程式</span></p>';
+  } else {
+    b.innerHTML = '<p>用 Chrome / Safari 開呢個網頁</p><p>然後撳 <span class="step">加到主畫面</span></p>';
+  }
+  document.getElementById('installModal').classList.add('show');
+}
+
+function hideInstall() {
+  document.getElementById('installModal').classList.remove('show');
+}
+</script>
 </head>
 <body>
 <div class="container">
 <div class="logo">Sono蘇蓉</div>
 <div class="subtitle">科技與未來 · 太空與超自然</div>
+
+<div class="install-wrap">
+  <button class="install-btn" id="installBtn" onclick="showInstall()">
+    <span class="icon">📲</span> 安裝 App
+  </button>
+</div>
+
+<div class="install-modal" id="installModal">
+  <div class="card">
+    <h3 id="modalTitle">安裝第六感日報</h3>
+    <div id="modalBody"></div>
+    <button class="close-btn" onclick="hideInstall()">關閉</button>
+  </div>
+</div>
+
 <div class="report-list">
 
 <a href="reports/sixth_sense_20260623.html" class="report-item">
