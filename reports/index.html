@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第六感日報 · 歷史</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    background: #0a0a1a; color: #e0e0e0; line-height: 1.8; min-height: 100vh;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+  .header { text-align: center; margin: 50px 0 40px; }
+  .logo {
+    font-size: 3em; font-weight: bold; letter-spacing: 3px;
+    background: linear-gradient(135deg, #ff6b9d, #c44569, #a29bfe, #6c5ce7);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle { color: #888; margin: 15px 0 30px; }
+  .back { display: inline-block; color: #a29bfe; text-decoration: none; margin-bottom: 30px; border: 1px solid #333; padding: 8px 20px; border-radius: 20px; transition: all 0.3s; }
+  .back:hover { background: #1a1a3a; border-color: #a29bfe; }
+  
+  .report-list { display: flex; flex-direction: column; gap: 12px; }
+  .report-card {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #111122; border: 1px solid #222; border-radius: 12px;
+    padding: 20px 25px; transition: all 0.3s; text-decoration: none; color: inherit;
+  }
+  .report-card:hover { border-color: #6c5ce7; background: #151530; }
+  .report-date { font-size: 1.1em; font-weight: 600; }
+  .report-arrow { color: #a29bfe; font-size: 1.2em; }
+  
+  .empty { text-align: center; color: #666; padding: 60px; }
+  .footer { text-align: center; color: #555; margin: 60px 0 30px; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">Sono蘇蓉</div>
+    <div class="subtitle">歷史日報</div>
+  </div>
+  
+  <a href="/" class="back">回首頁</a>
+  
+  <div class="report-list" id="list">
+    <a href="sixth_sense_20260623.html" class="report-card">
+      <span class="report-date">2026年6月23日</span>
+      <span class="report-arrow">→</span>
+    </a>
+  </div>
+  
+  <div class="footer">Powered by Sono蘇蓉 AI</div>
+</div>
+</body>
+</html>
