@@ -8,40 +8,21 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: #0a0a1a; color: #e0e0e0; line-height: 1.8; }
   .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-  .logo-banner { 
-    position: relative;
-    text-align: center; 
-    margin: -20px -20px 30px -20px;
-    padding: 60px 20px;
-    background-image: url('header_banner_20260623.png');
-    background-size: cover;
-    background-position: center;
-    border-radius: 0 0 20px 20px;
-    overflow: hidden;
-  }
-  .logo-banner::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255,107,157,0.4), rgba(162,155,254,0.4), rgba(108,92,231,0.4));
-    z-index: 1;
-  }
-  .logo { 
-    position: relative;
-    z-index: 2;
-    font-size: 4em; 
-    font-weight: 900; 
-    letter-spacing: 5px; 
-    color: #fff;
-    text-shadow: 0 0 20px rgba(255,107,157,0.8), 0 0 40px rgba(162,155,254,0.6);
-    line-height: 1;
-  }
   .header-text {
     text-align: center;
     margin-bottom: 30px;
+  }
+  .logo {
+    font-size: 4em; 
+    font-weight: 900; 
+    letter-spacing: 5px;
+    background: linear-gradient(135deg, #ff6b9d, #c44569, #a29bfe, #6c5ce7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 40px rgba(255,107,157,0.4);
+    line-height: 1;
+    margin-bottom: 15px;
   }
   .title { 
     font-size: 1.8em; 
@@ -124,11 +105,8 @@
 <body>
 <div class="container">
 
-<div class="logo-banner">
-  <div class="logo">Sono</div>
-</div>
-
 <div class="header-text">
+  <div class="logo">Sono</div>
   <div class="title">第六感日報</div>
   <div class="date">2026年6月23日（星期二）</div>
   <div class="subtitle">為你感應世界的脈搏</div>
