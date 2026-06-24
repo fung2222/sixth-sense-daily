@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0a1a">
+<title>猜拳火柴人 · RPS Battle</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'PingFang TC', 'Noto Sans HK', sans-serif;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+    color: #fff; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 12px; overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation; user-select: none;
+  }
+  h1 {
+    font-size: 2em; margin-bottom: 2px;
+    background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #a29bfe);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: 3px; text-align: center;
+  }
+  .subtitle { color: #888; margin-bottom: 10px; font-size: 0.85em; text-align: center; }
+
+  .score-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    max-width: 500px; width: 100%; margin-bottom: 12px;
+    background: rgba(30,30,50,0.8); border-radius: 12px;
+    padding: 10px 16px; border: 1px solid #333;
+  }
+  .score-item { text-align: center; flex: 1; }
+  .score-label { color: #888; font-size: 0.7em; }
+  .score-num { font-size: 1.5em; font-weight: 900; }
+  .score-num.win { color: #6bff6b; }
+  .score-num.lose { color: #ff6b6b; }
+  .score-num.draw { color: #feca57; }
+
+  .round-label {
+    color: #a29bfe; font-size: 0.85em; font-weight: 600;
+    text-align: center; margin-bottom: 8px;
+  }
+
+  #arena {
+    background: linear-gradient(180deg, #0f1419 0%, #1a1a2e 100%);
+    border: 2px solid #333; border-radius: 12px;
+    max-width: 100%; height: auto; display: block;
+    margin-bottom: 12px;
+  }
+
+  .result-banner {
+    text-align: center; font-size: 1.5em; font-weight: 900;
+    min-height: 50px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px; transition: all 0.3s;
+  }
+  .result-banner.win { color: #6bff6b; text-shadow: 0 0 20px rgba(107,255,107,0.5); }
+  .result-banner.lose { color: #ff6b6b; text-shadow: 0 0 20px rgba(255,107,107,0.5); }
+  .result-banner.draw { color: #feca57; text-shadow: 0 0 20px rgba(254,202,87,0.5); }
+
+  .choices {
+    display: flex; gap: 12px; justify-content: center;
+    max-width: 500px; width: 100%; margin-bottom: 12px;
+  }
+  .choice-btn {
+    flex: 1; max-width: 140px;
+    padding: 16px 8px;
+    border: 2px solid #555; border-radius: 14px;
+    background: linear-gradient(145deg, #2d3436, #1a1a2e);
+    color: #fff; font-size: 2.5em; cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    text-align: center;
+  }
+  .choice-btn:active { transform: scale(0.9); background: linear-gradient(145deg, #3d4446, #2a2a3e); }
+  .choice-btn:hover { border-color: #feca57; }
+  .choice-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .choice-btn .label { display: block; font-size: 0.3em; color: #ccc; margin-top: 4px; }
+
+  .action-bar {
+    display: flex; gap: 10px; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .action-btn {
+    padding: 10px 24px; border: none; border-radius: 10px;
+    font-weight: 700; font-size: 0.9em; cursor: pointer;
+    font-family: inherit; transition: transform 0.1s;
+  }
+  .action-btn:active { transform: scale(0.95); }
+  .action-btn.play { background: linear-gradient(135deg, #6bff6b, #48dbfb); color: #000; }
+  .action-btn.reset { background: linear-gradient(135deg, #ff6b6b, #feca57); color: #fff; }
+
+  .log {
+    max-width: 500px; width: 100%;
+    background: rgba(15,20,25,0.9); border: 1px solid #333;
+    border-radius: 10px; padding: 10px; max-height: 90px;
+    overflow-y: auto; font-size: 0.8em; line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .log-entry { margin-bottom: 3px; color: #888; }
+  .log-entry.win { color: #6bff6b; }
+  .log-entry.lose { color: #ff6b6b; }
+  .log-entry.draw { color: #feca57; }
+
+  .back-link {
+    color: #a29bfe; text-decoration: none; font-size: 0.8em;
+    padding: 6px 16px; border: 1px solid #333; border-radius: 16px;
+    transition: all 0.3s;
+  }
+  .back-link:hover { border-color: #a29bfe; background: rgba(162,155,254,0.08); }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 1.6em; }
+    .choice-btn { font-size: 2em; padding: 12px 4px; }
+    .result-banner { font-size: 1.2em; min-height: 40px; }
+  }
+</style>
+</head>
+<body>
+  <h1>✊ RPS BATTLE</h1>
+  <div class="subtitle">剪刀石頭佈 · 火柴人版</div>
+
+  <div class="score-bar">
+    <div class="score-item"><div class="score-label">🏆 勝</div><div class="score-num win" id="winScore">0</div></div>
+    <div class="score-item"><div class="score-label">🤝 和</div><div class="score-num draw" id="drawScore">0</div></div>
+    <div class="score-item"><div class="score-label">💀 負</div><div class="score-num lose" id="loseScore">0</div></div>
+  </div>
+
+  <div class="round-label" id="roundLabel">👉 揀你嘅招式！</div>
+
+  <canvas id="arena" width="500" height="250"></canvas>
+
+  <div class="result-banner" id="resultBanner">&nbsp;</div>
+
+  <div class="choices" id="choices">
+    <button class="choice-btn" data-move="rock">
+      ✊<span class="label">石頭</span>
+    </button>
+    <button class="choice-btn" data-move="paper">
+      ✋<span class="label">布</span>
+    </button>
+    <button class="choice-btn" data-move="scissors">
+      ✌️<span class="label">剪刀</span>
+    </button>
+  </div>
+
+  <div class="action-bar">
+    <button class="action-btn play" id="autoPlayBtn">🎲 自動玩</button>
+    <button class="action-btn reset" id="resetBtn">🔄 重設</button>
+  </div>
+
+  <a href="../" class="back-link">🏠 返回 Sono蘇蓉</a>
+
+<script>
+const canvas = document.getElementById('arena');
+const ctx = canvas.getContext('2d');
+const winEl = document.getElementById('winScore');
+const loseEl = document.getElementById('loseScore');
+const drawEl = document.getElementById('drawScore');
+const resultBanner = document.getElementById('resultBanner');
+const roundLabel = document.getElementById('roundLabel');
+const logEl = document.querySelector('.log');
+
+let scores = { win: 0, lose: 0, draw: 0 };
+let playerMove = null;
+let aiMove = null;
+let result = null;
+let animating = false;
+let animFrame = 0;
+let playerChoice = null; // 'rock', 'paper', 'scissors'
+let aiChoice = null;
+
+// Emoji for hand signs
+const handEmoji = { rock: '✊', paper: '✋', scissors: '✌️' };
+const handNames = { rock: '石頭', paper: '布', scissors: '剪刀' };
+
+// Funny result messages
+const winMsgs = [
+  '哈哈你贏咗！對手下巴都跌埋 😂', '贏得好靚！對手要喊㗎🤣',
+  '完美！你係猜拳王 👑', '對手表示：唔公平！😤',
+  '連呢招都估到？勁喎！🔥', '你係天才呀！🎉'
+];
+const loseMsgs = [
+  '哎呀輸咗⋯⋯下次實得 💪', '對手好狡猾！😣',
+  '唔緊要，再嚟過！🔥', '你讓佢咋嘛，係咪 😏',
+  '慘慘豬，俾人食住 😆', '佢屈機㗎，唔關你事 🤪'
+];
+const drawMsgs = [
+  '打和！大家都係勁揪！🤝', '心有靈犀！咁都一樣 😄',
+  '再嚟！今次一定要分勝負！⚡', '旗鼓相當！精彩！👏'
+];
+const taunts = [
+  '你出咩都好，我都贏硬！😎', '哈哈睇路呀～👀',
+  '你諗咁耐諗到未呀？😴', '我等你出招等到花兒也謝了🌹',
+  '我左眼見到⋯⋯你會輸！🔮', '放馬過嚟啦！🥱'
+];
+
+function pick(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+
+// ============================================================
+// DRAWING - Stickman with hand signs
+// ============================================================
+function drawStickman(x, y, facing, move, isPlayer) {
+  const color = isPlayer ? '#feca57' : '#48dbfb';
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 3.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath();
+  ctx.ellipse(x, y + 42, 20, 5, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+
+  // Head
+  ctx.beginPath();
+  ctx.arc(x, y - 48, 14, 0, Math.PI * 2);
+  ctx.stroke();
+  // Eye
+  ctx.beginPath();
+  ctx.arc(x + 5 * facing, y - 50, 2, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Body
+  ctx.beginPath();
+  ctx.moveTo(x, y - 34);
+  ctx.lineTo(x, y + 5);
+  ctx.stroke();
+
+  // Legs
+  ctx.beginPath();
+  ctx.moveTo(x, y + 5);
+  ctx.lineTo(x - 12, y + 38);
+  ctx.moveTo(x, y + 5);
+  ctx.lineTo(x + 12, y + 38);
+  ctx.stroke();
+
+  // Arms with hand signs
+  ctx.beginPath();
+  ctx.moveTo(x, y - 18);
+  if (move === 'rock') {
+    // Arm up, fist bump
+    ctx.lineTo(x + 25 * facing, y - 30);
+    ctx.stroke();
+    ctx.fillStyle = isPlayer ? '#feca57' : '#48dbfb';
+    ctx.beginPath();
+    ctx.arc(x + 28 * facing, y - 33, 7, 0, Math.PI * 2);
+    ctx.fill();
+    // Fist bump particles
+    if (result && animFrame % 2 === 0) {
+      ctx.fillStyle = '#ffd93d';
+      ctx.beginPath();
+      ctx.arc(x + 28 * facing + (Math.random()-0.5)*15, y - 33 + (Math.random()-0.5)*15, 2, 0, Math.PI*2);
+      ctx.fill();
+    }
+  } else if (move === 'paper') {
+    // Arm extended, hand open
+    ctx.lineTo(x + 40 * facing, y - 15);
+    ctx.stroke();
+    // Open hand (fingers)
+    ctx.fillStyle = isPlayer ? '#feca57' : '#48dbfb';
+    ctx.beginPath();
+    ctx.arc(x + 42 * facing, y - 18, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + 45 * facing, y - 22, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + 45 * facing, y - 14, 3, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (move === 'scissors') {
+    // Arm up, two fingers
+    ctx.lineTo(x + 30 * facing, y - 30);
+    ctx.stroke();
+    ctx.fillStyle = isPlayer ? '#feca57' : '#48dbfb';
+    ctx.beginPath();
+    ctx.arc(x + 33 * facing, y - 33, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + 36 * facing, y - 37, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + 36 * facing, y - 29, 3, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    // Idle - arms down
+    ctx.lineTo(x - 16 * facing, y - 10);
+    ctx.moveTo(x, y - 18);
+    ctx.lineTo(x + 16 * facing, y - 10);
+    ctx.stroke();
+  }
+
+  // Left arm (relaxed)
+  ctx.beginPath();
+  ctx.moveTo(x, y - 18);
+  ctx.lineTo(x - 18 * facing, y - 8);
+  ctx.stroke();
+
+  // Victory jump
+  if (result === 'win' && isPlayer && animFrame % 20 < 10) {
+    ctx.translate(0, -5);
+  }
+  // Lose slump
+  if (result === 'lose' && isPlayer && animFrame % 20 < 10) {
+    ctx.translate(0, 3);
+  }
+
+  // Speech bubble when result
+  if (result && animFrame === 1) {
+    ctx.save();
+    ctx.font = '10px sans-serif';
+    const txt = result === 'win' ? pick(['HAHA!','WIN!','太易!']) : 
+                result === 'lose' ? pick(['NOOO~','可惡','嗚嗚']) :
+                pick(['扯平!','又和?!']);
+    const tw = ctx.measureText(txt).width + 14;
+    const bh = 20;
+    const bx = x + 20 * facing, by = y - 75;
+    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    roundRect2(ctx, bx - tw/2, by - bh, tw, bh, 6);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(txt, bx, by - bh/2);
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+function roundRect2(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, 500, 250);
+  // Background
+  const grad = ctx.createLinearGradient(0,0,0,250);
+  grad.addColorStop(0, '#0f1419'); grad.addColorStop(1, '#1a1a2e');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,500,250);
+
+  // Ground
+  ctx.strokeStyle = '#444'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, 210); ctx.lineTo(500, 210); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,0.02)'; ctx.lineWidth = 1;
+  for (let i=0; i<500; i+=30) { ctx.beginPath(); ctx.moveTo(i,212); ctx.lineTo(i+15,250); ctx.stroke(); }
+
+  drawStickman(130, 195, 1, playerChoice, true);   // Player (right)
+  drawStickman(370, 195, -1, aiChoice, false);     // AI (left)
+
+  // VS text
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  ctx.font = 'bold 16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('⚔️ VS ⚔️', 250, 100);
+
+  // Selected move display
+  if (playerChoice && aiChoice) {
+    ctx.font = '24px sans-serif';
+    ctx.fillText(handEmoji[playerChoice], 130, 160);
+    ctx.fillText(handEmoji[aiChoice], 370, 160);
+  }
+}
+
+// ============================================================
+// GAME LOGIC
+// ============================================================
+function determineWinner(p, a) {
+  if (p === a) return 'draw';
+  if ((p === 'rock' && a === 'scissors') ||
+      (p === 'paper' && a === 'rock') ||
+      (p === 'scissors' && a === 'paper')) return 'win';
+  return 'lose';
+}
+
+function addLog(text, type) {
+  const div = document.createElement('div');
+  div.className = 'log-entry ' + type;
+  div.textContent = text;
+  logEl.appendChild(div);
+  logEl.scrollTop = logEl.scrollHeight;
+  while (logEl.children.length > 30) logEl.removeChild(logEl.firstChild);
+}
+
+function playRound(move) {
+  if (animating) return;
+
+  playerChoice = move;
+  aiChoice = ['rock', 'paper', 'scissors'][Math.floor(Math.random() * 3)];
+  result = determineWinner(playerChoice, aiChoice);
+
+  // Update scores
+  if (result === 'win') scores.win++;
+  else if (result === 'lose') scores.lose++;
+  else scores.draw++;
+
+  winEl.textContent = scores.win;
+  loseEl.textContent = scores.lose;
+  drawEl.textContent = scores.draw;
+
+  // Result message
+  let msg, logType;
+  if (result === 'win') {
+    msg = pick(winMsgs);
+    logType = 'win';
+    resultBanner.className = 'result-banner win';
+  } else if (result === 'lose') {
+    msg = pick(loseMsgs);
+    logType = 'lose';
+    resultBanner.className = 'result-banner lose';
+  } else {
+    msg = pick(drawMsgs);
+    logType = 'draw';
+    resultBanner.className = 'result-banner draw';
+  }
+  resultBanner.textContent = msg;
+  resultBanner.style.animation = 'none';
+  resultBanner.offsetHeight;
+  resultBanner.style.animation = '';
+
+  addLog(`${handEmoji[playerChoice]} ${handNames[playerChoice]} vs ${handEmoji[aiChoice]} ${handNames[aiChoice]} → ${result === 'win' ? '🏆 Win' : result === 'lose' ? '💀 Lose' : '🤝 Draw'}`, logType);
+
+  roundLabel.textContent = `👤 ${handNames[playerChoice]} vs 🤖 ${handNames[aiChoice]}`;
+
+  // Animate
+  animating = true;
+  animFrame = 0;
+
+  // Enable choices after delay
+  setTimeout(() => {
+    animating = false;
+    resultBanner.textContent = '👉 再揀過！';
+    resultBanner.className = 'result-banner';
+    resultBanner.style.animation = '';
+    roundLabel.textContent = '👉 揀你嘅招式！';
+    playerChoice = null;
+    aiChoice = null;
+    result = null;
+  }, 2000);
+}
+
+// ============================================================
+// GAME LOOP
+// ============================================================
+function update() {
+  if (animating) animFrame++;
+}
+
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+// ============================================================
+// INPUT
+// ============================================================
+document.querySelectorAll('.choice-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (!animating) playRound(btn.dataset.move);
+  });
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  scores = { win: 0, lose: 0, draw: 0 };
+  winEl.textContent = '0';
+  loseEl.textContent = '0';
+  drawEl.textContent = '0';
+  resultBanner.textContent = '🔄 重新開始！';
+  resultBanner.className = 'result-banner';
+  roundLabel.textContent = '👉 揀你嘅招式！';
+  playerChoice = null;
+  aiChoice = null;
+  result = null;
+  animating = false;
+  logEl.innerHTML = '';
+  addLog('🔄 新一局開始！', '');
+});
+
+// Auto play
+let autoInterval = null;
+document.getElementById('autoPlayBtn').addEventListener('click', () => {
+  if (autoInterval) {
+    clearInterval(autoInterval);
+    autoInterval = null;
+    document.getElementById('autoPlayBtn').textContent = '🎲 自動玩';
+    return;
+  }
+  document.getElementById('autoPlayBtn').textContent = '⏹️ 停止';
+  autoInterval = setInterval(() => {
+    if (!animating) {
+      const moves = ['rock', 'paper', 'scissors'];
+      playRound(moves[Math.floor(Math.random() * 3)]);
+    }
+  }, 2500);
+});
+
+// Keyboard
+document.addEventListener('keydown', (e) => {
+  if (animating) return;
+  switch (e.key) {
+    case '1': case 'r': playRound('rock'); break;
+    case '2': case 'p': playRound('paper'); break;
+    case '3': case 's': playRound('scissors'); break;
+  }
+});
+
+// ============================================================
+// START
+// ============================================================
+gameLoop();
+addLog('✊ 猜拳開始！撳石頭/布/剪刀玩！', '');
+</script>
+</body>
+</html>
