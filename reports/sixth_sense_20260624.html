@@ -89,12 +89,15 @@
   .tag.alert { background: #ff6b6b; color: #fff; }
   .tag.release { background: #ffd93d; color: #000; }
   .trend-box { background: linear-gradient(135deg, #2d1b4e, #1a2e4e); border-radius: 15px; padding: 25px; margin: 30px 0; }
-  .trend-box h2 { color: #a29bfe; font-size: 1.5em; margin-bottom: 15px; }
+  .trend-box h2 { color: #a29bfe; font-size: 1.5em; margin-bottom: 15px; cursor: pointer; }
+  .trend-box .trend-content { display: block; }
+  .trend-box.collapsed .trend-content { display: none; }
   .trend-box .observation { margin: 15px 0; padding-left: 20px; border-left: 3px solid #a29bfe; }
   .trend-box .prediction { margin: 15px 0; padding: 15px; background: rgba(162,155,254,0.1); border-radius: 8px; }
   .intuition-box { background: linear-gradient(135deg, #4e1b2d, #2e1a4e); border-radius: 15px; padding: 25px; margin: 30px 0; border: 2px solid #ff6b9d; }
-  .intuition-box h2 { color: #ff6b9d; font-size: 1.5em; margin-bottom: 15px; }
-  .intuition-box .quote { font-style: italic; color: #e0e0e0; line-height: 1.8; padding: 15px; background: rgba(255,107,157,0.05); border-radius: 8px; }
+  .intuition-box h2 { color: #ff6b9d; font-size: 1.5em; margin-bottom: 15px; cursor: pointer; }
+  .intuition-box .quote { display: block; font-style: italic; color: #e0e0e0; line-height: 1.8; padding: 15px; background: rgba(255,107,157,0.05); border-radius: 8px; }
+  .intuition-box.collapsed .quote { display: none; }
   .footer { text-align: center; color: #555; margin-top: 50px; padding: 20px; border-top: 1px solid #222; font-size: 0.85em; }
   .back-to-top { position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px; background: linear-gradient(135deg, #ff6b9d, #c44569); color: #fff; border-radius: 50%; text-align: center; line-height: 45px; font-size: 1.2em; text-decoration: none; box-shadow: 0 4px 15px rgba(255,107,157,0.4); opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 1000; }
   .back-to-top.show { opacity: 1; visibility: visible; }
@@ -143,6 +146,7 @@
     <a class="weather-link" href="https://www.hko.gov.hk/tc/wxinfo/currwx/tc_gis.htm" target="_blank">🌀 熱帶氣旋路徑</a>
     <a class="weather-link" href="https://www.hko.gov.hk/tc/gts/equake/eq_report.htm" target="_blank">🌍 地震監察</a>
   </div>
+  <img src="/sixth-sense-daily/reports/weather_banner_20260624.png" alt="HK morning" style="width:100%; max-height:280px; object-fit:cover; border-radius:12px; margin-bottom:15px; display:block;">
   <div class="weather-insight">
     <h3>🔮 Sono 天氣洞察</h3>
     <p class="insight-text">高空反氣旋持續影響廣東，今明兩日仍然酷熱，最高溫達33°C。週五起反氣旋減弱，華南將迎來驟雨及雷暴，週末天氣轉差。值得注意：熱帶氣旋米克拉正移向琉球群島，海高斯移向日本以南海域，暫不影響香港。下週初高空反氣旋再度覆蓋，天色好轉。</p>
@@ -323,7 +327,8 @@
 <!-- TRENDS -->
 <div class="trend-box" id="trends">
   <h2>📈 今日趨勢洞察</h2>
-  <div class="observation">
+  <div class="trend-content">
+    <div class="observation">
     <h3 style="color: #a29bfe; margin-bottom: 10px;">🔍 關鍵觀察</h3>
     <p style="color: #bbb; line-height: 2;">
       1. <strong>AI競賽白熱化：</strong>OpenAI 在短短兩個月內從 GPT-5.5 跳到 GPT-5.6，加上 Five Eyes 情報聯盟罕見聯合預警，顯示AI發展速度已超出大部分政府的預期。監管與技術的差距正在急速擴大。<br><br>
@@ -343,6 +348,9 @@
 </div>
 
 <!-- INTUITION -->
+  </div>
+</div>
+
 <div class="intuition-box" id="intuition">
   <h2>🔮 Sono的直覺</h2>
   <div class="quote">
@@ -382,5 +390,11 @@ document.getElementById('backToTop').addEventListener('click', function(e) {
 </script>
 
 </div>
+
+<script>
+document.querySelectorAll('.trend-box h2, .intuition-box h2').forEach(el => {
+  el.addEventListener('click', () => el.parentElement.classList.toggle('collapsed'));
+});
+</script>
 </body>
 </html>
