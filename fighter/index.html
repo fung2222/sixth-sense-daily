@@ -1085,7 +1085,7 @@ function update() {
     if (f.poseTimer > 0) { f.poseTimer--; if (f.poseTimer<=0 && f.targetPose!=='idle' && f.targetPose!=='defend') { f.pose=f.targetPose; f.targetPose='idle'; f.animProgress=0; } }
     if (f.defending && f.poseTimer<=0) { f.defending=false; f.pose='defend'; f.targetPose='idle'; f.animProgress=0; }
     if (f.hitFlash > 0) f.hitFlash--;
-    if (f.speechTimer > 0 && !f.dead) f.speechTimer--;
+    if (f.speechTimer > 0 && !gameOver) f.speechTimer--;
   });
 
   // Idle breathing
