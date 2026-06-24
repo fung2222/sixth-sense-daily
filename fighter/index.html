@@ -342,7 +342,8 @@ function createFighter(x, isAI) {
     isAI, color: isAI ? '#48dbfb' : '#feca57',
     targetPose: 'idle', animProgress: 1,
     aiThinkTimer: 20, aiMoveDir: 0, aiActionCooldown: 0,
-    dead: false, // death animation flag
+    dead: false,
+    speechText: '', speechTimer: 0,
   };
 }
 
@@ -356,13 +357,29 @@ function initGame() {
   particles = [];
   screenShake = 0;
   slowMoFrames = 0;
-  dyingFighter = null;
   deathTimer = 0;
+  dyingFighter = null;
   deathOverlay.classList.remove('show');
+  [player, ai].forEach(f => { f.speechText = ''; f.speechTimer = 0; });
   logEl.innerHTML = '';
   updateUI();
   addLog('⚔️ 對戰開始！', 'system');
   document.querySelectorAll('.ps-btn').forEach(b => b.disabled = false);
+}
+
+// Round rect helper (used by speech bubble)
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
 }
 
 // ============================================================
@@ -429,9 +446,46 @@ function drawLimb(x1,y1,x2,y2,bendDir,isLeg=false) {
 }
 
 function drawStickman(fighter) {
-  const {x, y:baseY, color, facing, charge, defending, hitFlash, dead} = fighter;
+  const {x, y:baseY, color, facing, charge, defending, hitFlash, dead, speechText, speechTimer} = fighter;
   let y = baseY;
-  if (dead) y = GROUND_Y + 25; // corpse on ground
+  if (dead) y = GROUND_Y + 25;
+
+  // Speech bubble
+  if (speechTimer > 0 && speechText) {
+    const bx = x, by = (dead ? y - 110 : y - 105);
+    ctx.save();
+    ctx.font = 'bold 13px "Noto Sans HK", sans-serif';
+    const metrics = ctx.measureText(speechText);
+    const tw = metrics.width + 20, th = 28;
+    const rx = bx - tw/2, ry = by - th;
+    // Bubble bg
+    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    roundRect(ctx, rx, ry, tw, th, 8);
+    ctx.fill();
+    ctx.stroke();
+    // Tail
+    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.beginPath();
+    ctx.moveTo(bx - 6, ry + th);
+    ctx.lineTo(bx, ry + th + 10);
+    ctx.lineTo(bx + 6, ry + th);
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.beginPath();
+    ctx.moveTo(bx - 6, ry + th);
+    ctx.lineTo(bx, ry + th + 10);
+    ctx.lineTo(bx + 6, ry + th);
+    ctx.stroke();
+    // Text
+    ctx.fillStyle = '#feca57';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(speechText, bx, ry + th/2);
+    ctx.restore();
+  }
 
   const t = Math.min(1, fighter.animProgress);
   const eased = t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
@@ -648,7 +702,15 @@ function killFighter(fighter) {
   fighter.dead = true;
   fighter.hp = 0;
   dyingFighter = fighter;
-  deathTimer = 60;
+  deathTimer = 90;
+
+  const winner = fighter === player ? ai : player;
+
+  // Speech bubbles
+  fighter.speechText = fighter.isAI ? '我畀你屈死啦' : '我頂唔住啦';
+  fighter.speechTimer = 90;
+  winner.speechText = '垃圾';
+  winner.speechTimer = 80;
   gameOver = true;
 
   // Death particles
@@ -1023,6 +1085,7 @@ function update() {
     if (f.poseTimer > 0) { f.poseTimer--; if (f.poseTimer<=0 && f.targetPose!=='idle' && f.targetPose!=='defend') { f.pose=f.targetPose; f.targetPose='idle'; f.animProgress=0; } }
     if (f.defending && f.poseTimer<=0) { f.defending=false; f.pose='defend'; f.targetPose='idle'; f.animProgress=0; }
     if (f.hitFlash > 0) f.hitFlash--;
+    if (f.speechTimer > 0) f.speechTimer--;
   });
 
   // Idle breathing
