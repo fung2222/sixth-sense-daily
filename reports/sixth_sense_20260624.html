@@ -35,6 +35,10 @@
   }
   .date { color: #888; font-size: 1.1em; margin-bottom: 10px; text-align: center; }
   .subtitle { color: #a29bfe; font-size: 0.95em; font-style: italic; opacity: 0.8; }
+  .back-link { text-align: center; margin: 8px 0 8px; }
+  .back-link a { color: #a29bfe; text-decoration: none; font-size: 0.85em; padding: 6px 16px; border: 1px solid #333; border-radius: 16px; transition: all 0.3s; }
+  .back-link a:hover { background: #1a1a3a; border-color: #a29bfe; }
+  .logo-link { text-decoration: none; }
   .weather-box { background: linear-gradient(135deg, #1a2438, #131d2e); border-radius: 12px; padding: 18px; margin: 20px 0 30px; border: 1px solid rgba(120,160,190,0.25); box-shadow: 0 0 12px rgba(80,130,170,0.08); }
   .weather-box h2 { color: #7eb8d4; font-size: 1.1em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
   .weather-today { display: flex; gap: 15px; margin-bottom: 12px; }
@@ -113,10 +117,12 @@
 <div class="container">
 
 <div class="header-text">
-  <div class="logo">Sono</div>
+  <a href="../" class="logo-link"><div class="logo">Sono</div></a>
   <div class="title">蘇蓉</div>
   <div class="subtitle">為你感應世界的脈搏</div>
 </div>
+
+<div class="back-link"><a href="../">← 回到首頁</a></div>
 
 <div class="date">2026年6月24日（星期三）</div>
 
