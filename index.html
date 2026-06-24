@@ -6,22 +6,52 @@
 <meta name="theme-color" content="#0a0a1a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Suno蘇蓉">
+<meta name="apple-mobile-web-app-title" content="Sono蘇蓉">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="apple-touch-icon" href="favicon.png">
-<title>Suno蘇蓉</title>
+<title>Sono蘇蓉</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; line-height: 1.7; }
+body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; line-height: 1.7; min-height: 100vh; }
+
 .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-.logo { text-align: center; font-size: 3em; font-weight: 900; background: linear-gradient(135deg, #ff6b9d, #c44569, #a29bfe, #6c5ce7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-top: 30px; letter-spacing: 4px; }
-.subtitle { text-align: center; font-size: 1.2em; font-weight: 700; background: linear-gradient(90deg, #ffd93d, #ff6b9d, #a29bfe, #6bff6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 8px 0 20px; }
-.install-wrap { text-align: center; margin-bottom: 30px; }
-.install-btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; background: linear-gradient(135deg, #ff6b9d, #c44569); color: #fff; border: none; border-radius: 30px; font-size: 1.05em; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(255,107,157,0.35); transition: all 0.3s; text-decoration: none; }
-.install-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(255,107,157,0.5); }
-.install-btn .icon { font-size: 1.4em; }
+
+/* Logo area */
+.logo-area { text-align: center; padding: 30px 0 10px; }
+.logo { font-size: 3em; font-weight: 900; background: linear-gradient(135deg, #ff6b9d, #c44569, #a29bfe, #6c5ce7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 4px; }
+.subtitle { font-size: 1.1em; font-weight: 700; background: linear-gradient(90deg, #ffd93d, #ff6b9d, #a29bfe, #6bff6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 6px 0; }
+
+/* Tab bar */
+.tab-bar { display: flex; gap: 4px; margin: 20px 0 0; background: rgba(255,255,255,0.03); border-radius: 14px; padding: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tab-bar::-webkit-scrollbar { height: 0; }
+.tab-btn { flex: 1; min-width: 80px; padding: 12px 8px; border: none; border-radius: 11px; cursor: pointer; font-size: 0.9em; font-weight: 700; font-family: inherit; transition: all 0.3s; text-align: center; white-space: nowrap; }
+.tab-btn .tab-emoji { display: block; font-size: 1.4em; margin-bottom: 3px; }
+.tab-btn .tab-label { font-size: 0.85em; }
+
+/* Inactive tab styles */
+.tab-btn { background: transparent; color: #666; }
+.tab-btn:hover { background: rgba(255,255,255,0.04); color: #999; }
+
+/* Active tab per accent */
+.tab-btn.active[data-tab="daily"] { background: rgba(255,107,157,0.15); color: #ff6b9d; box-shadow: 0 0 20px rgba(255,107,157,0.15); }
+.tab-btn.active[data-tab="games"] { background: rgba(107,255,107,0.12); color: #6bff6b; box-shadow: 0 0 20px rgba(107,255,107,0.12); }
+.tab-btn.active[data-tab="tools"] { background: rgba(0,212,255,0.12); color: #00d4ff; box-shadow: 0 0 20px rgba(0,212,255,0.12); }
+.tab-btn.active[data-tab="ai"]     { background: rgba(162,155,254,0.15); color: #a29bfe; box-shadow: 0 0 20px rgba(162,155,254,0.12); }
+
+/* Tab panels */
+.tab-panel { display: none; animation: fadeIn 0.35s ease; }
+.tab-panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Install button (visible globally) */
+.install-wrap { text-align: center; margin: 16px 0; }
+.install-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: linear-gradient(135deg, #ff6b9d, #c44569); color: #fff; border: none; border-radius: 30px; font-size: 0.95em; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(255,107,157,0.3); transition: all 0.3s; font-family: inherit; }
+.install-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,107,157,0.45); }
+.install-btn .icon { font-size: 1.2em; }
+
+/* Install modal */
 .install-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; }
 .install-modal.show { display: flex; }
 .install-modal .card { background: #1a1a2e; border-radius: 16px; padding: 30px; max-width: 360px; text-align: center; }
@@ -29,23 +59,67 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 .install-modal .card p { color: #aaa; font-size: 0.9em; line-height: 1.6; margin-bottom: 10px; }
 .install-modal .card .step { color: #ffd93d; font-weight: 700; }
 .install-modal .card .close-btn { margin-top: 20px; padding: 10px 30px; background: rgba(255,255,255,0.1); border: none; border-radius: 20px; color: #fff; cursor: pointer; font-size: 0.9em; }
-.report-list { display: grid; gap: 15px; }
-.report-item { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 20px; border-left: 4px solid #ff6b9d; transition: transform 0.2s, box-shadow 0.2s; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #e0e0e0; }
+
+/* ── Tab 1: Daily Reports ── */
+.report-list { display: grid; gap: 12px; }
+.report-item { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 18px 20px; border-left: 4px solid #ff6b9d; transition: transform 0.2s, box-shadow 0.2s; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #e0e0e0; }
 .report-item:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.4); border-left-color: #00d4ff; }
-.report-item .date-num { font-size: 2em; font-weight: 900; color: #ff6b9d; min-width: 70px; }
-.report-item .info { flex: 1; margin-left: 15px; }
-.report-item .info h3 { font-size: 1.1em; color: #fff; margin-bottom: 2px; }
-.report-item .info .weekday { font-size: 0.85em; color: #a29bfe; margin-bottom: 6px; }
-.report-item .info .desc { font-size: 0.85em; color: #888; }
-.report-item .arrow { font-size: 1.5em; color: #555; }
-.footer { text-align: center; padding: 40px 20px; color: #555; font-size: 0.85em; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 50px; }
-.empty { text-align: center; color: #666; padding: 60px 20px; font-size: 1.1em; }
+.report-item .date-num { font-size: 2em; font-weight: 900; color: #ff6b9d; min-width: 65px; text-align: center; }
+.report-item .info { flex: 1; margin-left: 14px; }
+.report-item .info h3 { font-size: 1.05em; color: #fff; margin-bottom: 2px; }
+.report-item .info .weekday { font-size: 0.82em; color: #a29bfe; margin-bottom: 5px; }
+.report-item .info .desc { font-size: 0.82em; color: #888; }
+.report-item .arrow { font-size: 1.4em; color: #555; }
+.report-history-link { text-align: center; margin-top: 20px; }
+.report-history-link a { color: #a29bfe; text-decoration: none; border: 1px solid #333; padding: 8px 20px; border-radius: 20px; transition: all 0.3s; font-size: 0.9em; }
+.report-history-link a:hover { background: #1a1a3a; border-color: #a29bfe; }
+
+/* ── Tab 2/3/4: Card Grid ── */
+.card-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 14px; padding: 22px; text-decoration: none; color: #e0e0e0; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; border: 1px solid rgba(255,255,255,0.06); display: block; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+.card .card-emoji { font-size: 2.4em; margin-bottom: 10px; display: block; }
+.card h4 { font-size: 1.1em; color: #fff; margin-bottom: 6px; }
+.card p { font-size: 0.85em; color: #888; line-height: 1.5; }
+.card.games  { border-top: 3px solid #6bff6b; }
+.card.games:hover  { border-color: #6bff6b; box-shadow: 0 10px 30px rgba(107,255,107,0.12); }
+.card.tools  { border-top: 3px solid #00d4ff; }
+.card.tools:hover  { border-color: #00d4ff; box-shadow: 0 10px 30px rgba(0,212,255,0.12); }
+.card.ai     { border-top: 3px solid #a29bfe; }
+.card.ai:hover     { border-color: #a29bfe; box-shadow: 0 10px 30px rgba(162,155,254,0.12); }
+
+/* Coming soon badge */
+.coming-soon { display: inline-block; background: rgba(255,255,255,0.06); color: #666; font-size: 0.72em; padding: 3px 10px; border-radius: 10px; margin-top: 8px; }
+
+/* Footer */
+.footer { text-align: center; padding: 40px 20px; color: #555; font-size: 0.85em; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
+
 @media (max-width: 600px) {
-  .logo { font-size: 2em; }
-  .report-item .date-num { font-size: 1.5em; min-width: 50px; }
+  .logo { font-size: 2.2em; }
+  .tab-btn { padding: 10px 6px; font-size: 0.8em; }
+  .tab-btn .tab-emoji { font-size: 1.2em; }
+  .report-item .date-num { font-size: 1.5em; min-width: 45px; }
+  .card-grid { grid-template-columns: 1fr; }
 }
 </style>
 <script>
+// Tab switching
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.tab-btn[data-tab="${tabName}"]`).classList.add('active');
+  document.getElementById('tab-' + tabName).classList.add('active');
+  try { localStorage.setItem('sono_last_tab', tabName); } catch(e) {}
+}
+
+// Restore last tab
+(function() {
+  var last = 'daily';
+  try { last = localStorage.getItem('sono_last_tab') || 'daily'; } catch(e) {}
+  switchTab(last);
+})();
+
+// ── PWA Install ──
 let deferredPrompt;
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const isAndroid = /Android/.test(navigator.userAgent);
@@ -53,7 +127,8 @@ const isAndroid = /Android/.test(navigator.userAgent);
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  document.getElementById('installBtn').style.background = 'linear-gradient(135deg, #6bff6b, #00d4ff)';
+  var btn = document.getElementById('installBtn');
+  if (btn) btn.style.background = 'linear-gradient(135deg, #6bff6b, #00d4ff)';
 });
 
 function showInstall() {
@@ -80,49 +155,161 @@ function hideInstall() {
 </head>
 <body>
 <div class="container">
-<div class="logo">Suno蘇蓉</div>
-<div class="subtitle">科技與未來 · 太空與超自然</div>
 
+<!-- Logo -->
+<div class="logo-area">
+  <div class="logo">Sono蘇蓉</div>
+  <div class="subtitle">科技與未來 · 太空與超自然</div>
+</div>
+
+<!-- Install button -->
 <div class="install-wrap">
   <button class="install-btn" id="installBtn" onclick="showInstall()">
-    <span class="icon">📲</span> 安裝 App
+    <span class="icon">📲</span> 加到主畫面
   </button>
 </div>
 
+<!-- Install modal -->
 <div class="install-modal" id="installModal">
   <div class="card">
-    <h3 id="modalTitle">安裝 Suno蘇蓉</h3>
+    <h3>安裝 Sono蘇蓉</h3>
     <div id="modalBody"></div>
     <button class="close-btn" onclick="hideInstall()">關閉</button>
   </div>
 </div>
 
-<div class="report-list">
-
-<a href="reports/sixth_sense_20260624.html" class="report-item">
-  <div class="date-num">24</div>
-  <div class="info">
-    <h3>2026年6月24日</h3>
-    <div class="weekday">星期三</div>
-    <div class="desc">GPT-5.6下週推出 · Five Eyes AI突破警告 · ChatGPT十億用戶 · 粉紅行星鹽分驚喜 · 五角大樓第三批UFO解密</div>
-  </div>
-  <div class="arrow">→</div>
-</a>
-
-<a href="reports/sixth_sense_20260623.html" class="report-item">
-  <div class="date-num">23</div>
-  <div class="info">
-    <h3>2026年6月23日</h3>
-    <div class="weekday">星期二</div>
-    <div class="desc">AI 突破總覽 · NASA 羅曼望遠鏡抵達 · Stanford 量子突破 · 逆齡基因療法測試 · 英國首相辭職</div>
-  </div>
-  <div class="arrow">→</div>
-</a>
-
+<!-- Tab bar -->
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="daily" onclick="switchTab('daily')">
+    <span class="tab-emoji">📰</span>
+    <span class="tab-label">Sono 每日</span>
+  </button>
+  <button class="tab-btn" data-tab="games" onclick="switchTab('games')">
+    <span class="tab-emoji">🎮</span>
+    <span class="tab-label">Sono 遊戲</span>
+  </button>
+  <button class="tab-btn" data-tab="tools" onclick="switchTab('tools')">
+    <span class="tab-emoji">🛠️</span>
+    <span class="tab-label">Sono 工具</span>
+  </button>
+  <button class="tab-btn" data-tab="ai" onclick="switchTab('ai')">
+    <span class="tab-emoji">🤖</span>
+    <span class="tab-label">Sono AI</span>
+  </button>
 </div>
+
+<!-- ══════ Tab 1: Sono 每日 ══════ -->
+<div class="tab-panel active" id="tab-daily">
+  <div class="report-list">
+
+    <a href="reports/sixth_sense_20260624.html" class="report-item">
+      <div class="date-num">24</div>
+      <div class="info">
+        <h3>2026年6月24日</h3>
+        <div class="weekday">星期三</div>
+        <div class="desc">GPT-5.6下週推出 · Five Eyes AI突破警告 · ChatGPT十億用戶 · 粉紅行星鹽分驚喜 · 五角大樓第三批UFO解密</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a href="reports/sixth_sense_20260623.html" class="report-item">
+      <div class="date-num">23</div>
+      <div class="info">
+        <h3>2026年6月23日</h3>
+        <div class="weekday">星期二</div>
+        <div class="desc">AI 突破總覽 · NASA 羅曼望遠鏡抵達 · Stanford 量子突破 · 逆齡基因療法測試 · 英國首相辭職</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+  </div>
+
+  <div class="report-history-link">
+    <a href="reports/">📅 查看所有日報</a>
+  </div>
+</div>
+
+<!-- ══════ Tab 2: Sono 遊戲 ══════ -->
+<div class="tab-panel" id="tab-games">
+  <div class="card-grid">
+
+    <a href="fighter/" class="card games">
+      <span class="card-emoji">🥊</span>
+      <h4>Stickman Fighter</h4>
+      <p>街機風格格鬥遊戲 · 虛擬搖桿 + PS 菱形掣 · 大競技場對戰</p>
+    </a>
+
+    <div class="card games">
+      <span class="card-emoji">🎲</span>
+      <h4>更多遊戲</h4>
+      <p>敬請期待…</p>
+      <span class="coming-soon">Coming Soon</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════ Tab 3: Sono 工具 ══════ -->
+<div class="tab-panel" id="tab-tools">
+  <div class="card-grid">
+
+    <div class="card tools">
+      <span class="card-emoji">🌤️</span>
+      <h4>天氣查詢</h4>
+      <p>香港即時天氣 · 九天預報 · 天文台數據</p>
+      <span class="coming-soon">Coming Soon</span>
+    </div>
+
+    <div class="card tools">
+      <span class="card-emoji">🔍</span>
+      <h4>Sono 搜尋</h4>
+      <p>AI 驅動智能搜尋引擎</p>
+      <span class="coming-soon">Coming Soon</span>
+    </div>
+
+    <div class="card tools">
+      <span class="card-emoji">📊</span>
+      <h4>數據面板</h4>
+      <p>個人化數據追蹤與分析</p>
+      <span class="coming-soon">Coming Soon</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════ Tab 4: Sono AI ══════ -->
+<div class="tab-panel" id="tab-ai">
+  <div class="card-grid">
+
+    <div class="card ai">
+      <span class="card-emoji">💬</span>
+      <h4>Sono Chat</h4>
+      <p>即時 AI 對話 · 粵語支援 · 個人助手</p>
+      <span class="coming-soon">Coming Soon</span>
+    </div>
+
+    <div class="card ai">
+      <span class="card-emoji">🎨</span>
+      <h4>Sono 創作</h4>
+      <p>AI 圖像生成 · 音樂創作 · 影片製作</p>
+      <span class="coming-soon">Coming Soon</span>
+    </div>
+
+    <div class="card ai">
+      <span class="card-emoji">🧠</span>
+      <h4>Sono 分析</h4>
+      <p>AI 趨勢預測 · 數據洞察 · 自動化報告</p>
+      <span class="coming-soon">Coming Soon</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
 <div class="footer">
-  Powered by <strong>Suno蘇蓉 AI</strong>
+  Powered by <strong>Sono蘇蓉 AI</strong>
 </div>
+
 </div>
 </body>
 </html>
