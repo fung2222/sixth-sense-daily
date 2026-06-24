@@ -185,8 +185,8 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
     <label>API Key</label>
     <input type="password" id="apiKey" placeholder="sk-or-...">
     <label>Model</label>
-    <input type="text" id="apiModel" placeholder="google/gemini-2.0-flash-001">
-    <p class="hint">💡 已預設 OpenRouter + Gemini Flash（免費）。想轉 model 可改，支援任何 OpenAI 兼容 API。</p>
+    <input type="text" id="apiModel" placeholder="google/gemma-4-31b-it:free">
+    <p class="hint">💡 已預設 OpenRouter + Gemma 4（免費）。想轉 model 可改，支援任何 OpenAI 兼容 API。</p>
     <div class="btn-row">
       <button class="btn-cancel" onclick="closeSettings()">取消</button>
       <button class="btn-save" onclick="saveSettings()">儲存</button>
@@ -396,7 +396,12 @@ async function sendMessage() {
     localStorage.setItem('sono_api_endpoint', endpoint);
   }
   var apiKey = localStorage.getItem('sono_api_key') || '';
-  var model = localStorage.getItem('sono_api_model') || 'google/gemini-2.0-flash-001';
+  var model = localStorage.getItem('sono_api_model') || 'google/gemma-4-31b-it:free';
+  // Auto-fix old model name
+  if (model === 'google/gemini-2.0-flash-001') {
+    model = 'google/gemma-4-31b-it:free';
+    localStorage.setItem('sono_api_model', model);
+  }
 
   if (!apiKey) {
     hideTyping();
@@ -447,7 +452,7 @@ async function sendMessage() {
 function openSettings() {
   document.getElementById('apiEndpoint').value = localStorage.getItem('sono_api_endpoint') || 'https://openrouter.ai/api/v1/chat/completions';
   document.getElementById('apiKey').value = localStorage.getItem('sono_api_key') || '';
-  document.getElementById('apiModel').value = localStorage.getItem('sono_api_model') || 'google/gemini-2.0-flash-001';
+  document.getElementById('apiModel').value = localStorage.getItem('sono_api_model') || 'google/gemma-4-31b-it:free';
   document.getElementById('settingsOverlay').classList.add('show');
 }
 
