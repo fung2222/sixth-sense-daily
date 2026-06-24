@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>🧠 記憶配對 · Sono 遊戲</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans HK", sans-serif;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+    color: #fff; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 12px; overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation; user-select: none;
+  }
+  h1 {
+    font-size: 1.8em; margin-bottom: 4px;
+    background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #a29bfe);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: 3px; text-align: center; width: 100%;
+  }
+  .subtitle { color: #888; margin-bottom: 12px; font-size: 0.85em; text-align: center; width: 100%; }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex; justify-content: center; gap: 16px;
+    width: 100%; max-width: 500px; margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .stat-item {
+    background: rgba(30,30,50,0.85); border-radius: 12px;
+    padding: 8px 16px; border: 1px solid #333; backdrop-filter: blur(4px);
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.85em;
+  }
+  .stat-item .stat-icon { font-size: 1.3em; }
+  .stat-item .stat-val { color: #feca57; font-weight: 700; font-size: 1.1em; }
+  .stat-item .stat-label { color: #888; font-size: 0.8em; }
+
+  /* Game board */
+  .board {
+    display: grid; gap: 8px;
+    width: 100%; max-width: 420px;
+    margin-bottom: 16px;
+  }
+  .board.size-4 { grid-template-columns: repeat(4, 1fr); }
+  .board.size-6 { grid-template-columns: repeat(4, 1fr); }
+
+  /* Card */
+  .card {
+    aspect-ratio: 1; border-radius: 14px;
+    perspective: 600px; cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .card:active { transform: scale(0.95); }
+  .card-inner {
+    width: 100%; height: 100%; position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+  .card-face {
+    position: absolute; inset: 0; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  }
+  .card-front {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 2px solid #333;
+    box-shadow: 0 0 15px rgba(162,155,254,0.08);
+    font-size: 2em;
+  }
+  .card-front::after { content: '❓'; }
+  .card-back {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 2px solid #48dbfb;
+    box-shadow: 0 0 20px rgba(72,219,251,0.2);
+    transform: rotateY(180deg);
+    font-size: 2.5em;
+  }
+  .card.matched .card-back {
+    border-color: #6bff6b;
+    box-shadow: 0 0 25px rgba(107,255,107,0.3);
+    animation: matchPulse 0.5s ease;
+  }
+  .card.matched { pointer-events: none; }
+  @keyframes matchPulse {
+    0% { transform: rotateY(180deg) scale(1); }
+    50% { transform: rotateY(180deg) scale(1.1); }
+    100% { transform: rotateY(180deg) scale(1); }
+  }
+  .card.wrong .card-back {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 25px rgba(255,107,107,0.3);
+    animation: shake 0.4s ease;
+  }
+  @keyframes shake {
+    0%,100% { transform: rotateY(180deg) translateX(0); }
+    25% { transform: rotateY(180deg) translateX(-6px); }
+    75% { transform: rotateY(180deg) translateX(6px); }
+  }
+
+  /* Difficulty selector */
+  .diff-bar {
+    display: flex; gap: 8px; margin-bottom: 14px;
+  }
+  .diff-btn {
+    padding: 8px 18px; border-radius: 20px;
+    border: 1px solid #333; background: rgba(255,255,255,0.04);
+    color: #888; font-size: 0.85em; cursor: pointer;
+    font-family: inherit; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .diff-btn:hover { border-color: #a29bfe; color: #a29bfe; }
+  .diff-btn.active {
+    background: linear-gradient(135deg, rgba(162,155,254,0.2), rgba(72,219,251,0.2));
+    border-color: #a29bfe; color: #fff;
+    box-shadow: 0 0 15px rgba(162,155,254,0.15);
+  }
+
+  /* Buttons */
+  .btn-restart {
+    padding: 12px 28px; border-radius: 25px;
+    border: none; font-size: 1em; font-weight: 700;
+    font-family: inherit; cursor: pointer;
+    background: linear-gradient(135deg, #ff6b6b, #feca57);
+    color: #fff; box-shadow: 0 4px 20px rgba(255,107,107,0.25);
+    transition: all 0.2s;
+  }
+  .btn-restart:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(255,107,107,0.35); }
+  .btn-restart:active { transform: scale(0.97); }
+
+  /* Win overlay */
+  .win-overlay {
+    display: none; position: fixed; inset: 0; z-index: 999;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    flex-direction: column; align-items: center; justify-content: center;
+    animation: fadeIn 0.4s ease;
+  }
+  .win-overlay.show { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .win-box {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-radius: 20px; padding: 32px; text-align: center;
+    border: 2px solid rgba(107,255,107,0.3);
+    box-shadow: 0 0 60px rgba(107,255,107,0.15);
+    max-width: 360px; width: 90%;
+    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .win-box .win-emoji { font-size: 4em; margin-bottom: 10px; }
+  .win-box .win-title {
+    font-size: 1.6em; font-weight: 900; margin-bottom: 6px;
+    background: linear-gradient(90deg, #6bff6b, #48dbfb, #a29bfe);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .win-box .win-msg { color: #888; font-size: 0.9em; margin-bottom: 16px; line-height: 1.6; }
+  .win-box .win-stats { color: #feca57; font-size: 1.1em; font-weight: 700; margin-bottom: 20px; }
+
+  /* Back link */
+  .back-link {
+    margin-top: 16px; color: #666; font-size: 0.8em;
+    text-decoration: none; transition: color 0.2s;
+  }
+  .back-link:hover { color: #a29bfe; }
+
+  /* Combo text */
+  .combo-text {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5em; font-weight: 900;
+    background: linear-gradient(90deg, #ff6b6b, #feca57);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    pointer-events: none; z-index: 100;
+    animation: comboPop 0.8s ease forwards;
+    opacity: 0;
+  }
+  @keyframes comboPop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    30% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+    100% { opacity: 0; transform: translate(-50%, -70%) scale(1); }
+  }
+
+  @media (max-width: 400px) {
+    h1 { font-size: 1.4em; }
+    .board { max-width: 340px; gap: 6px; }
+    .card-back { font-size: 2em; }
+    .card-front::after { font-size: 1em; }
+    .stat-item { padding: 6px 10px; font-size: 0.78em; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🧠 記憶配對</h1>
+<div class="subtitle">翻卡配對 · 考你記憶力 · 越翻越聰明 😎</div>
+
+<div class="diff-bar">
+  <button class="diff-btn active" onclick="setDifficulty('easy')">🌱 簡單 (8卡)</button>
+  <button class="diff-btn" onclick="setDifficulty('hard')">🔥 困難 (16卡)</button>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-icon">🔄</span>
+    <div><span class="stat-val" id="moves">0</span> <span class="stat-label">翻數</span></div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-icon">✅</span>
+    <div><span class="stat-val" id="pairs">0</span><span class="stat-label" id="pairsTotal">/4</span></div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-icon">⏱️</span>
+    <div><span class="stat-val" id="timer">0s</span></div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-icon">🔥</span>
+    <div><span class="stat-val" id="combo">0</span> <span class="stat-label">連擊</span></div>
+  </div>
+</div>
+
+<div class="board size-4" id="board"></div>
+
+<button class="btn-restart" onclick="startGame()">🔄 重新開始</button>
+
+<a href="../" class="back-link">← 返回 Sono 首頁</a>
+
+<!-- Win overlay -->
+<div class="win-overlay" id="winOverlay">
+  <div class="win-box">
+    <div class="win-emoji" id="winEmoji">🏆</div>
+    <div class="win-title">全部配對！</div>
+    <div class="win-msg" id="winMsg">你嘅記憶力真係唔錯！</div>
+    <div class="win-stats" id="winStats"></div>
+    <button class="btn-restart" onclick="closeWin(); startGame();">🎮 再玩一次</button>
+  </div>
+</div>
+
+<script>
+// ══════ Game State ══════
+var difficulty = 'easy';
+var EMOJIS_ALL = ['🐶','🐱','🐼','🦊','🐸','🦋','🌸','🍕','🎸','🚀','🌈','🎃','🦄','🍩','🎯','🐙','🦕','🎪','🧸','🍦'];
+var cards = [];
+var flippedCards = [];
+var matchedPairs = 0;
+var totalPairs = 4;
+var moves = 0;
+var combo = 0;
+var bestCombo = 0;
+var timerInterval = null;
+var startTime = 0;
+var gameActive = false;
+var lockBoard = false;
+
+function setDifficulty(d) {
+  difficulty = d;
+  document.querySelectorAll('.diff-btn').forEach(function(b) { b.classList.remove('active'); });
+  if (d === 'easy') {
+    document.querySelectorAll('.diff-btn')[0].classList.add('active');
+  } else {
+    document.querySelectorAll('.diff-btn')[1].classList.add('active');
+  }
+  startGame();
+}
+
+function shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+  }
+  return arr;
+}
+
+function startGame() {
+  // Reset
+  clearInterval(timerInterval);
+  flippedCards = [];
+  matchedPairs = 0;
+  moves = 0;
+  combo = 0;
+  bestCombo = 0;
+  gameActive = true;
+  lockBoard = false;
+  startTime = Date.now();
+
+  if (difficulty === 'easy') {
+    totalPairs = 4;
+  } else {
+    totalPairs = 8;
+  }
+
+  // Pick emojis
+  var pool = shuffle(EMOJIS_ALL.slice()).slice(0, totalPairs);
+  cards = shuffle(pool.concat(pool));
+
+  // Update UI
+  document.getElementById('moves').textContent = '0';
+  document.getElementById('pairs').textContent = '0';
+  document.getElementById('pairsTotal').textContent = '/' + totalPairs;
+  document.getElementById('timer').textContent = '0s';
+  document.getElementById('combo').textContent = '0';
+
+  // Build board
+  var board = document.getElementById('board');
+  board.innerHTML = '';
+  if (difficulty === 'hard') {
+    board.className = 'board size-4';
+    board.style.gridTemplateColumns = 'repeat(4, 1fr)';
+  } else {
+    board.className = 'board size-4';
+    board.style.gridTemplateColumns = 'repeat(4, 1fr)';
+  }
+
+  for (var i = 0; i < cards.length; i++) {
+    var card = document.createElement('div');
+    card.className = 'card';
+    card.setAttribute('data-idx', i);
+    card.setAttribute('data-emoji', cards[i]);
+    card.innerHTML = '<div class="card-inner"><div class="card-face card-front"></div><div class="card-face card-back">' + cards[i] + '</div></div>';
+    card.addEventListener('click', onCardClick);
+    card.addEventListener('touchend', function(e) { e.preventDefault(); });
+    board.appendChild(card);
+  }
+
+  // Start timer
+  timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+  if (!gameActive) return;
+  var elapsed = Math.floor((Date.now() - startTime) / 1000);
+  document.getElementById('timer').textContent = elapsed + 's';
+}
+
+function onCardClick(e) {
+  if (lockBoard) return;
+  var card = e.currentTarget;
+  if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
+  if (flippedCards.length >= 2) return;
+
+  card.classList.add('flipped');
+  flippedCards.push(card);
+
+  if (flippedCards.length === 2) {
+    moves++;
+    document.getElementById('moves').textContent = moves;
+    checkMatch();
+  }
+}
+
+function checkMatch() {
+  var c1 = flippedCards[0];
+  var c2 = flippedCards[1];
+  var e1 = c1.getAttribute('data-emoji');
+  var e2 = c2.getAttribute('data-emoji');
+
+  if (e1 === e2) {
+    // Match!
+    combo++;
+    if (combo > bestCombo) bestCombo = combo;
+    document.getElementById('combo').textContent = combo;
+
+    setTimeout(function() {
+      c1.classList.add('matched');
+      c2.classList.add('matched');
+      matchedPairs++;
+      document.getElementById('pairs').textContent = matchedPairs;
+
+      if (combo >= 2) showCombo(combo);
+
+      flippedCards = [];
+
+      if (matchedPairs === totalPairs) {
+        gameActive = false;
+        clearInterval(timerInterval);
+        setTimeout(showWin, 600);
+      }
+    }, 400);
+  } else {
+    // No match
+    combo = 0;
+    document.getElementById('combo').textContent = '0';
+    lockBoard = true;
+
+    setTimeout(function() {
+      c1.classList.add('wrong');
+      c2.classList.add('wrong');
+    }, 300);
+
+    setTimeout(function() {
+      c1.classList.remove('flipped', 'wrong');
+      c2.classList.remove('flipped', 'wrong');
+      flippedCards = [];
+      lockBoard = false;
+    }, 1000);
+  }
+}
+
+function showCombo(n) {
+  var el = document.createElement('div');
+  el.className = 'combo-text';
+  var msgs = ['', '', '🔥 連擊x2!', '⚡ 連擊x3!', '💥 連擊x4!', '🌟 連擊x5!'];
+  el.textContent = n < msgs.length ? msgs[n] : '🚀 連擊x' + n + '!';
+  document.body.appendChild(el);
+  setTimeout(function() { el.remove(); }, 900);
+}
+
+function showWin() {
+  var elapsed = Math.floor((Date.now() - startTime) / 1000);
+  var overlay = document.getElementById('winOverlay');
+  var emoji = document.getElementById('winEmoji');
+  var msg = document.getElementById('winMsg');
+  var stats = document.getElementById('winStats');
+
+  // Rating
+  var perfect = totalPairs;
+  var ratio = moves / totalPairs;
+  if (ratio <= 1.5) {
+    emoji.textContent = '🧠';
+    msg.textContent = '變態級記憶力！你係人類外掛吧？！';
+  } else if (ratio <= 2.5) {
+    emoji.textContent = '🏆';
+    msg.textContent = '勁呀！記憶力超班！';
+  } else if (ratio <= 4) {
+    emoji.textContent = '😎';
+    msg.textContent = '唔錯唔錯，有潛質！';
+  } else {
+    emoji.textContent = '🐌';
+    msg.textContent = '慢慢嚟，記憶力會越練越好㗎！';
+  }
+
+  stats.textContent = '翻咗 ' + moves + ' 次 · 用咗 ' + elapsed + ' 秒 · 最高連擊 ' + bestCombo;
+  overlay.classList.add('show');
+}
+
+function closeWin() {
+  document.getElementById('winOverlay').classList.remove('show');
+}
+
+// ══════ Init ══════
+startGame();
+</script>
+</body>
+</html>
