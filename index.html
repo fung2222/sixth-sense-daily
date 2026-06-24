@@ -307,11 +307,11 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
       <p>香港即時天氣 · 九天預報 · 天文台數據</p>
       <span class="coming-soon">Coming Soon</span>
     </div>
-    <a href="tools/currency-converter.html" class="card toolbox" style="text-decoration:none;color:inherit;">
+    <div class="card toolbox" id="currencyTrigger" style="cursor:pointer;">
       <span class="card-emoji">💰</span>
       <h4>貨幣匯率</h4>
       <p>即時匯率轉換 · 18種貨幣 · 市場價格參考</p>
-    </a>
+    </div>
     <div class="card toolbox">
       <span class="card-emoji">🔍</span>
       <h4>Sono 搜尋</h4>
@@ -332,6 +332,33 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
   Powered by <strong>Sono蘇蓉 AI</strong>
 </div>
 
+</div>
+
+<!-- ══════ Currency Converter Modal ══════ -->
+<div id="currencyModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;max-width:480px;width:100%;padding:24px;border:1px solid rgba(255,255,255,0.08);max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <h2 style="font-size:1.3em;color:#fff;">💰 貨幣匯率</h2>
+      <button id="currencyClose" style="width:32px;height:32px;border:none;border-radius:50%;background:rgba(255,255,255,0.06);color:#888;font-size:1.1em;cursor:pointer;">✕</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+      <div><div style="color:#888;font-size:0.75em;">基準匯率</div><div id="mBaseRate" style="color:#6bff6b;font-size:1em;font-weight:700;">--</div></div>
+      <div style="color:#666;font-size:0.7em;" id="mUpdateTime">載入中...</div>
+    </div>
+    <select id="mFrom" style="width:100%;padding:12px;background:rgba(255,255,255,0.06);border:1px solid #333;border-radius:10px;color:#fff;font-size:0.95em;font-family:inherit;margin-bottom:10px;">
+      <option value="HKD">🇭🇰 HKD 港元</option><option value="USD">🇺🇸 USD 美元</option><option value="EUR">🇪🇺 EUR 歐元</option><option value="GBP">🇬🇧 GBP 英鎊</option><option value="JPY">🇯🇵 JPY 日圓</option><option value="CNY">🇨🇳 CNY 人民幣</option><option value="TWD">🇹🇼 TWD 新台幣</option><option value="KRW">🇰🇷 KRW 韓圜</option><option value="SGD">🇸🇬 SGD 新加坡元</option><option value="AUD">🇦🇺 AUD 澳元</option>
+    </select>
+    <input id="mAmount" type="number" value="1" step="any" style="width:100%;padding:12px;background:rgba(255,255,255,0.06);border:1px solid #333;border-radius:10px;color:#fff;font-size:1.1em;font-family:inherit;margin-bottom:10px;outline:none;" placeholder="輸入金額">
+    <button id="mSwap" style="display:block;margin:0 auto 10px;width:36px;height:36px;border-radius:50%;border:1px solid #333;background:rgba(255,255,255,0.04);color:#a29bfe;font-size:1em;cursor:pointer;">⇄</button>
+    <select id="mTo" style="width:100%;padding:12px;background:rgba(255,255,255,0.06);border:1px solid #333;border-radius:10px;color:#fff;font-size:0.95em;font-family:inherit;margin-bottom:16px;">
+      <option value="USD">🇺🇸 USD 美元</option><option value="HKD" selected>🇭🇰 HKD 港元</option><option value="EUR">🇪🇺 EUR 歐元</option><option value="GBP">🇬🇧 GBP 英鎊</option><option value="JPY">🇯🇵 JPY 日圓</option><option value="CNY">🇨🇳 CNY 人民幣</option><option value="TWD">🇹🇼 TWD 新台幣</option><option value="KRW">🇰🇷 KRW 韓圜</option><option value="SGD">🇸🇬 SGD 新加坡元</option><option value="AUD">🇦🇺 AUD 澳元</option>
+    </select>
+    <div style="background:rgba(107,255,107,0.06);border:1px solid rgba(107,255,107,0.15);border-radius:12px;padding:16px;text-align:center;">
+      <div style="color:#888;font-size:0.75em;margin-bottom:4px;">兌換結果</div>
+      <div id="mResult" style="font-size:2em;font-weight:900;background:linear-gradient(90deg,#6bff6b,#a29bfe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">--</div>
+      <div id="mResultSub" style="color:#666;font-size:0.7em;margin-top:4px;"></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -532,6 +559,57 @@ async function fetchWeather() {
   } catch(e) {}
 }
 fetchWeather();
+
+// ══════ Currency Converter Modal ══════
+(function(){
+  var mRates = {};
+  var mFrom = document.getElementById('mFrom');
+  var mTo = document.getElementById('mTo');
+  var mAmt = document.getElementById('mAmount');
+  var mResult = document.getElementById('mResult');
+  var mResultSub = document.getElementById('mResultSub');
+  var mBaseRate = document.getElementById('mBaseRate');
+  var mUpdate = document.getElementById('mUpdateTime');
+  var modal = document.getElementById('currencyModal');
+
+  document.getElementById('currencyTrigger').onclick = function(){ modal.style.display='flex'; mConvert(); };
+  document.getElementById('currencyClose').onclick = function(){ modal.style.display='none'; };
+  modal.onclick = function(e){ if(e.target===this) modal.style.display='none'; };
+
+  function mConvert() {
+    var f = mFrom.value, t = mTo.value, a = parseFloat(mAmt.value) || 0;
+    var fr = mRates[f] || 1, tr = mRates[t];
+    if (!tr) { mResult.textContent = '--'; return; }
+    var r = a / fr * tr;
+    var big = r>1000 || t==='VND'||t==='IDR'||t==='KRW';
+    mResult.textContent = (big ? r.toLocaleString('zh-HK',{maxFraction:0}) : r.toLocaleString('zh-HK',{minFraction:2,maxFraction:2})) + ' ' + t;
+    mResultSub.textContent = '1 ' + f + ' = ' + (tr/fr).toFixed(6) + ' ' + t;
+    mBaseRate.textContent = '1 ' + f + ' = ' + (tr/fr).toFixed(6) + ' ' + t;
+  }
+
+  async function mFetch() {
+    try {
+      var r = await fetch('https://api.frankfurter.app/latest?from='+mFrom.value);
+      var d = await r.json();
+      mRates = d.rates; mRates[mFrom.value]=1;
+      mUpdate.textContent = '更新: '+new Date(d.date).toLocaleDateString('zh-HK');
+    } catch(e){
+      mRates = {USD:1,EUR:0.92,GBP:0.79,JPY:149.5,CNY:7.24,HKD:7.82,TWD:32.1,KRW:1375,SGD:1.34,AUD:1.53};
+      mUpdate.textContent = '離線模式';
+    }
+    mConvert();
+  }
+
+  mFrom.onchange = mFetch;
+  mTo.onchange = mConvert;
+  mAmt.oninput = mConvert;
+  document.getElementById('mSwap').onclick = function(){
+    var tmp = mFrom.value; mFrom.value = mTo.value; mTo.value = tmp;
+    mFetch();
+  };
+
+  mFetch();
+})();
 </script>
 </body>
 </html>
