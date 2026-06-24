@@ -158,7 +158,7 @@
 
   /* Restart button above log */
   .restart-bar {
-    max-width: 640px; width: 100%; display: flex; justify-content: center; margin-bottom: 4px;
+    max-width: 640px; width: 100%; display: flex; justify-content: center; gap: 10px; margin-bottom: 4px;
   }
   .btn-restart {
     padding: 8px 20px;
@@ -169,6 +169,15 @@
     transition: transform 0.1s;
   }
   .btn-restart:active { transform: scale(0.95); }
+  .btn-home {
+    padding: 8px 20px;
+    background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+    border: none; color: #fff; border-radius: 8px;
+    cursor: pointer; font-weight: 700; font-size: 0.85em; text-decoration: none;
+    box-shadow: 0 2px 8px rgba(162,155,254,0.3);
+    transition: transform 0.1s; display: inline-flex; align-items: center; gap: 4px;
+  }
+  .btn-home:active { transform: scale(0.95); }
 
   .log {
     max-width: 640px; width: 100%;
@@ -279,6 +288,7 @@
 
   <div class="restart-bar">
     <button class="btn-restart" id="restartBtn">重新開始</button>
+    <a href="../" class="btn-home">🏠 回到首頁</a>
   </div>
 
   <div class="log" id="log"></div>
