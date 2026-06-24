@@ -344,6 +344,7 @@ function createFighter(x, isAI) {
     aiThinkTimer: 20, aiMoveDir: 0, aiActionCooldown: 0,
     dead: false,
     speechText: '', speechTimer: 0,
+    chargingUltimate: 0, // 1.5s charge timer (~90 frames)
   };
 }
 
@@ -360,7 +361,7 @@ function initGame() {
   deathTimer = 0;
   dyingFighter = null;
   deathOverlay.classList.remove('show');
-  [player, ai].forEach(f => { f.speechText = ''; f.speechTimer = 0; });
+  [player, ai].forEach(f => { f.speechText = ''; f.speechTimer = 0; f.chargingUltimate = 0; });
   logEl.innerHTML = '';
   updateUI();
   addLog('⚔️ 對戰開始！', 'system');
@@ -446,7 +447,7 @@ function drawLimb(x1,y1,x2,y2,bendDir,isLeg=false) {
 }
 
 function drawStickman(fighter) {
-  const {x, y:baseY, color, facing, charge, defending, hitFlash, dead, speechText, speechTimer} = fighter;
+  const {x, y:baseY, color, facing, charge, defending, hitFlash, dead, speechText, speechTimer, chargingUltimate} = fighter;
   let y = baseY;
   if (dead) y = GROUND_Y + 25;
 
@@ -554,6 +555,61 @@ function drawStickman(fighter) {
     for (let i=0; i<3; i++) {
       ctx.beginPath(); ctx.arc(x, y-15, 34+i*14+Math.sin(animFrame*0.05+i)*4, 0, Math.PI*2); ctx.stroke();
     }
+  }
+
+  // Super Saiyan mode (during ultimate charge)
+  if (chargingUltimate > 0) {
+    const ssjProgress = 1 - (chargingUltimate / 90); // 0→1 during charge
+    const pulse = Math.sin(animFrame * 0.15) * 0.3 + 0.7;
+    // Golden aura rings
+    ctx.strokeStyle = `rgba(255, 234, 167, ${0.6 * pulse})`;
+    ctx.lineWidth = 3;
+    for (let i = 0; i < 4; i++) {
+      ctx.beginPath();
+      ctx.arc(x, y - 15, 40 + i * 14 + Math.sin(animFrame * 0.08 + i) * 6, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    // Energy pillar
+    const pillarAlpha = 0.25 * pulse * ssjProgress;
+    const pillarGrad = ctx.createLinearGradient(x, y - 120, x, y + 20);
+    pillarGrad.addColorStop(0, `rgba(255,234,167,0)`);
+    pillarGrad.addColorStop(0.3, `rgba(255,234,167,${pillarAlpha})`);
+    pillarGrad.addColorStop(0.7, `rgba(255,234,167,${pillarAlpha})`);
+    pillarGrad.addColorStop(1, `rgba(255,234,167,0)`);
+    ctx.fillStyle = pillarGrad;
+    ctx.fillRect(x - 30, y - 120, 60, 140);
+    // Super saiyan hair (spiky triangles)
+    const headX = x + pts.head.x;
+    const headY = y + pts.head.y;
+    ctx.fillStyle = `rgba(255, 215, 0, ${0.9 * ssjProgress})`;
+    for (let i = -3; i <= 3; i++) {
+      ctx.beginPath();
+      const bx = headX + i * 10 + Math.sin(animFrame * 0.2 + i) * 3;
+      const by = headY - 14;
+      const spikeH = 18 + Math.abs(i) * 5 + Math.sin(animFrame * 0.25 + i) * 4;
+      ctx.moveTo(bx - 4, by);
+      ctx.lineTo(bx, by - spikeH);
+      ctx.lineTo(bx + 4, by);
+      ctx.fill();
+    }
+    // Hair glow
+    ctx.strokeStyle = 'rgba(255,255,100,0.4)';
+    ctx.lineWidth = 1;
+    for (let i = -3; i <= 3; i++) {
+      ctx.beginPath();
+      const bx = headX + i * 10 + Math.sin(animFrame * 0.2 + i) * 3;
+      const by = headY - 14;
+      const spikeH = 18 + Math.abs(i) * 5 + Math.sin(animFrame * 0.25 + i) * 4;
+      ctx.moveTo(bx - 4, by);
+      ctx.lineTo(bx, by - spikeH);
+      ctx.lineTo(bx + 4, by);
+      ctx.stroke();
+    }
+    // White eyes (no pupil)
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(headX + 6*facing, headY - 2, 4, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   ctx.restore();
@@ -667,14 +723,15 @@ function drawProjectiles() {
 // ============================================================
 // COMBAT — No hit stun!
 // ============================================================
-function applyDamage(target, dmg, attacker) {
+function applyDamage(target, dmg, attacker, bigKnockback = false) {
   if (target.dead) return;
   target.hp = Math.max(0, target.hp - dmg);
   target.hitFlash = 6;
   target.defending = false;
 
   const dir = target===player ? -1 : 1;
-  target.vx = dir * 7;
+  target.vx = dir * (bigKnockback ? 18 : 7);
+  if (bigKnockback) target.vy = -6; // launch up
 
   // Minimal pose disruption — just flash, don't stop
   target.hitFlash = 8;
@@ -750,6 +807,7 @@ function setPose(fighter, pose, duration) {
 
 function performAction(action, fighter) {
   if (gameOver || fighter.hp <= 0 || fighter.dead) return;
+  if (fighter.chargingUltimate > 0) return; // can't act while charging
 
   const defender = fighter===player ? ai : player;
   const isPlayer = fighter===player;
@@ -800,32 +858,11 @@ function performAction(action, fighter) {
         addLog(`${isPlayer?'👤':'🤖'} ▲ 大招未儲滿！（${fighter.charge}/3）`, 'system');
         return;
       }
+      if (fighter.chargingUltimate > 0) return; // already charging
       fighter.charge = 0;
-      setPose(fighter, 'ultimate', 50);
-      screenShake = 18;
-      slowMoFrames = 18;
-
-      document.getElementById('arenaWrap').style.filter = 'brightness(1.8) contrast(1.3)';
-      setTimeout(() => { document.getElementById('arenaWrap').style.filter = ''; }, 250);
-
-      spawnUltimateParticles(fighter.x, fighter.y);
-      addLog(`${isPlayer?'👤':'🤖'} ▲ 終極大絕！！！`, isPlayer?'player':'ai');
-
-      setTimeout(() => {
-        if (gameOver) return;
-        screenShake = 25;
-        spawnUltimateParticles(fighter.x, fighter.y);
-        document.getElementById('arenaWrap').style.filter = 'brightness(2)';
-        setTimeout(() => { document.getElementById('arenaWrap').style.filter = ''; }, 200);
-
-        if (dist < 200) {
-          const dmg = defender.defending ? 22 : 42 + Math.floor(Math.random()*16);
-          applyDamage(defender, dmg, fighter);
-          addLog(`💥 大招命中！！！(-${dmg})`, isPlayer?'player':'ai');
-        } else {
-          addLog(`💥 大招打空！`, 'system');
-        }
-      }, 350);
+      fighter.chargingUltimate = 90; // 1.5 seconds
+      fighter.vx = 0; fighter.vy = 0;
+      addLog(`${isPlayer?'👤':'🤖'} ▲ 儲氣中...`, isPlayer?'player':'ai');
       updateUI();
       break;
     }
@@ -838,6 +875,7 @@ function performAction(action, fighter) {
 // ============================================================
 function updateAI() {
   if (gameOver || ai.hp <= 0 || ai.dead) return;
+  if (ai.chargingUltimate > 0) return; // don't act while charging
 
   const dist = Math.abs(ai.x - player.x);
 
@@ -995,7 +1033,7 @@ drawJoystick();
 
 // Joystick dir to movement each frame
 function processJoystick() {
-  if (gameOver || player.hp <= 0 || player.dead) return;
+  if (gameOver || player.hp <= 0 || player.dead || player.chargingUltimate > 0) return;
   if (!joystickActive) return;
   player.vx = jsDir.x * MOVE_SPEED;
   if (jsDir.y < -0.3 && player.y >= GROUND_Y-1) {
@@ -1037,7 +1075,7 @@ function addLog(text, type='system') {
 // GAME LOOP
 // ============================================================
 function moveFighter(fighter, dir) {
-  if (fighter.dead) return;
+  if (fighter.dead || fighter.chargingUltimate > 0) return;
   if (dir==='left') fighter.vx = -MOVE_SPEED;
   else if (dir==='right') fighter.vx = MOVE_SPEED;
   else if (dir==='jump') { if (fighter.y>=GROUND_Y-1) { fighter.vy=JUMP_FORCE; setPose(fighter,'jump',30); spawnParticles(fighter.x,GROUND_Y+45,'#55efc4',8,0.5); } }
@@ -1062,6 +1100,43 @@ function update() {
   }
 
   [player, ai].forEach(f => {
+    // Ultimate charge timer
+    if (f.chargingUltimate > 0) {
+      f.chargingUltimate--;
+      f.vx = 0; f.vy = Math.max(f.vy, 0); // freeze movement
+      // Charge particles
+      if (animFrame % 3 === 0) {
+        spawnParticles(f.x, f.y - 20, '#ffeaa7', 3, 0.5);
+      }
+      // Pose
+      if (f.targetPose !== 'ultimate') {
+        setPose(f, 'ultimate', 200);
+      } else if (f.poseTimer < 10) {
+        f.poseTimer = 200;
+      }
+      if (f.chargingUltimate === 0) {
+        // FIRE!
+        const defender = f === player ? ai : player;
+        const dist = Math.abs(f.x - defender.x);
+        screenShake = 25;
+        slowMoFrames = 20;
+        document.getElementById('arenaWrap').style.filter = 'brightness(2.5)';
+        setTimeout(() => { document.getElementById('arenaWrap').style.filter = ''; }, 300);
+        spawnUltimateParticles(f.x, f.y);
+        addLog(`${f.isAI?'🤖':'👤'} ▲ 終極大絕爆發！！！`, f.isAI?'ai':'player');
+        if (dist < 220) {
+          const dmg = defender.defending ? 25 : 50 + Math.floor(Math.random()*18);
+          applyDamage(defender, dmg, f, true);
+          addLog(`💥 命中！！！(-${dmg})`, f.isAI?'ai':'player');
+        } else {
+          addLog(`💥 打空！`, 'system');
+          spawnUltimateParticles(f.x, f.y);
+        }
+        setPose(f, 'idle', 10);
+      }
+      return; // skip normal physics
+    }
+
     if (f.dead) {
       // Dead body physics - slight settle
       f.vx *= 0.85;
