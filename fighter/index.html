@@ -158,7 +158,7 @@
 
   /* Restart button above log */
   .restart-bar {
-    max-width: 640px; width: 100%; display: flex; justify-content: center; gap: 10px; margin-bottom: 4px;
+    max-width: 640px; width: 100%; display: flex; justify-content: center; margin-bottom: 4px;
   }
   .btn-restart {
     padding: 8px 20px;
@@ -169,15 +169,6 @@
     transition: transform 0.1s;
   }
   .btn-restart:active { transform: scale(0.95); }
-  .btn-home {
-    padding: 8px 20px;
-    background: linear-gradient(135deg, #a29bfe, #6c5ce7);
-    border: none; color: #fff; border-radius: 8px;
-    cursor: pointer; font-weight: 700; font-size: 0.85em; text-decoration: none;
-    box-shadow: 0 2px 8px rgba(162,155,254,0.3);
-    transition: transform 0.1s; display: inline-flex; align-items: center; gap: 4px;
-  }
-  .btn-home:active { transform: scale(0.95); }
 
   .log {
     max-width: 640px; width: 100%;
@@ -260,7 +251,7 @@
   </div>
 
   <div id="arenaWrap">
-    <canvas id="arena" width="640" height="420"></canvas>
+    <canvas id="arena" width="640" height="500"></canvas>
     <div id="deathOverlay"><div id="deathText"></div></div>
   </div>
 
@@ -288,21 +279,20 @@
 
   <div class="restart-bar">
     <button class="btn-restart" id="restartBtn">重新開始</button>
-    <a href="../" class="btn-home">回到首頁</a>
   </div>
 
-  <div class="log" id="log"></div>
+  <div class="log" id="log" style="display:none"></div>
 
 <script>
 // ============================================================
 // CONFIG
 // ============================================================
-const GROUND_Y = 360;
+const GROUND_Y = 440;
 const ARENA_W = 640;
-const ARENA_H = 420;
+const ARENA_H = 500;
 const MOVE_SPEED = 5.5;
-const JUMP_FORCE = -14;
-const GRAVITY = 0.7;
+const JUMP_FORCE = -22;
+const GRAVITY = 0.65;
 
 // ============================================================
 // TTS
@@ -340,6 +330,7 @@ let slowMoFrames = 0;
 let scores = { playerWins: 0, playerLosses: 0, aiWins: 0, aiLosses: 0 };
 let dyingFighter = null;
 let deathTimer = 0;
+let logCache = []; // for in-canvas log
 
 function createFighter(x, isAI) {
   return {
@@ -375,6 +366,7 @@ function initGame() {
   deathOverlay.classList.remove('show');
   [player, ai].forEach(f => { f.speechText = ''; f.speechTimer = 0; f.chargingUltimate = 0; });
   const modeNames = ['埋身肉搏', '拉打遊擊', '隨機發揮'];
+  logCache = [];
   logEl.innerHTML = '';
   addLog(`⚔️ 對戰開始！AI 模式：${modeNames[ai.aiMode]}`, 'system');
   updateUI();
@@ -1124,6 +1116,9 @@ function addLog(text, type='system') {
   logEl.appendChild(div);
   logEl.scrollTop = logEl.scrollHeight;
   while (logEl.children.length > 40) logEl.removeChild(logEl.firstChild);
+  // Keep cache for in-canvas display
+  logCache.push({text, type});
+  if (logCache.length > 40) logCache.shift();
 }
 
 // ============================================================
@@ -1249,6 +1244,43 @@ function render() {
   drawStickman(ai);
   drawProjectiles();
   drawParticles();
+
+  // In-canvas log: player left-top, AI right-top
+  ctx.save();
+  ctx.font = '11px "Noto Sans HK", monospace';
+  ctx.textBaseline = 'top';
+  let px = 10, py = 8;
+  ctx.fillStyle = '#feca57';
+  ctx.fillText('👤', px - 2, py);
+  px += 16;
+  for (let i = logCache.length - 1; i >= 0 && py < 120; i--) {
+    const e = logCache[i];
+    if (e.type !== 'player' && e.type !== 'system') continue;
+    ctx.fillStyle = e.type === 'player' ? '#feca57' : '#888';
+    const txt = e.text.replace(/[👤🤖]/g,'').trim();
+    if (ctx.measureText(txt).width < 280) {
+      ctx.fillText(txt, px, py);
+      py += 15;
+    }
+  }
+
+  let ax = ARENA_W - 10;
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#48dbfb';
+  ctx.fillText('🤖', ax - 8, 8);
+  let ay = 8;
+  for (let i = logCache.length - 1; i >= 0 && ay < 120; i--) {
+    const e = logCache[i];
+    if (e.type !== 'ai' && e.type !== 'system') continue;
+    ctx.fillStyle = e.type === 'ai' ? '#48dbfb' : '#888';
+    const txt = e.text.replace(/[👤🤖]/g,'').trim();
+    if (ctx.measureText(txt).width < 280) {
+      ctx.fillText(txt, ax, ay);
+      ay += 15;
+    }
+  }
+  ctx.textAlign = 'left';
+  ctx.restore();
   ctx.restore();
 }
 
