@@ -412,7 +412,7 @@ document.querySelectorAll('.news-card').forEach(card => {
 });
 </script>
 
-<script>function switchNewsTab(i){document.querySelectorAll(".news-tab").forEach(b=>b.classList.remove("active"));document.querySelectorAll(".section-panel").forEach(p=>p.classList.remove("active"));document.querySelector('.news-tab[data-section="'+i+'"]').classList.add("active");document.getElementById("panel-"+i).classList.add("active")}</script>
+<script>function switchNewsTab(i){document.querySelectorAll(".news-tab").forEach(b=>b.classList.remove("active"));document.querySelectorAll(".section-panel").forEach(p=>{p.classList.remove("active");p.style.display="none"});document.querySelector('.news-tab[data-section="'+i+'"]').classList.add("active");var el=document.getElementById("panel-"+i);if(el){el.classList.add("active");el.style.display="block"}}</script>
 
 
 <script>
