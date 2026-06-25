@@ -2,8 +2,8 @@
 """Rebuild 24日 and 25日 news with SearXNG-sourced images"""
 import re, shutil
 
-DEPLOY = '/opt/data/sixth-sense-deploy'
-ARCHIVE = '/opt/data/sixth-sense-archive/reports'
+DEPLOY = '/opt/data/suno-deploy'
+ARCHIVE = '/opt/data/suno-archive/reports'
 
 # Read 25日 as base (div-balanced, verified)
 with open(f'{DEPLOY}/reports/suno_20260625.html', 'r') as f:
