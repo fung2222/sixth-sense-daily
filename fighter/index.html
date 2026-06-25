@@ -198,6 +198,16 @@
   }
   .btn-moves:hover { border-color: #888; color: #fff; }
 
+  .btn-weapon {
+    padding: 8px 14px;
+    background: rgba(162,155,254,0.1);
+    border: 1px solid #555; color: #a29bfe;
+    border-radius: 8px; cursor: pointer;
+    font-weight: 700; font-size: 0.8em;
+    transition: all 0.2s;
+  }
+  .btn-weapon:hover { border-color: #a29bfe; background: rgba(162,155,254,0.2); }
+
   .log {
     max-width: 640px; width: 100%;
     background: rgba(15,20,25,0.9);
@@ -280,9 +290,10 @@
     letter-spacing: 3px;
   }
   .weapon-sub { color: #888; font-size: 0.85em; margin-top: -10px; }
-  .weapon-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 320px; justify-content: center; }
+  .weapon-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 320px; justify-content: center; justify-items: center; }
   .weapon-card {
-    width: 100%; padding: 20px 12px;
+    width: 140px; aspect-ratio: 1;
+    padding: 20px 12px;
     background: linear-gradient(135deg, #1a1a2e, #16213e);
     border: 2px solid #333; border-radius: 16px;
     cursor: pointer; text-align: center;
@@ -403,7 +414,8 @@
 
   <div class="restart-bar">
     <button class="btn-restart" id="restartBtn">重新開始</button>
-    <button class="btn-moves" id="movesToggle" onclick="toggleMoves()">📜 出招表</button>
+    <button class="btn-moves" id="movesToggle">📜 出招表</button>
+    <button class="btn-weapon" id="weaponBtn">⚔️ 換武器</button>
     <a href="../" class="btn-home">回到首頁</a>
   </div>
 
@@ -554,6 +566,7 @@ function initGame() {
   updateUI();
   document.querySelectorAll('.ps-btn').forEach(b => b.disabled = false);
   document.getElementById('movesToggle').disabled = false;
+  document.getElementById('weaponBtn').disabled = false;
 }
 
 // Round rect helper (used by speech bubble)
@@ -1035,6 +1048,7 @@ function killFighter(fighter) {
 
   document.querySelectorAll('.ps-btn').forEach(b => b.disabled = true);
   document.getElementById('movesToggle').disabled = true;
+  document.getElementById('weaponBtn').disabled = true;
   updateUI();
 }
 
@@ -1635,8 +1649,15 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keyup', (e) => { keysDown[e.key] = false; });
 
 restartBtn.addEventListener('click', () => {
-  weapon = null;
-  document.querySelector('h1').textContent = 'STICKMAN FIGHTER';
+  if (!weapon) {
+    document.getElementById('weaponOverlay').classList.remove('hidden');
+  } else {
+    initGame();
+  }
+});
+
+document.getElementById('movesToggle').addEventListener('click', toggleMoves);
+document.getElementById('weaponBtn').addEventListener('click', () => {
   document.getElementById('weaponOverlay').classList.remove('hidden');
 });
 
