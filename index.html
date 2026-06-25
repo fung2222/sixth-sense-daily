@@ -279,7 +279,7 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 
     <!-- ── Stickman Fighter ── -->
     <div class="game-item">
-      <div class="game-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="game-header" onclick="toggleGame(this)">
         <svg class="game-logo" viewBox="0 0 48 48" fill="none">
           <defs><linearGradient id="gf1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6bff6b"/><stop offset="100%" stop-color="#00d4ff"/></linearGradient></defs>
           <circle cx="24" cy="10" r="5" stroke="url(#gf1)" stroke-width="2" fill="none"/>
@@ -306,7 +306,7 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 
     <!-- ── 猜拳火柴人 ── -->
     <div class="game-item">
-      <div class="game-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="game-header" onclick="toggleGame(this)">
         <svg class="game-logo" viewBox="0 0 48 48" fill="none">
           <defs><linearGradient id="gf2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffd93d"/><stop offset="100%" stop-color="#ff6b9d"/></linearGradient></defs>
           <rect x="8" y="10" width="10" height="16" rx="3" stroke="url(#gf2)" stroke-width="2" fill="none"/>
@@ -330,7 +330,7 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 
     <!-- ── 記憶配對 ── -->
     <div class="game-item">
-      <div class="game-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="game-header" onclick="toggleGame(this)">
         <svg class="game-logo" viewBox="0 0 48 48" fill="none">
           <defs><linearGradient id="gf3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a29bfe"/><stop offset="100%" stop-color="#6c5ce7"/></linearGradient></defs>
           <rect x="8" y="14" width="14" height="18" rx="3" stroke="url(#gf3)" stroke-width="2" fill="none"/>
@@ -524,6 +524,16 @@ function switchTab(tabName) {
   try { last = localStorage.getItem('sono_last_tab') || 'daily'; } catch(e) {}
   switchTab(last);
 })();
+
+// ══════ Game Accordion ══════
+function toggleGame(header) {
+  var item = header.parentElement;
+  var wasOpen = item.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.game-item').forEach(function(el) { el.classList.remove('open'); });
+  // Toggle clicked (open if was closed, close if was open)
+  if (!wasOpen) item.classList.add('open');
+}
 
 // ══════ Chat Widget ══════
 var chatExpanded = false;
