@@ -18,7 +18,6 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation; user-select: none;
   }
-  /* Game Boy style panels */
   .gb-panel {
     max-width: 640px; width: 100%;
     background: rgba(18,18,36,0.7);
@@ -79,9 +78,9 @@
   }
 
   .gamepad {
-    display: flex; justify-content: space-between; align-items: center;
-    max-width: 640px; width: 100%; gap: 12px;
-    min-height: 180px;
+    display: flex; justify-content: space-between; align-items: stretch;
+    max-width: 640px; width: 100%; gap: 6px; margin-bottom: 4px;
+    min-height: 180px; margin-top: 0;
   }
 
   /* Joystick */
@@ -173,7 +172,7 @@
 
   /* Bottom bar buttons - unified style */
   .restart-bar {
-    max-width: 640px; width: 100%; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;
+    max-width: 640px; width: 100%; display: flex; justify-content: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;
   }
   .bar-btn {
     padding: 8px 16px;
@@ -480,9 +479,9 @@
 const GROUND_Y = 445;
 const ARENA_W = 640;
 const ARENA_H = 505;
-const MOVE_SPEED = 4.4;
-const JUMP_FORCE = -15;
-const GRAVITY = 0.52;
+const MOVE_SPEED = 5.5;
+const JUMP_FORCE = -17;
+const GRAVITY = 0.65;
 
 // ============================================================
 // TTS
@@ -560,7 +559,7 @@ function toggleMoves() {
       const w = WEAPONS[weapon];
       document.getElementById('movesWeaponLabel').textContent = w.icon + ' ' + w.name + ' · ' + w.desc;
       document.getElementById('moveSlash').textContent = weapon === 'gun' ? '單發射擊' : (w.slashDmg ? '傷害+' + w.slashDmg + (w.slashCrit?' 暴擊'+Math.round(w.slashCrit*100)+'%':'') + (w.slashSpeed?' 極速':'') : '基本近戰');
-      document.getElementById('moveRanged').textContent = weapon === 'sword' ? '七旋斬·破彈' : (weapon === 'gun' ? '手榴彈·範圍' : (w.rangedCount ? w.rangedCount+'連發' + (w.rangedSpeed?' 高速':''): '基本遠程'));
+      document.getElementById('moveRanged').textContent = weapon === 'sword' ? '七旋斬·破彈' : (weapon === 'gun' ? '手榴彈·單發' : (w.rangedCount ? w.rangedCount+'連發' + (w.rangedSpeed?' 高速':''): '基本遠程'));
     } else {
       document.getElementById('movesWeaponLabel').textContent = '';
       document.getElementById('moveSlash').textContent = '近戰攻擊';
@@ -655,48 +654,68 @@ function getPosePoints(pose, facing) {
   const poses = {
     idle: {
       head: {x:0,y:-68}, neck:{x:0,y:-50}, hip:{x:0,y:-5},
-      armL:{x:-24*f,y:-24}, armR:{x:24*f,y:-24},
+      armL:{x:-22*f,y:-22}, armR:{x:22*f,y:-22},
       legL:{x:-15,y:52}, legR:{x:15,y:52},
     },
+    idle2: {
+      head: {x:0,y:-67}, neck:{x:0,y:-49}, hip:{x:1,y:-4},
+      armL:{x:-26*f,y:-18}, armR:{x:18*f,y:-28},
+      legL:{x:-12,y:53}, legR:{x:18,y:51},
+    },
     slash: {
-      head:{x:5*f,y:-65}, neck:{x:3*f,y:-47}, hip:{x:0,y:-5},
-      armL:{x:-16*f,y:-26}, armR:{x:48*f,y:-40},
-      legL:{x:-20,y:52}, legR:{x:22*f,y:50},
+      head:{x:8*f,y:-62}, neck:{x:5*f,y:-44}, hip:{x:0,y:-5},
+      armL:{x:-22*f,y:-30}, armR:{x:52*f,y:-44},
+      legL:{x:-22,y:50}, legR:{x:24*f,y:48},
+    },
+    slash_windup: {
+      head:{x:-3*f,y:-65}, neck:{x:-2*f,y:-47}, hip:{x:-1,y:-4},
+      armL:{x:-10*f,y:-36}, armR:{x:-8*f,y:-42},
+      legL:{x:-18,y:53}, legR:{x:12,y:45},
     },
     ranged: {
-      head:{x:3*f,y:-68}, neck:{x:2*f,y:-50}, hip:{x:0,y:-5},
-      armL:{x:-14*f,y:-32}, armR:{x:44*f,y:-35},
-      legL:{x:-14,y:52}, legR:{x:14,y:52},
+      head:{x:4*f,y:-66}, neck:{x:3*f,y:-48}, hip:{x:0,y:-5},
+      armL:{x:-18*f,y:-28}, armR:{x:48*f,y:-32},
+      legL:{x:-16,y:51}, legR:{x:16,y:51},
     },
     defend: {
-      head:{x:-4*f,y:-60}, neck:{x:-2*f,y:-44}, hip:{x:0,y:-2},
-      armL:{x:12*f,y:-44}, armR:{x:16*f,y:-37},
-      legL:{x:-20,y:50}, legR:{x:14,y:52},
+      head:{x:-6*f,y:-58}, neck:{x:-3*f,y:-42}, hip:{x:-1,y:-3},
+      armL:{x:8*f,y:-46}, armR:{x:14*f,y:-38},
+      legL:{x:-22,y:48}, legR:{x:16,y:50},
     },
     ultimate: {
-      head:{x:0,y:-75}, neck:{x:0,y:-55}, hip:{x:0,y:-10},
-      armL:{x:-42*f,y:-65}, armR:{x:42*f,y:-65},
-      legL:{x:-28,y:48}, legR:{x:28,y:48},
+      head:{x:0,y:-78}, neck:{x:0,y:-58}, hip:{x:0,y:-12},
+      armL:{x:-46*f,y:-68}, armR:{x:46*f,y:-68},
+      legL:{x:-30,y:44}, legR:{x:30,y:44},
     },
     hit: {
-      head:{x:-6*f,y:-60}, neck:{x:-3*f,y:-44}, hip:{x:-2*f,y:-3},
-      armL:{x:-22*f,y:-10}, armR:{x:-10*f,y:3},
-      legL:{x:-10,y:52}, legR:{x:18,y:50},
+      head:{x:-8*f,y:-58}, neck:{x:-4*f,y:-42}, hip:{x:-3*f,y:-4},
+      armL:{x:-28*f,y:-12}, armR:{x:-14*f,y:2},
+      legL:{x:-12,y:50}, legR:{x:20,y:48},
     },
     jump: {
-      head:{x:0,y:-68}, neck:{x:0,y:-50}, hip:{x:0,y:-5},
-      armL:{x:-28*f,y:-42}, armR:{x:28*f,y:-42},
-      legL:{x:-12,y:38}, legR:{x:12,y:38},
+      head:{x:0,y:-72}, neck:{x:0,y:-54}, hip:{x:0,y:-8},
+      armL:{x:-32*f,y:-46}, armR:{x:32*f,y:-46},
+      legL:{x:-14,y:34}, legR:{x:14,y:34},
+    },
+    jump_tuck: {
+      head:{x:0,y:-58}, neck:{x:0,y:-42}, hip:{x:0,y:0},
+      armL:{x:-18*f,y:-6}, armR:{x:18*f,y:-6},
+      legL:{x:-8,y:22}, legR:{x:8,y:22},
     },
     dead: {
-      head:{x:-10*f,y:-15}, neck:{x:-4*f,y:-2}, hip:{x:0,y:12},
-      armL:{x:-35*f,y:15}, armR:{x:-10*f,y:5},
-      legL:{x:-30,y:35}, legR:{x:-5,y:30},
+      head:{x:-12*f,y:-12}, neck:{x:-5*f,y:0}, hip:{x:0,y:15},
+      armL:{x:-38*f,y:18}, armR:{x:-12*f,y:8},
+      legL:{x:-32,y:38}, legR:{x:-8,y:32},
     },
     sit: {
-      head:{x:0,y:-35}, neck:{x:0,y:-20}, hip:{x:0,y:5},
-      armL:{x:-30*f,y:0}, armR:{x:30*f,y:0},
-      legL:{x:-40,y:30}, legR:{x:40,y:30},
+      head:{x:0,y:-32}, neck:{x:0,y:-18}, hip:{x:0,y:8},
+      armL:{x:-34*f,y:2}, armR:{x:34*f,y:2},
+      legL:{x:-42,y:32}, legR:{x:42,y:32},
+    },
+    kick: {
+      head:{x:-3*f,y:-60}, neck:{x:-2*f,y:-44}, hip:{x:1,y:-6},
+      armL:{x:-26*f,y:-28}, armR:{x:8*f,y:-36},
+      legL:{x:-10,y:46}, legR:{x:44*f,y:18},
     },
   };
   return poses[pose] || poses.idle;
@@ -771,6 +790,14 @@ function drawStickman(fighter) {
   ctx.fillStyle = 'rgba(0,0,0,0.25)';
   ctx.beginPath(); ctx.ellipse(x, GROUND_Y+52, 22, 6, 0, 0, Math.PI*2); ctx.fill();
 
+  // Body lean rotation
+  const lean = fighter.hipX || 0;
+  if (lean !== 0 && fighter.y >= GROUND_Y-1) {
+    ctx.translate(x, y - 15);
+    ctx.rotate(lean * 0.015);
+    ctx.translate(-x, -(y - 15));
+  }
+
   ctx.strokeStyle = dc; ctx.fillStyle = dc;
 
   // Jump flip rotation
@@ -798,6 +825,25 @@ function drawStickman(fighter) {
   if (isPlayer && weapon && !dead) {
     const wx = x + pts.armR.x, wy = y + pts.armR.y;
     const f = facing;
+
+    // Idle weapon display
+    if (fighter.targetPose === 'idle' || fighter.targetPose === 'defend' || eased < 0.3) {
+      if (weapon === 'sword') {
+        ctx.strokeStyle = 'rgba(192,192,224,0.6)'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(wx, wy); ctx.lineTo(wx + 20 * f, wy - 18); ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(wx, wy); ctx.lineTo(wx + 20 * f, wy - 18); ctx.stroke();
+      } else if (weapon === 'gun') {
+        ctx.strokeStyle = '#aaa'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(wx - 6 * f, wy); ctx.lineTo(wx + 22 * f, wy - 4); ctx.stroke();
+      } else if (weapon === 'magic') {
+        ctx.fillStyle = 'rgba(162,155,254,0.5)';
+        ctx.beginPath(); ctx.arc(wx + 10 * f, wy - 8, 5, 0, Math.PI * 2); ctx.fill();
+      } else if (weapon === 'fist') {
+        ctx.fillStyle = 'rgba(225,112,85,0.6)';
+        ctx.beginPath(); ctx.arc(wx + 10 * f, wy - 5, 8, 0, Math.PI * 2); ctx.fill();
+      }
+    }
 
     if (fighter.targetPose !== 'idle') {
       if (weapon === 'sword') {
@@ -1229,7 +1275,7 @@ function performAction(action, fighter) {
       } else {
         addLog(`${isPlayer?'👤':'🤖'} ■ 普攻揮空！`, 'system');
       }
-      fighter.charge = Math.min(3, fighter.charge + 0.5 + (w && w.extraCharge ? w.extraCharge : 0));
+      fighter.charge = Math.min(3, fighter.charge + 1 + (w && w.extraCharge ? w.extraCharge : 0));
       break;
     }
     case 'ranged': {
@@ -1254,24 +1300,13 @@ function performAction(action, fighter) {
         fighter.charge = Math.min(3, fighter.charge+0.5);
         break;
       }
-      // 步槍 ● = 手榴彈
+      // 步槍 ● = 手榴彈（單發投射物）
       if (isPlayer && weapon === 'gun') {
         setPose(fighter, 'ranged', 20);
         addLog(`👤 ● 💣 手榴彈！`, 'player');
-        spawnParticles(fighter.x+28*fighter.facing, fighter.y-32, '#ff6b35', 8);
-        setTimeout(() => {
-          if (!gameOver) {
-            const grenadeX = defender.x, grenadeY = defender.y - 20;
-            const grenadeDmg = 18 + Math.floor(Math.random()*8);
-            spawnParticles(grenadeX, grenadeY, '#ff6b35', 25);
-            spawnParticles(grenadeX, grenadeY, '#ffd93d', 15);
-            const dmg = defender.defending ? Math.floor(grenadeDmg*0.3) : grenadeDmg;
-            applyDamage(defender, dmg, fighter, true);
-            // AoE splash
-            const splashDmg = Math.floor(grenadeDmg * 0.3);
-            if (!gameOver) setTimeout(() => applyDamage(defender, splashDmg, fighter, false), 100);
-          }
-        }, 300);
+        spawnParticles(fighter.x+28*fighter.facing, fighter.y-32, '#ff6b35', 6);
+        // Fire a single grenade projectile
+        spawnProjectile(fighter.x+28*fighter.facing, fighter.y-32, fighter.facing, fighter);
         fighter.charge = Math.min(3, fighter.charge+0.5);
         break;
       }
@@ -1708,10 +1743,23 @@ function update() {
     if (f.speechTimer > 0 && !gameOver) f.speechTimer--;
   });
 
-  // Idle breathing
+  // Idle breathing — alternate poses, body lean
   [player, ai].forEach(f => {
     if (!f.dead && f.targetPose==='idle' && f.animProgress>=1 && f.y>=GROUND_Y-1 && f.poseTimer<=0) {
       f.y = GROUND_Y + Math.sin(animFrame*0.04)*0.5;
+      // Alternate idle poses for breathing effect
+      if (animFrame % 90 < 45) {
+        if (f.pose !== 'idle') { f.pose = 'idle'; f.targetPose = 'idle2'; f.animProgress = 0; }
+      } else {
+        if (f.pose !== 'idle2') { f.pose = 'idle2'; f.targetPose = 'idle'; f.animProgress = 0; }
+      }
+    }
+    // Body lean based on movement
+    if (!f.dead && f.y >= GROUND_Y-1) {
+      const lean = Math.max(-8, Math.min(8, f.vx * 1.2));
+      f.hipX = lean; // custom property for hip offset
+    } else {
+      f.hipX = 0;
     }
   });
 
@@ -1743,37 +1791,28 @@ function render() {
 
   // In-canvas log: player left-top, AI right-top
   ctx.save();
-  ctx.font = '11px "Noto Sans HK", monospace';
+  ctx.font = 'bold 24px "Noto Sans HK", sans-serif';
   ctx.textBaseline = 'top';
-  let px = 10, py = 8;
-  ctx.fillStyle = '#feca57';
-  ctx.fillText('👤', px - 2, py);
-  px += 16;
-  for (let i = logCache.length - 1; i >= 0 && py < 120; i--) {
+  let px = 10, py = 6, pCount = 0;
+  for (let i = logCache.length - 1; i >= 0 && pCount < 3; i--) {
     const e = logCache[i];
-    if (e.type !== 'player' && e.type !== 'system') continue;
-    ctx.fillStyle = e.type === 'player' ? '#feca57' : '#888';
+    if (e.type !== 'player') continue;
+    ctx.fillStyle = e.type === 'player' ? '#feca57' : '#aaa';
     const txt = e.text.replace(/[👤🤖]/g,'').trim();
-    if (ctx.measureText(txt).width < 280) {
-      ctx.fillText(txt, px, py);
-      py += 15;
-    }
+    ctx.fillText(txt, px, py);
+    py += 28;
+    pCount++;
   }
-
-  let ax = ARENA_W - 10;
+  let ax = ARENA_W - 10, ay = 6, aCount = 0;
   ctx.textAlign = 'right';
-  ctx.fillStyle = '#48dbfb';
-  ctx.fillText('🤖', ax - 8, 8);
-  let ay = 8;
-  for (let i = logCache.length - 1; i >= 0 && ay < 120; i--) {
+  for (let i = logCache.length - 1; i >= 0 && aCount < 3; i--) {
     const e = logCache[i];
-    if (e.type !== 'ai' && e.type !== 'system') continue;
-    ctx.fillStyle = e.type === 'ai' ? '#48dbfb' : '#888';
+    if (e.type !== 'ai') continue;
+    ctx.fillStyle = e.type === 'ai' ? '#48dbfb' : '#aaa';
     const txt = e.text.replace(/[👤🤖]/g,'').trim();
-    if (ctx.measureText(txt).width < 280) {
-      ctx.fillText(txt, ax, ay);
-      ay += 15;
-    }
+    ctx.fillText(txt, ax, ay);
+    ay += 28;
+    aCount++;
   }
   ctx.textAlign = 'left';
   ctx.restore();
