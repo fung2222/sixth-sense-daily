@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 指令格鬥 | AI Command Fighter</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: #0a0a0f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+}
+#game-wrapper {
+  position: relative;
+  border: 2px solid #ff2d55;
+  box-shadow: 0 0 40px rgba(255,45,85,0.3), inset 0 0 20px rgba(0,0,0,0.5);
+}
+canvas { display: block; }
+#hud {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+  pointer-events: none;
+}
+.hud-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hud-portrait {
+  width: 48px; height: 48px;
+  border: 2px solid;
+  image-rendering: pixelated;
+}
+.hud-info { color: #fff; font-size: 13px; }
+.hud-name { font-weight: bold; letter-spacing: 2px; margin-bottom: 2px; }
+.hud-hp-bar {
+  width: 180px; height: 10px;
+  background: #1a1a2e;
+  border: 1px solid #333;
+  position: relative;
+}
+.hud-hp-fill {
+  height: 100%;
+  transition: width 0.2s;
+}
+.p1 .hud-portrait { border-color: #00d4ff; }
+.p1 .hud-hp-fill { background: linear-gradient(90deg, #00d4ff, #00ff88); }
+.p2 .hud-portrait { border-color: #ff2d55; }
+.p2 .hud-hp-fill { background: linear-gradient(90deg, #ff2d55, #ff6b35); }
+#controls-hint {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.25);
+  font-size: 11px;
+  text-align: center;
+  pointer-events: none;
+  letter-spacing: 1px;
+}
+</style>
+</head>
+<body>
+<div id="game-wrapper">
+  <canvas id="game"></canvas>
+  <div id="hud">
+    <div class="hud-player p1">
+      <canvas class="hud-portrait" id="portrait1" width="48" height="48"></canvas>
+      <div class="hud-info">
+        <div class="hud-name" style="color:#00d4ff">龍 RYU</div>
+        <div class="hud-hp-bar"><div class="hud-hp-fill" id="hp1" style="width:100%"></div></div>
+      </div>
+    </div>
+    <div class="hud-player p2">
+      <div class="hud-info" style="text-align:right">
+        <div class="hud-name" style="color:#ff2d55">影 KAGE</div>
+        <div class="hud-hp-bar"><div class="hud-hp-fill" id="hp2" style="width:100%"></div></div>
+      </div>
+      <canvas class="hud-portrait" id="portrait2" width="48" height="48"></canvas>
+    </div>
+  </div>
+  <div id="controls-hint">
+    P1: WASD 移動 | P2: ←↑↓→ 移動 | 即將支援打字出招...
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  AI Command Fighter — Phase 1 Engine
+// ═══════════════════════════════════════
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+// Canvas size
+const W = 900, H = 500;
+canvas.width = W; canvas.height = H;
+
+// Game constants
+const GRAVITY = 0.6;
+const GROUND_Y = 400;
+const FRICTION = 0.85;
+
+// ═══════════════ Pixel Art Sprites (16x16, color-indexed) ═══════════════
+// Colors: 0=transparent, 1=skin, 2=dark, 3=primary, 4=accent, 5=light, 6=hair
+// Each sprite = array of 16 strings, each string = 16 chars
+
+// ─── 龍 RYU (Karateka) ───
+const SPRITE_RYU = {
+  idle: [
+    '................',
+    '......6666......',
+    '.....666666.....',
+    '....66666666....',
+    '....64466446....',  // headband + hair
+    '....11111111....',  // face top
+    '....111..111....',  // eyes
+    '....111..111....',  // eyes
+    '....11111111....',  // face
+    '.....1111.......',  // chin
+    '......11........',  // neck
+    '.....3333.......',  // shoulders
+    '....3333333.....',  // chest
+    '.....33.33......',  // arms
+    '......3..3......',  // arms
+    '.....55555......',  // belt
+    '.....33333......',  // gi
+    '......3..3......',  // leg
+    '......3..3......',  // leg
+    '......333.......',  // feet
+  ],
+  walk1: [
+    '................',
+    '......6666......',
+    '.....666666.....',
+    '....66666666....',
+    '....64466446....',
+    '....11111111....',
+    '....111..111....',
+    '....111..111....',
+    '....11111111....',
+    '.....1111.......',
+    '......11........',
+    '.....3333.......',
+    '....3333333.....',
+    '.....33.33......',
+    '......33.3......',  // step
+    '.....55555......',
+    '.....33333......',
+    '......3...3.....',  // legs apart
+    '......3...3.....',
+    '.....33..33.....',  // feet
+  ],
+  walk2: [
+    '................',
+    '......6666......',
+    '.....666666.....',
+    '....66666666....',
+    '....64466446....',
+    '....11111111....',
+    '....111..111....',
+    '....111..111....',
+    '....11111111....',
+    '.....1111.......',
+    '......11........',
+    '.....3333.......',
+    '....3333333.....',
+    '.....33.33......',
+    '.....3..33......',
+    '.....55555......',
+    '.....33333......',
+    '.....3...3......',
+    '.....3...3......',
+    '....33...33.....',
+  ],
+  jump: [
+    '................',
+    '......6666......',
+    '.....666666.....',
+    '....66666666....',
+    '....64466446....',
+    '....11111111....',
+    '....111..111....',
+    '....111..111....',
+    '....11111111....',
+    '.....1111.......',
+    '......11........',
+    '.....3333.......',
+    '....3333333.....',
+    '.....33.33......',
+    '......3..3......',
+    '.....55555......',
+    '......3.3.......',  // legs tucked
+    '......3.3.......',
+    '.....3...3......',
+    '.....3...3......',
+  ],
+  crouch: [
+    '................',
+    '......6666......',
+    '.....666666.....',
+    '....66666666....',
+    '....64466446....',
+    '....11111111....',
+    '....111..111....',
+    '....111..111....',
+    '....11111111....',
+    '.....1111.......',
+    '......11........',
+    '....333333......',
+    '....3333333.....',
+    '....33.33.3.....',
+    '....3..3..3.....',
+    '....555555......',
+    '....333333......',
+    '....3....3......',
+    '....3....3......',
+    '...33....33.....',
+  ],
+};
+
+// ─── 影 KAGE (Ninja) ───
+const SPRITE_KAGE = {
+  idle: [
+    '................',
+    '......2222......',
+    '.....224422.....',
+    '....22444422....',
+    '....22444422....',  // hood
+    '....22....22....',  // face opening
+    '....22.11.22....',  // eyes (red)
+    '....22.11.22....',
+    '....22....22....',
+    '.....222222.....',
+    '......2222......',  // neck
+    '.....222222.....',
+    '....22222222....',  // body
+    '....22.22.22....',  // arms
+    '.....2.22.2.....',
+    '.....222222.....',
+    '....22444422....',  // sash
+    '.....22.22......',  // leg
+    '.....22.22......',
+    '.....22222......',  // feet
+  ],
+  walk1: [
+    '................',
+    '......2222......',
+    '.....224422.....',
+    '....22444422....',
+    '....22444422....',
+    '....22....22....',
+    '....22.11.22....',
+    '....22.11.22....',
+    '....22....22....',
+    '.....222222.....',
+    '......2222......',
+    '.....222222.....',
+    '....22222222....',
+    '....22.22.22....',
+    '.....22.22.2....',
+    '.....222222.....',
+    '....22444422....',
+    '.....22..22.....',
+    '.....22..22.....',
+    '....22...22.....',
+  ],
+  walk2: [
+    '................',
+    '......2222......',
+    '.....224422.....',
+    '....22444422....',
+    '....22444422....',
+    '....22....22....',
+    '....22.11.22....',
+    '....22.11.22....',
+    '....22....22....',
+    '.....222222.....',
+    '......2222......',
+    '.....222222.....',
+    '....22222222....',
+    '.....2.22.22....',
+    '....22.22.2.....',
+    '.....222222.....',
+    '....22444422....',
+    '.....22..22.....',
+    '.....22..22.....',
+    '.....22..22.....',
+  ],
+  jump: [
+    '................',
+    '......2222......',
+    '.....224422.....',
+    '....22444422....',
+    '....22444422....',
+    '....22....22....',
+    '....22.11.22....',
+    '....22.11.22....',
+    '....22....22....',
+    '.....222222.....',
+    '......2222......',
+    '.....222222.....',
+    '....22222222....',
+    '....22.22.22....',
+    '.....2.22.2.....',
+    '.....222222.....',
+    '......2..2......',  // legs tucked
+    '......2..2......',
+    '.....2....2.....',
+    '.....2....2.....',
+  ],
+  crouch: [
+    '................',
+    '......2222......',
+    '.....224422.....',
+    '....22444422....',
+    '....22444422....',
+    '....22....22....',
+    '....22.11.22....',
+    '....22.11.22....',
+    '....22....22....',
+    '.....222222.....',
+    '......2222......',
+    '....22222222....',
+    '....22222222....',
+    '....2.22.22.....',
+    '....2..2..2.....',
+    '....22444422....',
+    '....2222222.....',
+    '....22..22......',
+    '....2....2......',
+    '...22....22.....',
+  ],
+};
+
+// ═══════════════ Color Palettes ═══════════════
+const PALETTES = {
+  ryu: ['transparent', '#f4c59a', '#1a1a2e', '#ff6b35', '#ff2d55', '#f0f0f0', '#1a1a2e'],
+  kage: ['transparent', '#ff2d55', '#1a0a2e', '#2d1b4e', '#ff4444', '#4a2d6e', '#1a0a2e'],
+};
+
+// ═══════════════ Character Class ═══════════════
+class Fighter {
+  constructor(name, spriteData, palette, x, facingRight, portraitColor) {
+    this.name = name;
+    this.spriteData = spriteData;
+    this.palette = palette;
+    this.x = x;
+    this.y = GROUND_Y;
+    this.vx = 0;
+    this.vy = 0;
+    this.width = 64;
+    this.height = 80;
+    this.facingRight = facingRight;
+    this.state = 'idle';  // idle, walk, jump, crouch
+    this.animFrame = 0;
+    this.animTimer = 0;
+    this.animSpeed = 8;  // frames per animation change
+    this.onGround = true;
+    this.hp = 100;
+    this.maxHp = 100;
+    this.portraitColor = portraitColor;
+    this.speed = 3;
+    this.jumpPower = -12;
+    // Offscreen canvas for sprite rendering
+    this.spriteCanvas = document.createElement('canvas');
+    this.spriteCanvas.width = 64;
+    this.spriteCanvas.height = 80;
+    this.spriteCtx = this.spriteCanvas.getContext('2d');
+    this.spriteCtx.imageSmoothingEnabled = false;
+  }
+
+  getSprite(state) {
+    const sprites = this.spriteData[state] || this.spriteData.idle;
+    if (state === 'walk') {
+      return sprites[Math.floor(this.animFrame / this.animSpeed) % 2 === 0 ? 'walk1' : 'walk2'];
+    }
+    return sprites;
+  }
+
+  update(keys, leftKey, rightKey, upKey, downKey) {
+    // Input
+    if (keys[leftKey])  { this.vx = -this.speed; this.facingRight = false; this.state = 'walk'; }
+    else if (keys[rightKey]) { this.vx = this.speed; this.facingRight = true; this.state = 'walk'; }
+    else { this.vx *= FRICTION; if (Math.abs(this.vx) < 0.1) this.vx = 0; }
+
+    if (keys[upKey] && this.onGround) {
+      this.vy = this.jumpPower;
+      this.onGround = false;
+      this.state = 'jump';
+    }
+
+    if (keys[downKey] && this.onGround) {
+      this.state = 'crouch';
+      this.vx *= 0.5;
+    } else if (this.onGround && Math.abs(this.vx) < 0.1) {
+      this.state = 'idle';
+    }
+
+    if (!this.onGround) {
+      this.state = 'jump';
+    }
+
+    // Physics
+    this.vy += GRAVITY;
+    this.x += this.vx;
+    this.y += this.vy;
+
+    // Ground collision
+    if (this.y >= GROUND_Y) {
+      this.y = GROUND_Y;
+      this.vy = 0;
+      this.onGround = true;
+    }
+
+    // Bounds
+    if (this.x < 30) this.x = 30;
+    if (this.x > W - 30 - this.width) this.x = W - 30 - this.width;
+
+    // Animation
+    this.animFrame++;
+  }
+
+  renderSprite(state) {
+    const spriteCtx = this.spriteCtx;
+    spriteCtx.clearRect(0, 0, 64, 80);
+    const sprite = this.getSprite(state);
+
+    for (let row = 0; row < sprite.length; row++) {
+      for (let col = 0; col < sprite[row].length; col++) {
+        const colorIdx = sprite[row][col];
+        if (colorIdx === '.') continue;
+        const idx = parseInt(colorIdx);
+        if (isNaN(idx) || idx === 0) continue;
+        spriteCtx.fillStyle = this.palette[idx];
+        spriteCtx.fillRect(col * 4, row * 4, 4, 4);
+      }
+    }
+  }
+
+  draw(ctx) {
+    const state = this.state;
+    this.renderSprite(state);
+
+    ctx.save();
+    const drawX = this.facingRight ? this.x : this.x + this.width;
+    const scaleX = this.facingRight ? 1 : -1;
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.beginPath();
+    ctx.ellipse(this.x + this.width/2, GROUND_Y + 70, 22, 6, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // Flipped rendering
+    ctx.translate(drawX, this.y - 16);
+    ctx.scale(scaleX, 1);
+    ctx.drawImage(this.spriteCanvas, 0, 0);
+    ctx.restore();
+
+    // State label for debug
+    if (false) {
+      ctx.fillStyle = '#fff';
+      ctx.font = '10px monospace';
+      ctx.fillText(state, this.x, this.y - 30);
+    }
+  }
+
+  getHitbox() {
+    return {
+      x: this.x + 8,
+      y: this.y - 16 + 8,
+      w: this.width - 16,
+      h: this.height - 16,
+    };
+  }
+}
+
+// ═══════════════ Arena Rendering ═══════════════
+function drawArena() {
+  // Sky gradient
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
+  skyGrad.addColorStop(0, '#0a0a1a');
+  skyGrad.addColorStop(0.5, '#111133');
+  skyGrad.addColorStop(1, '#1a1040');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, W, GROUND_Y);
+
+  // Stars
+  ctx.fillStyle = '#fff';
+  for (let i = 0; i < 60; i++) {
+    const sx = (i * 137 + 50) % W;
+    const sy = (i * 97 + 30) % (GROUND_Y - 50);
+    const size = (i % 3 === 0) ? 1.5 : 0.7;
+    const alpha = 0.3 + (Math.sin(Date.now()/2000 + i) * 0.3);
+    ctx.globalAlpha = alpha;
+    ctx.fillRect(sx, sy, size, size);
+  }
+  ctx.globalAlpha = 1;
+
+  // Moon
+  ctx.fillStyle = '#ffeedd';
+  ctx.beginPath();
+  ctx.arc(750, 80, 35, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#0a0a1a';
+  ctx.beginPath();
+  ctx.arc(765, 72, 30, 0, Math.PI*2);
+  ctx.fill();
+
+  // Distant buildings
+  ctx.fillStyle = '#0d0d25';
+  for (let i = 0; i < 20; i++) {
+    const bx = i * 48;
+    const bh = 40 + (Math.sin(i*1.7)*20);
+    ctx.fillRect(bx, GROUND_Y - bh, 44, bh);
+  }
+
+  // Ground
+  const groundGrad = ctx.createLinearGradient(0, GROUND_Y, 0, H);
+  groundGrad.addColorStop(0, '#1a1a3e');
+  groundGrad.addColorStop(0.1, '#141430');
+  groundGrad.addColorStop(1, '#0a0a1a');
+  ctx.fillStyle = groundGrad;
+  ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
+
+  // Ground line (neon)
+  ctx.strokeStyle = 'rgba(0, 212, 255, 0.3)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(20, GROUND_Y);
+  ctx.lineTo(W - 20, GROUND_Y);
+  ctx.stroke();
+
+  // Corner decorations
+  const corners = [[30,30],[W-30,30],[30,H-30],[W-30,H-30]];
+  corners.forEach(([cx, cy]) => {
+    ctx.strokeStyle = 'rgba(255, 45, 85, 0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx-15, cy); ctx.lineTo(cx+5, cy);
+    ctx.moveTo(cx, cy-15); ctx.lineTo(cx, cy+5);
+    ctx.stroke();
+  });
+
+  // Floating particles
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+  for (let i = 0; i < 12; i++) {
+    const px = (i * 173 + Date.now()/50) % W;
+    const py = (i * 89 + 30) % GROUND_Y;
+    ctx.fillRect(px, py, 2, 2);
+  }
+}
+
+// ═══════════════ HUD Portraits ═══════════════
+function drawPortrait(canvasId, spriteData, palette) {
+  const pCanvas = document.getElementById(canvasId);
+  const pCtx = pCanvas.getContext('2d');
+  pCtx.imageSmoothingEnabled = false;
+  pCtx.clearRect(0, 0, 48, 48);
+  const sprite = spriteData.idle;
+  for (let row = 0; row < Math.min(sprite.length, 12); row++) {
+    for (let col = 0; col < Math.min(sprite[row].length, 12); col++) {
+      const colorIdx = sprite[row][col];
+      if (colorIdx === '.') continue;
+      const idx = parseInt(colorIdx);
+      if (isNaN(idx) || idx === 0) continue;
+      pCtx.fillStyle = palette[idx];
+      pCtx.fillRect(col*4, row*4, 4, 4);
+    }
+  }
+}
+
+// ═══════════════ Game Setup ═══════════════
+const player1 = new Fighter('龍', SPRITE_RYU, PALETTES.ryu, 180, true, '#00d4ff');
+const player2 = new Fighter('影', SPRITE_KAGE, PALETTES.kage, 620, false, '#ff2d55');
+
+const keys = {};
+
+// Keyboard
+window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; e.preventDefault(); });
+window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; e.preventDefault(); });
+
+// Draw portraits
+drawPortrait('portrait1', SPRITE_RYU, PALETTES.ryu);
+drawPortrait('portrait2', SPRITE_KAGE, PALETTES.kage);
+
+// ═══════════════ Game Loop ═══════════════
+function gameLoop() {
+  // Update
+  player1.update(keys, 'a', 'd', 'w', 's');
+  player2.update(keys, 'arrowleft', 'arrowright', 'arrowup', 'arrowdown');
+
+  // Collision push
+  const hb1 = player1.getHitbox();
+  const hb2 = player2.getHitbox();
+  if (hb1.x + hb1.w > hb2.x && hb1.x < hb2.x + hb2.w &&
+      hb1.y + hb1.h > hb2.y && hb1.y < hb2.y + hb2.h) {
+    const overlapX = Math.min(hb1.x + hb1.w - hb2.x, hb2.x + hb2.w - hb1.x);
+    if (hb1.x < hb2.x) {
+      player1.x -= overlapX / 2;
+      player2.x += overlapX / 2;
+    } else {
+      player1.x += overlapX / 2;
+      player2.x -= overlapX / 2;
+    }
+  }
+
+  // Render
+  ctx.clearRect(0, 0, W, H);
+  drawArena();
+  player1.draw(ctx);
+  player2.draw(ctx);
+
+  // Update HUD HP bars
+  document.getElementById('hp1').style.width = (player1.hp / player1.maxHp * 100) + '%';
+  document.getElementById('hp2').style.width = (player2.hp / player2.maxHp * 100) + '%';
+
+  requestAnimationFrame(gameLoop);
+}
+
+// Start
+gameLoop();
+console.log('🔥 AI Command Fighter — Phase 1 Engine Ready');
+console.log('P1 (龍): WASD | P2 (影): Arrow Keys');
+</script>
+</body>
+</html>
