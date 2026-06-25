@@ -446,7 +446,7 @@
   <div class="restart-bar">
     <button class="btn-restart" id="restartBtn">重新開始</button>
     <button class="btn-moves" id="movesToggle">📜 出招表</button>
-    <button class="btn-weapon" id="weaponBtn">⚔️ 換武器</button>
+    <button class="btn-weapon" id="weaponBtn">武器</button>
     <a href="../" class="btn-home">回到首頁</a>
   </div>
 
@@ -624,7 +624,6 @@ function initGame() {
   updateUI();
   document.querySelectorAll('.ps-btn').forEach(b => b.disabled = false);
   document.getElementById('movesToggle').disabled = false;
-  document.getElementById('weaponBtn').disabled = false;
 }
 
 // Round rect helper (used by speech bubble)
@@ -1106,7 +1105,6 @@ function killFighter(fighter) {
 
   document.querySelectorAll('.ps-btn').forEach(b => b.disabled = true);
   document.getElementById('movesToggle').disabled = true;
-  document.getElementById('weaponBtn').disabled = true;
   updateUI();
 }
 
