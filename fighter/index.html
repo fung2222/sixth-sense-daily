@@ -549,8 +549,8 @@ function toggleMoves() {
     if (weapon && WEAPONS[weapon]) {
       const w = WEAPONS[weapon];
       document.getElementById('movesWeaponLabel').textContent = w.icon + ' ' + w.name + ' · ' + w.desc;
-      document.getElementById('moveSlash').textContent = w.slashDmg ? '傷害+' + w.slashDmg + (w.slashCrit?' 暴擊'+Math.round(w.slashCrit*100)+'%':'') + (w.slashSpeed?' 極速':'') : '基本近戰';
-      document.getElementById('moveRanged').textContent = w.rangedCount ? w.rangedCount+'連發' + (w.rangedSpeed?' 高速':''): '基本遠程';
+      document.getElementById('moveSlash').textContent = weapon === 'gun' ? '單發射擊' : (w.slashDmg ? '傷害+' + w.slashDmg + (w.slashCrit?' 暴擊'+Math.round(w.slashCrit*100)+'%':'') + (w.slashSpeed?' 極速':'') : '基本近戰');
+      document.getElementById('moveRanged').textContent = weapon === 'sword' ? '七旋斬·破彈' : (weapon === 'gun' ? '手榴彈·範圍' : (w.rangedCount ? w.rangedCount+'連發' + (w.rangedSpeed?' 高速':''): '基本遠程'));
     } else {
       document.getElementById('movesWeaponLabel').textContent = '';
       document.getElementById('moveSlash').textContent = '近戰攻擊';
@@ -1204,6 +1204,15 @@ function performAction(action, fighter) {
   switch (action) {
     case 'slash': {
       const w = (fighter===player && weapon) ? WEAPONS[weapon] : null;
+      // 步槍 ■ = 單發射擊
+      if (isPlayer && weapon === 'gun') {
+        setPose(fighter, 'ranged', 14);
+        spawnProjectile(fighter.x+28*fighter.facing, fighter.y-32, fighter.facing, fighter);
+        addLog(`👤 ■ 🔫 單發射擊！`, 'player');
+        spawnParticles(fighter.x+28*fighter.facing, fighter.y-32, '#ffc832', 5);
+        fighter.charge = Math.min(3, fighter.charge+1);
+        break;
+      }
       const slashDur = (w && w.slashSpeed) ? Math.floor(16 * w.slashSpeed) : 16;
       setPose(fighter, 'slash', slashDur);
       let slashRange = fighter.enraged ? 180 : (w && w.slashRange ? w.slashRange : 95);
@@ -1220,7 +1229,6 @@ function performAction(action, fighter) {
         addLog(`${label} ■ ${enrTag}${w?w.icon+' ':''}普攻${critTag}！`, isPlayer?'player':'ai');
         spawnParticles(fighter.x+20*fighter.facing, fighter.y-20, isCrit?'#ffd93d':(fighter.enraged?'#ff4444':'#ff9f43'), isCrit?20:(fighter.enraged?20:8));
         setTimeout(() => { if (!gameOver) applyDamage(defender, dmg, fighter, fighter.enraged); }, 100);
-        // Magic: AoE slash
         if (w && w.aoeRadius) {
           const aoeDmg = Math.floor(dmg * 0.6);
           addLog(`🔮 魔法衝擊波！(${aoeDmg})`, isPlayer?'player':'ai');
@@ -1234,8 +1242,49 @@ function performAction(action, fighter) {
       break;
     }
     case 'ranged': {
-      setPose(fighter, 'ranged', 16);
       const w = (fighter===player && weapon) ? WEAPONS[weapon] : null;
+      // 雙刀 ● = 七旋斬
+      if (isPlayer && weapon === 'sword') {
+        setPose(fighter, 'slash', 20);
+        const spinRange = 100;
+        addLog(`👤 ● ⚔️ 七旋斬！`, 'player');
+        spawnParticles(fighter.x, fighter.y-20, '#c0c0e0', 15);
+        if (dist < spinRange) {
+          const spinDmg = 12 + Math.floor(Math.random()*6);
+          const dmg = defender.defending ? Math.floor(spinDmg*0.3) : spinDmg;
+          setTimeout(() => { if (!gameOver) applyDamage(defender, dmg, fighter, true); }, 150);
+          // Destroy nearby projectiles
+          projectiles = projectiles.filter(p => {
+            const pDist = Math.abs(p.x - fighter.x);
+            if (pDist < 120) { spawnParticles(p.x, p.y, '#fff', 4); return false; }
+            return true;
+          });
+        }
+        fighter.charge = Math.min(3, fighter.charge+1);
+        break;
+      }
+      // 步槍 ● = 手榴彈
+      if (isPlayer && weapon === 'gun') {
+        setPose(fighter, 'ranged', 20);
+        addLog(`👤 ● 💣 手榴彈！`, 'player');
+        spawnParticles(fighter.x+28*fighter.facing, fighter.y-32, '#ff6b35', 8);
+        setTimeout(() => {
+          if (!gameOver) {
+            const grenadeX = defender.x, grenadeY = defender.y - 20;
+            const grenadeDmg = 18 + Math.floor(Math.random()*8);
+            spawnParticles(grenadeX, grenadeY, '#ff6b35', 25);
+            spawnParticles(grenadeX, grenadeY, '#ffd93d', 15);
+            const dmg = defender.defending ? Math.floor(grenadeDmg*0.3) : grenadeDmg;
+            applyDamage(defender, dmg, fighter, true);
+            // AoE splash
+            const splashDmg = Math.floor(grenadeDmg * 0.3);
+            if (!gameOver) setTimeout(() => applyDamage(defender, splashDmg, fighter, false), 100);
+          }
+        }, 300);
+        fighter.charge = Math.min(3, fighter.charge+1);
+        break;
+      }
+      setPose(fighter, 'ranged', 16);
       const projCount = fighter.enraged ? 3 : (w && w.rangedCount ? w.rangedCount : 1);
       const speedDelay = w && w.rangedSpeed ? 160 * w.rangedSpeed : 160;
       for (let pi = 0; pi < projCount; pi++) {
