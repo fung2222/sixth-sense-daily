@@ -108,10 +108,11 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 .weather-bar .weather-temp { font-size: 1.68em; font-weight: 900; color: #fff; line-height: 1; }
 .weather-bar .weather-desc { font-size: 0.96em; color: #7eb8d4; }
 .weather-bar .weather-meta { font-size: 0.84em; color: #666; white-space: nowrap; }
-.weather-bar .weather-bottom { display: flex; align-items: center; gap: 8px; font-size: 0.94em; }
-.weather-bar .weather-location { color: #a29bfe; }
-.weather-bar .weather-sep { color: #333; }
-.weather-bar .weather-date { color: #666; }
+/* ── Location Bar ── */
+.location-bar { display: flex; align-items: center; gap: 8px; padding: 0 6px 8px; font-size: 0.78em; }
+.location-bar .loc-city { color: #a29bfe; }
+.location-bar .loc-sep { color: #333; }
+.location-bar .loc-date { color: #888; }
 .report-list { display: grid; gap: 12px; }
 .report-item { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 18px 20px; border-left: 4px solid #ff6b9d; transition: transform 0.2s, box-shadow 0.2s; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #e0e0e0; }
 .report-item:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.4); border-left-color: #00d4ff; }
@@ -210,6 +211,13 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
   </div>
 </div>
 
+<!-- ══════ Location + Date ══════ -->
+<div class="location-bar">
+  <span class="loc-city" id="weatherCity">--</span>
+  <span class="loc-sep">|</span>
+  <span class="loc-date" id="weatherDate">--月--日 星期-</span>
+</div>
+
 <!-- ══════ Weather Bar ══════ -->
 <div class="weather-bar" id="weatherBar">
   <div class="weather-top">
@@ -217,11 +225,6 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
     <span class="weather-temp" id="weatherTemp">--°</span>
     <span class="weather-desc" id="weatherDesc"></span>
     <span class="weather-meta" id="weatherMeta">💧 --</span>
-  </div>
-  <div class="weather-bottom">
-    <span class="weather-location" id="weatherCity">--</span>
-    <span class="weather-sep">|</span>
-    <span class="weather-date" id="weatherDate">--月--日 星期-</span>
   </div>
 </div>
 
