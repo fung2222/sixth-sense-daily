@@ -231,26 +231,48 @@
     border-radius: 3px; font-size: 0.8em; font-weight: 700;
   }
 
-  /* Moves Modal */
+  /* Moves Modal — same style as weapon overlay */
   .moves-modal {
     position: fixed; inset: 0; z-index: 110;
-    background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
-    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.85);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 16px;
   }
   .moves-modal-content {
     background: linear-gradient(135deg, #1a1a2e, #16213e);
-    border: 2px solid #a29bfe; border-radius: 16px;
-    padding: 24px; max-width: 380px; width: 90%;
-    box-shadow: 0 0 40px rgba(162,155,254,0.3);
+    border: 2px solid #333; border-radius: 16px;
+    padding: 24px; max-width: 320px; width: 90%;
   }
   .moves-modal-title {
-    font-size: 1.2em; font-weight: 900; color: #fff;
-    text-align: center; margin-bottom: 4px;
+    font-size: 1.4em; font-weight: 900; text-align: center; margin-bottom: 2px;
+    background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #a29bfe);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
   }
   .moves-modal-sub {
-    font-size: 0.75em; color: #a29bfe;
-    text-align: center; margin-bottom: 16px;
+    font-size: 0.75em; color: #888; text-align: center; margin-bottom: 16px;
   }
+  .moves-list { display: flex; flex-direction: column; gap: 8px; }
+  .moves-list-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px;
+  }
+  .moves-list-item .ml-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1em; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .moves-list-item .ml-btn.sq { background: #e056a0; }
+  .moves-list-item .ml-btn.cir { background: #e74c3c; }
+  .moves-list-item .ml-btn.crs { background: #3498db; }
+  .moves-list-item .ml-btn.tri { background: #2ecc71; }
+  .moves-list-item .ml-btn.def { background: linear-gradient(135deg, #feca57, #e17055); }
+  .moves-list-item .ml-info { flex: 1; }
+  .moves-list-item .ml-name { font-size: 0.9em; font-weight: 700; color: #e0e0e0; }
+  .moves-list-item .ml-desc { font-size: 0.7em; color: #888; margin-top: 1px; }
   .moves-close-btn {
     display: block; margin: 16px auto 0;
     padding: 10px 30px;
@@ -428,14 +450,14 @@
   <!-- Moves Modal -->
   <div id="movesModal" class="moves-modal" style="display:none">
     <div class="moves-modal-content">
-      <div class="moves-modal-title">📜 招式表</div>
+      <div class="moves-modal-title">招式表</div>
       <div class="moves-modal-sub" id="movesWeaponLabel"></div>
-      <div class="moves-grid">
-        <div class="move-item"><span class="move-btn sq">■</span> <span class="move-label">斬擊</span><span class="move-detail" id="moveSlash"></span></div>
-        <div class="move-item"><span class="move-btn cir">●</span> <span class="move-label">射擊</span><span class="move-detail" id="moveRanged"></span></div>
-        <div class="move-item"><span class="move-btn crs">✕</span> <span class="move-label">跳躍</span><span class="move-detail">空中移動</span></div>
-        <div class="move-item"><span class="move-btn tri">▲</span> <span class="move-label">必殺技</span><span class="move-detail">需3⚡儲氣</span></div>
-        <div class="move-item"><span class="move-btn def2">🛡️</span> <span class="move-label">防禦</span><span class="move-detail">減傷75%</span></div>
+      <div class="moves-list">
+        <div class="moves-list-item"><div class="ml-btn sq">■</div><div class="ml-info"><div class="ml-name">斬擊</div><div class="ml-desc" id="moveSlash"></div></div></div>
+        <div class="moves-list-item"><div class="ml-btn cir">●</div><div class="ml-info"><div class="ml-name">射擊</div><div class="ml-desc" id="moveRanged"></div></div></div>
+        <div class="moves-list-item"><div class="ml-btn crs">✕</div><div class="ml-info"><div class="ml-name">跳躍</div><div class="ml-desc">空中移動</div></div></div>
+        <div class="moves-list-item"><div class="ml-btn tri">▲</div><div class="ml-info"><div class="ml-name">必殺技</div><div class="ml-desc">需3⚡儲氣</div></div></div>
+        <div class="moves-list-item"><div class="ml-btn def">🛡️</div><div class="ml-info"><div class="ml-name">防禦</div><div class="ml-desc">減傷75%</div></div></div>
       </div>
       <button class="moves-close-btn" id="movesClose">✕ 關閉</button>
     </div>
