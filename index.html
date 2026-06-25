@@ -102,15 +102,16 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ── Weather Bar ── */
-.weather-bar { display: flex; align-items: center; gap: 14px; padding: 14px 18px; margin-bottom: 14px; background: linear-gradient(135deg, rgba(120,160,190,0.06), rgba(162,155,254,0.06)); border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
-.weather-bar .weather-icon { font-size: 2.4em; line-height: 1; }
-.weather-bar .weather-info { display: flex; flex-direction: column; gap: 2px; }
-.weather-bar .weather-temp-row { display: flex; align-items: baseline; gap: 8px; }
-.weather-bar .weather-temp { font-size: 1.5em; font-weight: 900; color: #fff; line-height: 1; }
-.weather-bar .weather-desc { font-size: 0.85em; color: #7eb8d4; }
-.weather-bar .weather-meta { font-size: 0.65em; color: #555; }
-.weather-bar .weather-spacer { flex: 1; }
-.weather-bar .weather-location { font-size: 0.75em; color: #a29bfe; text-align: right; line-height: 1.4; }
+.weather-bar { display: flex; flex-direction: column; gap: 6px; padding: 14px 18px; margin-bottom: 14px; background: linear-gradient(135deg, rgba(120,160,190,0.06), rgba(162,155,254,0.06)); border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
+.weather-bar .weather-top { display: flex; align-items: center; gap: 10px; }
+.weather-bar .weather-icon { font-size: 2em; line-height: 1; }
+.weather-bar .weather-temp { font-size: 1.4em; font-weight: 900; color: #fff; line-height: 1; }
+.weather-bar .weather-desc { font-size: 0.8em; color: #7eb8d4; }
+.weather-bar .weather-meta { font-size: 0.7em; color: #666; margin-left: auto; white-space: nowrap; }
+.weather-bar .weather-bottom { display: flex; align-items: center; gap: 8px; font-size: 0.68em; }
+.weather-bar .weather-location { color: #a29bfe; }
+.weather-bar .weather-sep { color: #333; }
+.weather-bar .weather-date { color: #666; }
 .report-list { display: grid; gap: 12px; }
 .report-item { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 18px 20px; border-left: 4px solid #ff6b9d; transition: transform 0.2s, box-shadow 0.2s; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #e0e0e0; }
 .report-item:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.4); border-left-color: #00d4ff; }
@@ -211,19 +212,17 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 
 <!-- ══════ Weather Bar ══════ -->
 <div class="weather-bar" id="weatherBar">
-  <span class="weather-icon" id="weatherIcon">⛅</span>
-  <div class="weather-info">
-    <div class="weather-temp-row">
-      <span class="weather-temp" id="weatherTemp">--°</span>
-      <span class="weather-desc" id="weatherDesc"></span>
-    </div>
+  <div class="weather-top">
+    <span class="weather-icon" id="weatherIcon">⛅</span>
+    <span class="weather-temp" id="weatherTemp">--°</span>
+    <span class="weather-desc" id="weatherDesc"></span>
     <span class="weather-meta" id="weatherMeta">💧 --</span>
   </div>
-  <span class="weather-spacer"></span>
-  <span class="weather-location" id="weatherLocation">
-    <span id="weatherCity">--</span><br>
-    <span id="weatherDate">--月--日 星期-</span>
-  </span>
+  <div class="weather-bottom">
+    <span class="weather-location" id="weatherCity">--</span>
+    <span class="weather-sep">|</span>
+    <span class="weather-date" id="weatherDate">--月--日 星期-</span>
+  </div>
 </div>
 
 <!-- ══════ Tab Bar ══════ -->
