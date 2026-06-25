@@ -6,7 +6,7 @@ DEPLOY = '/opt/data/sixth-sense-deploy'
 ARCHIVE = '/opt/data/sixth-sense-archive/reports'
 
 # Read 25日 as base (div-balanced, verified)
-with open(f'{DEPLOY}/reports/sixth_sense_20260625.html', 'r') as f:
+with open(f'{DEPLOY}/reports/suno_20260625.html', 'r') as f:
     base = f.read()
 
 news_start = base.find('<!-- NEWS TABS -->')
@@ -435,8 +435,8 @@ c24 = c24.replace('2026.06.25', '2026.06.24')
 c24 = c24.replace('weather_banner_20260625.png', 'weather_banner_20260624.png')
 c24 = c24.replace('20260625060000', '20260624060000')
 # Nav
-c24 = c24.replace('href="sixth_sense_20260624.html" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 16px;border:1px solid #333;border-radius:20px;transition:all 0.3s;display:inline-flex;align-items:center;gap:4px;">← 24日</a><a href="../" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 24px;border:1px solid #333;border-radius:20px;transition:all 0.3s;">回到首頁</a>',
-              'href="sixth_sense_20260623.html" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 16px;border:1px solid #333;border-radius:20px;transition:all 0.3s;display:inline-flex;align-items:center;gap:4px;">← 23日</a><a href="../" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 24px;border:1px solid #333;border-radius:20px;transition:all 0.3s;">回到首頁</a><a href="sixth_sense_20260625.html" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 16px;border:1px solid #333;border-radius:20px;transition:all 0.3s;display:inline-flex;align-items:center;gap:4px;">25日 →</a>')
+c24 = c24.replace('href="suno_20260624.html" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 16px;border:1px solid #333;border-radius:20px;transition:all 0.3s;display:inline-flex;align-items:center;gap:4px;">← 24日</a><a href="../" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 24px;border:1px solid #333;border-radius:20px;transition:all 0.3s;">回到首頁</a>',
+              'href="suno_20260623.html" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 16px;border:1px solid #333;border-radius:20px;transition:all 0.3s;display:inline-flex;align-items:center;gap:4px;">← 23日</a><a href="../" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 24px;border:1px solid #333;border-radius:20px;transition:all 0.3s;">回到首頁</a><a href="suno_20260625.html" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 16px;border:1px solid #333;border-radius:20px;transition:all 0.3s;display:inline-flex;align-items:center;gap:4px;">25日 →</a>')
 # Sono quick diff
 c24 = c24.replace('OpenAI 推出首個 AI 專用晶片', 'OpenAI 自研晶片 Jalapeño 登場')
 c24 = c24.replace('Claude Fable 5 被封鎖令我諗起一句話', 'Claude 可以寫 80% 自家程式碼令我諗起')
@@ -447,7 +447,7 @@ opens = c24.count('<div')
 closes = c24.count('</div>')
 assert opens == closes, f"24日 div imbalance: {opens}/{closes}"
 
-with open(f'{DEPLOY}/reports/sixth_sense_20260624.html', 'w') as f:
+with open(f'{DEPLOY}/reports/suno_20260624.html', 'w') as f:
     f.write(c24)
 print(f"24日 written: {opens}/{closes}")
 
@@ -456,11 +456,11 @@ print(f"24日 written: {opens}/{closes}")
 # =============================================
 c25 = base[:news_start] + news_25 + base[news_end:]
 # Nav: [← 24日] [回到首頁]
-c25 = c25.replace('href="sixth_sense_20260624.html" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 16px;border:1px solid #333;border-radius:20px;transition:all 0.3s;display:inline-flex;align-items:center;gap:4px;">← 24日</a><a href="../" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 24px;border:1px solid #333;border-radius:20px;transition:all 0.3s;">回到首頁</a>',
-              'href="sixth_sense_20260624.html" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 16px;border:1px solid #333;border-radius:20px;transition:all 0.3s;display:inline-flex;align-items:center;gap:4px;">← 24日</a><a href="../" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 24px;border:1px solid #333;border-radius:20px;transition:all 0.3s;">回到首頁</a>')
+c25 = c25.replace('href="suno_20260624.html" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 16px;border:1px solid #333;border-radius:20px;transition:all 0.3s;display:inline-flex;align-items:center;gap:4px;">← 24日</a><a href="../" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 24px;border:1px solid #333;border-radius:20px;transition:all 0.3s;">回到首頁</a>',
+              'href="suno_20260624.html" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 16px;border:1px solid #333;border-radius:20px;transition:all 0.3s;display:inline-flex;align-items:center;gap:4px;">← 24日</a><a href="../" style="color:#a29bfe;text-decoration:none;font-size:0.9em;padding:8px 24px;border:1px solid #333;border-radius:20px;transition:all 0.3s;">回到首頁</a>')
 # Remove any "25日 →" since this IS the latest
 if '25日 →' in c25:
-    c25 = re.sub(r'<a href="sixth_sense_20260625\.html"[^>]*>25日 →</a>', '', c25)
+    c25 = re.sub(r'<a href="suno_20260625\.html"[^>]*>25日 →</a>', '', c25)
 
 opens = c25.count('<div')
 closes = c25.count('</div>')
@@ -469,7 +469,7 @@ assert opens == closes, f"25日 div imbalance: {opens}/{closes}"
 # Verify no duplicate img empty
 assert '<img src=""' not in c25, "Empty img still in 25日!"
 
-with open(f'{DEPLOY}/reports/sixth_sense_20260625.html', 'w') as f:
+with open(f'{DEPLOY}/reports/suno_20260625.html', 'w') as f:
     f.write(c25)
 print(f"25日 written: {opens}/{closes}")
 
@@ -477,8 +477,8 @@ print(f"25日 written: {opens}/{closes}")
 # BACKUP + PUSH
 # =============================================
 import subprocess
-shutil.copy(f'{DEPLOY}/reports/sixth_sense_20260624.html', f'{ARCHIVE}/sixth_sense_20260624.html')
-shutil.copy(f'{DEPLOY}/reports/sixth_sense_20260625.html', f'{ARCHIVE}/sixth_sense_20260625.html')
+shutil.copy(f'{DEPLOY}/reports/suno_20260624.html', f'{ARCHIVE}/suno_20260624.html')
+shutil.copy(f'{DEPLOY}/reports/suno_20260625.html', f'{ARCHIVE}/suno_20260625.html')
 
 subprocess.run(['git', 'add', '-A'], cwd=DEPLOY, capture_output=True)
 subprocess.run(['git', 'commit', '-m', 'Daily: rebuild 24+25日 with SearXNG Chinese source images'], cwd=DEPLOY, capture_output=True)
