@@ -352,13 +352,13 @@
     <div class="weapon-options">
       <div class="weapon-card" onclick="selectWeapon('sword')">
         <span class="weapon-icon">⚔️</span>
-        <div class="weapon-name">劍</div>
-        <div class="weapon-desc">強化斬擊<br>範圍 +30%<br>暴擊機率 20%</div>
+        <div class="weapon-name">雙刀</div>
+        <div class="weapon-desc">快速連斬<br>範圍 +50%<br>暴擊機率 20%</div>
       </div>
       <div class="weapon-card" onclick="selectWeapon('gun')">
         <span class="weapon-icon">🔫</span>
-        <div class="weapon-name">手槍</div>
-        <div class="weapon-desc">強化射擊<br>雙發連射<br>射速 +50%</div>
+        <div class="weapon-name">步槍</div>
+        <div class="weapon-desc">遠程狙擊<br>雙發連射<br>射速 +50%</div>
       </div>
       <div class="weapon-card" onclick="selectWeapon('magic')">
         <span class="weapon-icon">🔮</span>
@@ -505,16 +505,16 @@ let weapon = null;
 
 const WEAPONS = {
   sword: {
-    name: '劍', icon: '⚔️',
+    name: '雙刀', icon: '⚔️',
     slashDmg: 8, slashRange: 120, slashCrit: 0.2,
     rangedDmg: 0, rangedCount: 0,
-    desc: '強化斬擊｜暴擊20%'
+    desc: '快速連斬｜暴擊20%｜範圍+50%'
   },
   gun: {
-    name: '手槍', icon: '🔫',
+    name: '步槍', icon: '🔫',
     slashDmg: 0, slashRange: 0,
     rangedDmg: 6, rangedCount: 2, rangedSpeed: 0.5,
-    desc: '雙發連射｜射速+50%'
+    desc: '遠程狙擊｜雙發連射｜射速+50%'
   },
   magic: {
     name: '魔法', icon: '🔮',
@@ -549,8 +549,8 @@ function toggleMoves() {
     if (weapon && WEAPONS[weapon]) {
       const w = WEAPONS[weapon];
       document.getElementById('movesWeaponLabel').textContent = w.icon + ' ' + w.name + ' · ' + w.desc;
-      document.getElementById('moveSlash').textContent = w.slashDmg ? '傷害+' + w.slashDmg + (w.slashCrit?' 暴擊'+Math.round(w.slashCrit*100)+'%':'') : '基本';
-      document.getElementById('moveRanged').textContent = w.rangedCount ? w.rangedCount+'連發' : '基本';
+      document.getElementById('moveSlash').textContent = w.slashDmg ? '傷害+' + w.slashDmg + (w.slashCrit?' 暴擊'+Math.round(w.slashCrit*100)+'%':'') + (w.slashSpeed?' 極速':'') : '基本近戰';
+      document.getElementById('moveRanged').textContent = w.rangedCount ? w.rangedCount+'連發' + (w.rangedSpeed?' 高速':''): '基本遠程';
     } else {
       document.getElementById('movesWeaponLabel').textContent = '';
       document.getElementById('moveSlash').textContent = '近戰攻擊';
