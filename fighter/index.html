@@ -163,50 +163,23 @@
   .ps-legend .dot.tri { background: #2ecc71; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
   .ps-legend .dot.cross-dot { background: #3498db; border-radius: 2px; }
 
-  /* Restart button above log */
+  /* Bottom bar buttons - unified style */
   .restart-bar {
-    max-width: 640px; width: 100%; display: flex; justify-content: center; gap: 10px; margin-bottom: 4px;
+    max-width: 640px; width: 100%; display: flex; justify-content: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;
   }
-  .btn-restart {
-    padding: 8px 20px;
-    background: linear-gradient(135deg, #ff6b6b, #feca57);
-    border: none; color: #fff; border-radius: 8px;
-    cursor: pointer; font-weight: 700; font-size: 0.85em;
-    box-shadow: 0 2px 8px rgba(255,107,107,0.3);
-    transition: transform 0.1s;
-  }
-  .btn-restart:active { transform: scale(0.95); }
-  .btn-home {
-    display: inline-flex; align-items: center; gap: 4px;
+  .bar-btn {
     padding: 8px 16px;
-    background: linear-gradient(135deg, #a29bfe, #6c5ce7);
     border: none; color: #fff; border-radius: 8px;
-    cursor: pointer; font-weight: 700; font-size: 0.85em;
-    text-decoration: none;
-    box-shadow: 0 2px 8px rgba(162,155,254,0.3);
+    cursor: pointer; font-weight: 700; font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     transition: transform 0.1s;
+    text-decoration: none; display: inline-flex; align-items: center;
   }
-  .btn-home:active { transform: scale(0.95); }
-
-  .btn-moves {
-    padding: 8px 14px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid #444; color: #aaa;
-    border-radius: 8px; cursor: pointer;
-    font-weight: 700; font-size: 0.8em;
-    transition: all 0.2s;
-  }
-  .btn-moves:hover { border-color: #888; color: #fff; }
-
-  .btn-weapon {
-    padding: 8px 14px;
-    background: rgba(162,155,254,0.1);
-    border: 1px solid #555; color: #a29bfe;
-    border-radius: 8px; cursor: pointer;
-    font-weight: 700; font-size: 0.8em;
-    transition: all 0.2s;
-  }
-  .btn-weapon:hover { border-color: #a29bfe; background: rgba(162,155,254,0.2); }
+  .bar-btn:active { transform: scale(0.95); }
+  .bar-btn.restart { background: linear-gradient(135deg, #e74c3c, #e17055); }
+  .bar-btn.moves { background: linear-gradient(135deg, #3498db, #2ecc71); }
+  .bar-btn.weapon { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
+  .bar-btn.leave { background: linear-gradient(135deg, #555, #333); }
 
   .log {
     max-width: 640px; width: 100%;
@@ -444,10 +417,10 @@
   </div>
 
   <div class="restart-bar">
-    <button class="btn-restart" id="restartBtn">再來</button>
-    <button class="btn-moves" id="movesToggle">📜 招式</button>
-    <button class="btn-weapon" id="weaponBtn">武器</button>
-    <a href="../" class="btn-home">離開</a>
+    <button class="bar-btn restart" id="restartBtn">再來</button>
+    <button class="bar-btn moves" id="movesToggle">招式</button>
+    <button class="bar-btn weapon" id="weaponBtn">武器</button>
+    <a href="../" class="bar-btn leave">離開</a>
   </div>
 
   <div class="log" id="log" style="display:none"></div>
