@@ -101,18 +101,6 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 .tab-panel.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ── Weather Bar ── */
-.weather-bar { display: flex; flex-direction: column; gap: 6px; padding: 14px 18px; margin-bottom: 14px; background: linear-gradient(135deg, rgba(120,160,190,0.06), rgba(162,155,254,0.06)); border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
-.weather-bar .weather-top { display: flex; align-items: center; gap: 10px; }
-.weather-bar .weather-icon { font-size: 2.4em; line-height: 1; }
-.weather-bar .weather-temp { font-size: 1.68em; font-weight: 900; color: #fff; line-height: 1; }
-.weather-bar .weather-desc { font-size: 0.96em; color: #7eb8d4; }
-.weather-bar .weather-meta { font-size: 0.84em; color: #666; white-space: nowrap; }
-/* ── Location Bar ── */
-.location-bar { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 6px 8px; font-size: 0.78em; text-align: center; }
-.location-bar .loc-city { color: #a29bfe; }
-.location-bar .loc-sep { color: #333; }
-.location-bar .loc-date { color: #888; }
 .report-list { display: grid; gap: 12px; }
 .report-item { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 18px 20px; border-left: 4px solid #ff6b9d; transition: transform 0.2s, box-shadow 0.2s; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #e0e0e0; }
 .report-item:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.4); border-left-color: #00d4ff; }
@@ -211,23 +199,6 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
   </div>
 </div>
 
-<!-- ══════ Location + Date ══════ -->
-<div class="location-bar">
-  <span class="loc-city" id="weatherCity">--</span>
-  <span class="loc-sep">|</span>
-  <span class="loc-date" id="weatherDate">--月--日 星期-</span>
-</div>
-
-<!-- ══════ Weather Bar ══════ -->
-<div class="weather-bar" id="weatherBar">
-  <div class="weather-top">
-    <span class="weather-icon" id="weatherIcon">⛅</span>
-    <span class="weather-temp" id="weatherTemp">--°</span>
-    <span class="weather-desc" id="weatherDesc"></span>
-    <span class="weather-meta" id="weatherMeta">💧 --</span>
-  </div>
-</div>
-
 <!-- ══════ Tab Bar ══════ -->
 <div class="tab-bar">
   <button class="tab-btn active" data-tab="daily" onclick="switchTab('daily')">
@@ -307,10 +278,6 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 
   <div class="section-label">🛠️ 實用工具</div>
   <div class="tool-grid">
-    <div class="card tool-sm" id="weatherTrigger">
-      <span class="ts-emoji">🌤️</span>
-      <span class="ts-label">全球天氣</span>
-    </div>
     <div class="card tool-sm" id="currencyTrigger">
       <span class="ts-emoji">💰</span>
       <span class="ts-label">貨幣匯率</span>
@@ -370,36 +337,6 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
       <div id="mResult" style="font-size:2em;font-weight:900;background:linear-gradient(90deg,#6bff6b,#a29bfe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">--</div>
       <div id="mResultSub" style="color:#666;font-size:0.7em;margin-top:4px;"></div>
     </div>
-  </div>
-</div>
-
-<!-- ══════ Global Weather Modal ══════ -->
-<div id="weatherModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
-  <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;max-width:480px;width:100%;padding:24px;border:1px solid rgba(255,255,255,0.08);max-height:90vh;overflow-y:auto;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-      <h2 style="font-size:1.3em;color:#fff;">🌤️ 全球天氣</h2>
-      <button id="weatherClose" style="width:32px;height:32px;border:none;border-radius:50%;background:rgba(255,255,255,0.06);color:#888;font-size:1.1em;cursor:pointer;">✕</button>
-    </div>
-    <p style="color:#666;font-size:0.75em;margin-bottom:12px;">Open-Meteo 免費數據 · 中英文城市名皆可 · 即時天氣 + 5 日預測</p>
-    <div style="display:flex;gap:8px;margin-bottom:16px;">
-      <input id="wCity" type="text" value="香港" style="flex:1;padding:12px;background:rgba(255,255,255,0.06);border:1px solid #333;border-radius:10px;color:#fff;font-size:0.95em;font-family:inherit;outline:none;" placeholder="輸入城市名（中英文皆可）">
-      <button id="wSearch" style="padding:12px 18px;border:none;border-radius:10px;background:linear-gradient(135deg,#ff6b9d,#a29bfe);color:#fff;font-weight:700;cursor:pointer;">查詢</button>
-    </div>
-    <div id="wResult" style="display:none;">
-      <div style="text-align:center;padding:20px 0;">
-        <div id="wIcon" style="font-size:3.5em;margin-bottom:8px;"></div>
-        <div id="wTemp" style="font-size:2.5em;font-weight:900;color:#fff;"></div>
-        <div id="wDesc" style="color:#888;font-size:0.9em;margin-top:4px;"></div>
-        <div id="wCityName" style="color:#a29bfe;font-size:0.85em;margin-top:2px;"></div>
-      </div>
-      <div id="wExtra" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;"></div>
-      <div id="wForecast" style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
-        <div style="color:#888;font-size:0.78em;margin-bottom:8px;">📅 未來 5 天</div>
-        <div id="wForecastGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;"></div>
-      </div>
-    </div>
-    <div id="wLoading" style="display:none;text-align:center;padding:40px;color:#666;">載入中...</div>
-    <div id="wError" style="display:none;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.25);border-radius:10px;padding:16px;text-align:center;color:#ff6b6b;font-size:0.85em;"></div>
   </div>
 </div>
 
@@ -623,64 +560,6 @@ function saveSettings() {
 document.getElementById('settingsOverlay').addEventListener('click', function(e) {
   if (e.target === this) closeSettings();
 });
-// ══════ Weather (Open-Meteo + Geolocation) ══════
-var weekDays = ['日','一','二','三','四','五','六'];
-// WMO weather codes → emoji
-var wmoEmoji = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌦️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'🌨️',80:'🌦️',81:'🌧️',82:'🌧️',85:'🌨️',86:'🌨️',95:'⛈️',96:'⛈️',99:'⛈️'};
-var wmoDesc = {0:'晴朗',1:'大致晴朗',2:'局部多雲',3:'多雲',45:'有霧',48:'霧淞',51:'微雨',53:'細雨',55:'毛毛雨',61:'驟雨',63:'雨',65:'大雨',71:'微雪',73:'雪',75:'大雪',80:'陣雨',81:'驟雨',82:'暴雨',85:'陣雪',86:'雪',95:'雷暴',96:'強雷暴+雹',99:'強雷暴+雹'};
-
-function updateDate() {
-  var now = new Date();
-  var y = now.getFullYear();
-  var m = now.getMonth() + 1;
-  var d = now.getDate();
-  var w = weekDays[now.getDay()];
-  document.getElementById('weatherDate').textContent = y + '年' + m + '月' + d + '日 星期' + w;
-}
-updateDate();
-
-async function reverseGeocode(lat, lon) {
-  try {
-    var r = await fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lon + '&format=json&accept-language=zh-HK&zoom=10');
-    var d = await r.json();
-    var city = d.address?.city || d.address?.town || d.address?.village || d.address?.county || '';
-    var country = d.address?.country || '';
-    return city ? city + ', ' + country : country;
-  } catch(e) { return '香港, 中國'; }
-}
-
-async function fetchWeather(lat, lon) {
-  try {
-    if (!lat || !lon) {
-      // Default to Hong Kong
-      lat = 22.3193; lon = 114.1694;
-    }
-    var resp = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m,relative_humidity_2m,weather_code&timezone=auto');
-    var data = await resp.json();
-    var cur = data.current;
-    var code = cur.weather_code;
-    document.getElementById('weatherIcon').textContent = wmoEmoji[code] || '⛅';
-    document.getElementById('weatherTemp').textContent = Math.round(cur.temperature_2m) + '°';
-    document.getElementById('weatherDesc').textContent = wmoDesc[code] || '';
-    document.getElementById('weatherMeta').textContent = '💧 ' + cur.relative_humidity_2m + '%';
-    // Reverse geocode
-    var loc = await reverseGeocode(lat, lon);
-    document.getElementById('weatherCity').textContent = loc;
-  } catch(e) {
-    document.getElementById('weatherCity').textContent = '香港, 中國';
-  }
-}
-
-// Init: try browser geolocation
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-    function(pos) { fetchWeather(pos.coords.latitude, pos.coords.longitude); },
-    function() { fetchWeather(); } // fallback to HK
-  );
-} else {
-  fetchWeather();
-}
-
 // ══════ Currency Converter Modal ══════
 (function(){
   var mRates = {};
@@ -730,60 +609,6 @@ if (navigator.geolocation) {
   };
 
   mFetch();
-})();
-
-// ══════ Global Weather Modal ══════
-(function(){
-  var modal = document.getElementById('weatherModal');
-  document.getElementById('weatherTrigger').onclick = function(){ modal.style.display='flex'; doWeather(); };
-  document.getElementById('weatherClose').onclick = function(){ modal.style.display='none'; };
-  modal.onclick = function(e){ if(e.target===this) modal.style.display='none'; };
-  document.getElementById('wSearch').onclick = doWeather;
-  document.getElementById('wCity').onkeydown = function(e){ if(e.key==='Enter') doWeather(); };
-
-  var wmo = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',61:'🌧️',80:'🌦️',95:'⛈️',96:'⛈️'};
-
-  async function doWeather(){
-    var city = document.getElementById('wCity').value.trim();
-    if(!city) return;
-    document.getElementById('wLoading').style.display='block';
-    document.getElementById('wResult').style.display='none';
-    document.getElementById('wError').style.display='none';
-    try {
-      // Use Nominatim for geocoding (supports Chinese + English)
-      var geo = await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(city)+'&format=json&limit=1&accept-language=zh');
-      var gd = await geo.json();
-      if(!gd||!gd[0]) throw new Error('找不到城市「'+city+'」，試下用英文名');
-      var loc = gd[0];
-      // Use Open-Meteo for weather
-      var w = await fetch('https://api.open-meteo.com/v1/forecast?latitude='+loc.lat+'&longitude='+loc.lon+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=5');
-      var wd = await w.json();
-      var c = wd.current;
-      document.getElementById('wIcon').textContent = wmo[c.weather_code]||'☀️';
-      document.getElementById('wTemp').textContent = c.temperature_2m+'°C';
-      document.getElementById('wDesc').textContent = '體感 '+c.apparent_temperature+'°C · 💧'+c.relative_humidity_2m+'% · 🌀'+c.wind_speed_10m+'km/h';
-      document.getElementById('wCityName').textContent = loc.display_name.split(',')[0];
-      var extra = document.getElementById('wExtra');
-      extra.innerHTML = '';
-      var items = [['💧 濕度',c.relative_humidity_2m+'%'],['🌡️ 體感',c.apparent_temperature+'°C'],['🌀 風速',c.wind_speed_10m+'km/h'],['📊 天氣碼',c.weather_code]];
-      items.forEach(function(x){ extra.innerHTML += '<div style="background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;text-align:center;"><div style="color:#888;font-size:0.7em;">'+x[0]+'</div><div style="color:#fff;font-size:1.1em;font-weight:700;">'+x[1]+'</div></div>'; });
-      var fg = document.getElementById('wForecastGrid');
-      fg.innerHTML = '';
-      var days = ['日','一','二','三','四','五','六'];
-      var today = new Date();
-      wd.daily.time.forEach(function(t,i){
-        var d = new Date(t+'T12:00:00');
-        var dn = (i===0)?'今日':days[d.getDay()];
-        fg.innerHTML += '<div style="background:rgba(255,255,255,0.03);padding:8px 4px;border-radius:6px;text-align:center;"><div style="color:#888;font-size:0.7em;">'+dn+'</div><div style="font-size:1.2em;">'+(wmo[wd.daily.weather_code[i]]||'☀️')+'</div><div style="color:#fff;font-size:0.8em;font-weight:700;">'+wd.daily.temperature_2m_max[i]+'°</div><div style="color:#888;font-size:0.7em;">'+wd.daily.temperature_2m_min[i]+'°</div></div>';
-      });
-      document.getElementById('wLoading').style.display='none';
-      document.getElementById('wResult').style.display='block';
-    } catch(e){
-      document.getElementById('wLoading').style.display='none';
-      document.getElementById('wError').style.display='block';
-      document.getElementById('wError').textContent = '❌ '+e.message;
-    }
-  }
 })();
 
 // ══════ Search Modal ══════
