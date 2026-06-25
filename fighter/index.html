@@ -13,17 +13,23 @@
     background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
     color: #fff; min-height: 100vh;
     display: flex; flex-direction: column; align-items: center;
-    padding: 10px; overflow: hidden fixed;
+    padding: 6px; gap: 4px;
+    overflow: hidden fixed;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation; user-select: none;
   }
+  /* Game Boy style panels */
+  .gb-panel {
+    max-width: 640px; width: 100%;
+    background: rgba(18,18,36,0.7);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 10px 12px;
+  }
   h1 {
-    font-size: 1.7em; margin: 0; padding: 14px 0 10px;
+    font-size: 1.5em; margin: 0; padding: 10px 0 8px;
     background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #a29bfe);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     letter-spacing: 3px; text-align: center; width: 100%;
-    background-color: rgba(20,20,40,0.6);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
   }
   .subtitle { color: #888; margin-bottom: 8px; font-size: 0.8em; text-align: center; width: 100%; }
 
@@ -73,12 +79,9 @@
   }
 
   .gamepad {
-    display: flex; justify-content: space-between; align-items: stretch;
-    max-width: 640px; width: 100%; gap: 6px; margin-bottom: 8px;
-    min-height: 180px; margin-top: 10px;
-    background: rgba(20,20,40,0.4);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px; padding: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    max-width: 640px; width: 100%; gap: 12px;
+    min-height: 180px;
   }
 
   /* Joystick */
@@ -170,10 +173,7 @@
 
   /* Bottom bar buttons - unified style */
   .restart-bar {
-    max-width: 640px; width: 100%; display: flex; justify-content: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;
-    background: rgba(20,20,40,0.4);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px; padding: 10px 10px;
+    max-width: 640px; width: 100%; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;
   }
   .bar-btn {
     padding: 8px 16px;
@@ -341,7 +341,7 @@
   .weapon-name { font-size: 1em; font-weight: 700; color: #fff; margin-bottom: 4px; }
   .weapon-desc { font-size: 0.68em; color: #888; line-height: 1.4; }
 
-  #arenaWrap { position: relative; display: inline-block; margin-bottom: 10px; }
+  #arenaWrap { position: relative; display: inline-block; }
 
   @media (max-width: 480px) {
     .ps-buttons { grid-template-columns: repeat(3, 46px); grid-template-rows: repeat(3, 46px); }
@@ -381,7 +381,9 @@
     </div>
   </div>
 
+  <div class="gb-panel">
   <h1>STICKMAN FIGHTER</h1>
+  </div>
 
   <div class="top-bar">
     <!-- Player (Left) -->
@@ -423,7 +425,7 @@
     <div id="deathOverlay"><div id="deathText"></div></div>
   </div>
 
-  <div class="gamepad">
+  <div class="gamepad gb-panel">
     <div class="joystick-zone" id="joystickZone">
       <canvas id="jsCanvas" width="140" height="140"></canvas>
       <div class="joystick-label">移動</div>
@@ -446,7 +448,7 @@
     </div>
   </div>
 
-  <div class="restart-bar">
+  <div class="restart-bar gb-panel">
     <button class="bar-btn restart" id="restartBtn">再來</button>
     <button class="bar-btn moves" id="movesToggle">招式</button>
     <button class="bar-btn weapon" id="weaponBtn">武器</button>
@@ -796,25 +798,6 @@ function drawStickman(fighter) {
   if (isPlayer && weapon && !dead) {
     const wx = x + pts.armR.x, wy = y + pts.armR.y;
     const f = facing;
-
-    // Idle weapon display
-    if (fighter.targetPose === 'idle' || fighter.targetPose === 'defend' || eased < 0.3) {
-      if (weapon === 'sword') {
-        ctx.strokeStyle = 'rgba(192,192,224,0.6)'; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.moveTo(wx, wy); ctx.lineTo(wx + 20 * f, wy - 18); ctx.stroke();
-        ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.moveTo(wx, wy); ctx.lineTo(wx + 20 * f, wy - 18); ctx.stroke();
-      } else if (weapon === 'gun') {
-        ctx.strokeStyle = '#aaa'; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.moveTo(wx - 6 * f, wy); ctx.lineTo(wx + 22 * f, wy - 4); ctx.stroke();
-      } else if (weapon === 'magic') {
-        ctx.fillStyle = 'rgba(162,155,254,0.5)';
-        ctx.beginPath(); ctx.arc(wx + 10 * f, wy - 8, 5, 0, Math.PI * 2); ctx.fill();
-      } else if (weapon === 'fist') {
-        ctx.fillStyle = 'rgba(225,112,85,0.6)';
-        ctx.beginPath(); ctx.arc(wx + 10 * f, wy - 5, 8, 0, Math.PI * 2); ctx.fill();
-      }
-    }
 
     if (fighter.targetPose !== 'idle') {
       if (weapon === 'sword') {
