@@ -141,21 +141,14 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
   transform: translateY(-4px);
 }
 .card.tool-sm .ts-icon-box {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-  border: 1px solid rgba(255,255,255,0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   transition: all 0.3s;
 }
 .card.tool-sm:hover .ts-icon-box {
-  background: linear-gradient(135deg, rgba(162,155,254,0.2), rgba(255,107,157,0.2));
-  border-color: rgba(162,155,254,0.4);
-  box-shadow: 0 4px 20px rgba(162,155,254,0.3);
+  transform: scale(1.15);
 }
 .card.tool-sm .ts-emoji {
   font-size: 2em;
@@ -179,11 +172,7 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
   }
-  .card.tool-sm .ts-icon-box {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
-  }
+  
   .card.tool-sm .ts-emoji {
     font-size: 1.8em;
   }
