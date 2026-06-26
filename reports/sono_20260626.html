@@ -62,11 +62,11 @@
   .forecast-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,212,255,0.2); }
   .forecast-section h3 { color: #7eb8d4; font-size: 0.85em; margin-bottom: 8px; opacity: 0.8; }
   .forecast-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-  .forecast-day { background: rgba(120,160,190,0.06); padding: 8px 4px; border-radius: 6px; text-align: center; }
-  .forecast-day .day { color: #888; font-size: 0.7em; margin-bottom: 3px; }
-  .forecast-day .ficon { font-size: 1.2em; margin: 2px 0; display: block; line-height: 1; }
-  .forecast-day .ftemp { color: #fff; font-size: 0.8em; font-weight: bold; }
-  .forecast-day .ftemp-lo { color: #888; font-size: 0.7em; }
+  .forecast-day { background: rgba(120,160,190,0.06); padding: 8px 4px; border-radius: 6px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .forecast-day .day { color: #888; font-size: 0.7em; margin-bottom: 3px; height: 1.2em; line-height: 1.2; }
+  .forecast-day .ficon { font-size: 1.2em; margin: 2px 0; height: 1.4em; line-height: 1.4; display: flex; align-items: center; justify-content: center; }
+  .forecast-day .ftemp { color: #fff; font-size: 0.8em; font-weight: bold; height: 1em; line-height: 1; }
+  .forecast-day .ftemp-lo { color: #888; font-size: 0.7em; height: 1em; line-height: 1; }
   .weather-links { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
   .weather-link { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: rgba(120,160,190,0.1); border-radius: 15px; color: #7eb8d4; text-decoration: none; font-size: 0.8em; transition: background 0.2s; }
   .weather-link:hover { background: rgba(120,160,190,0.25); }
