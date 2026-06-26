@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>貪食蛇 · Sono遊戲</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans HK", sans-serif;
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+  color: #fff; min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 24px 16px; overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation; user-select: none;
+}
+
+h1 {
+  font-size: 2em; margin-bottom: 2px;
+  background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #a29bfe);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 3px; text-align: center; width: 100%;
+}
+.subtitle { color: #888; margin-bottom: 20px; font-size: 0.88em; text-align: center; }
+
+.game-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 1;
+  background: rgba(18,18,36,0.7);
+  border: 2px solid rgba(72,219,251,0.3);
+  border-radius: 16px;
+  box-shadow: 0 0 40px rgba(72,219,251,0.15);
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.stats-bar {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0;
+  width: 100%;
+  max-width: 500px;
+  justify-content: center;
+}
+
+.stat-item {
+  background: rgba(30,30,50,0.85);
+  border-radius: 12px;
+  padding: 10px 20px;
+  border: 1px solid #333;
+  backdrop-filter: blur(4px);
+  text-align: center;
+  flex: 1;
+  max-width: 150px;
+}
+
+.stat-label {
+  font-size: 0.75em;
+  color: #888;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  font-size: 1.8em;
+  font-weight: 900;
+  background: linear-gradient(135deg, #6bff6b, #00d4ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 8px;
+  width: 180px;
+  height: 180px;
+  margin: 16px 0;
+}
+
+.ctrl-btn {
+  background: rgba(30,30,50,0.85);
+  border: 2px solid #444;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 1.8em;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ctrl-btn:active {
+  transform: scale(0.92);
+  background: rgba(72,219,251,0.2);
+  border-color: #48dbfb;
+}
+
+.ctrl-up { grid-column: 2; grid-row: 1; }
+.ctrl-left { grid-column: 1; grid-row: 2; }
+.ctrl-down { grid-column: 2; grid-row: 3; }
+.ctrl-right { grid-column: 3; grid-row: 2; }
+
+.btn-restart {
+  padding: 14px 32px;
+  border-radius: 25px;
+  border: none;
+  font-size: 1em;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff6b6b, #feca57);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(255,107,107,0.25);
+  transition: all 0.2s;
+  margin-top: 16px;
+}
+
+.btn-restart:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(255,107,107,0.35);
+}
+
+.btn-restart:active {
+  transform: scale(0.97);
+}
+
+.win-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.win-overlay.show {
+  display: flex;
+}
+
+.win-box {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+  border: 2px solid rgba(107,255,107,0.3);
+  box-shadow: 0 0 60px rgba(107,255,107,0.15);
+  max-width: 360px;
+  width: 90%;
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popIn {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.win-emoji {
+  font-size: 4em;
+  margin-bottom: 12px;
+  animation: bounce 0.6s ease infinite alternate;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-10px); }
+}
+
+.win-title {
+  font-size: 1.8em;
+  font-weight: 900;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #6bff6b, #00d4ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.win-msg {
+  color: #aaa;
+  font-size: 0.95em;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.win-stats {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.win-stat {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 12px 20px;
+}
+
+.win-stat-label {
+  font-size: 0.7em;
+  color: #888;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.win-stat-value {
+  font-size: 1.5em;
+  font-weight: 900;
+  color: #48dbfb;
+}
+
+.back-link {
+  margin-top: 16px;
+  color: #666;
+  font-size: 0.8em;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: #a29bfe;
+}
+
+@media (max-width: 400px) {
+  h1 { font-size: 1.6em; }
+  .subtitle { font-size: 0.8em; }
+  .stat-item { padding: 8px 14px; }
+  .stat-value { font-size: 1.5em; }
+  .controls { width: 150px; height: 150px; }
+  .ctrl-btn { font-size: 1.5em; }
+}
+
+@media (min-width: 768px) {
+  .controls {
+    display: none;
+  }
+}
+</style>
+</head>
+<body>
+
+<h1>🐍 貪食蛇</h1>
+<div class="subtitle">經典街機 · 食到爆機 · 越食越長 😋</div>
+
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-label">分數</div>
+    <div class="stat-value" id="score">0</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label">長度</div>
+    <div class="stat-value" id="length">3</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label">最高</div>
+    <div class="stat-value" id="high">0</div>
+  </div>
+</div>
+
+<div class="game-container">
+  <canvas id="gameCanvas"></canvas>
+</div>
+
+<div class="controls">
+  <button class="ctrl-btn ctrl-up" ontouchstart="setDir(0,-1)" onclick="setDir(0,-1)">↑</button>
+  <button class="ctrl-btn ctrl-left" ontouchstart="setDir(-1,0)" onclick="setDir(-1,0)">←</button>
+  <button class="ctrl-btn ctrl-down" ontouchstart="setDir(0,1)" onclick="setDir(0,1)">↓</button>
+  <button class="ctrl-btn ctrl-right" ontouchstart="setDir(1,0)" onclick="setDir(1,0)">→</button>
+</div>
+
+<button class="btn-restart" onclick="restart()">🔄 重新開始</button>
+<a href="../" class="back-link">← 返回 Sono 首頁</a>
+
+<div class="win-overlay" id="winOverlay">
+  <div class="win-box">
+    <div class="win-emoji">🏆</div>
+    <div class="win-title">爆機喇！</div>
+    <div class="win-msg" id="winMsg">你條蛇長到爆畫面！</div>
+    <div class="win-stats">
+      <div class="win-stat">
+        <div class="win-stat-label">最終分數</div>
+        <div class="win-stat-value" id="finalScore">0</div>
+      </div>
+      <div class="win-stat">
+        <div class="win-stat-label">蛇長度</div>
+        <div class="win-stat-value" id="finalLength">0</div>
+      </div>
+    </div>
+    <button class="btn-restart" onclick="restart()">🎮 再玩一次</button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+const lengthEl = document.getElementById('length');
+const highEl = document.getElementById('high');
+const winOverlay = document.getElementById('winOverlay');
+const finalScoreEl = document.getElementById('finalScore');
+const finalLengthEl = document.getElementById('finalLength');
+const winMsgEl = document.getElementById('winMsg');
+
+const GRID = 20;
+const SIZE = 25;
+canvas.width = GRID * SIZE;
+canvas.height = GRID * SIZE;
+
+let snake, dir, nextDir, food, score, gameLoop, speed, highScore;
+
+const winMessages = [
+  "你條蛇長到爆畫面！變態級！",
+  "食到成個畫面都係蛇！你係蛇王！",
+  "厲害到蛇都怕咗你！",
+  "呢個長度，蛇界傳奇！",
+  "食到爆機，人類外掛！"
+];
+
+highScore = parseInt(localStorage.getItem('snake_high') || '0');
+highEl.textContent = highScore;
+
+function init() {
+  snake = [{x:10, y:10}, {x:9, y:10}, {x:8, y:10}];
+  dir = {x:1, y:0};
+  nextDir = {x:1, y:0};
+  score = 0;
+  speed = 120;
+  updateStats();
+  spawnFood();
+  winOverlay.classList.remove('show');
+  if (gameLoop) clearInterval(gameLoop);
+  gameLoop = setInterval(update, speed);
+}
+
+function spawnFood() {
+  let pos;
+  do {
+    pos = {
+      x: Math.floor(Math.random() * GRID),
+      y: Math.floor(Math.random() * GRID)
+    };
+  } while (snake.some(s => s.x === pos.x && s.y === pos.y));
+  food = pos;
+}
+
+function setDir(x, y) {
+  if (x === -dir.x && y === -dir.y) return;
+  nextDir = {x, y};
+}
+
+function update() {
+  dir = nextDir;
+  const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+  
+  if (head.x < 0 || head.x >= GRID || head.y < 0 || head.y >= GRID) {
+    gameOver();
+    return;
+  }
+  
+  if (snake.some(s => s.x === head.x && s.y === head.y)) {
+    gameOver();
+    return;
+  }
+  
+  snake.unshift(head);
+  
+  if (head.x === food.x && head.y === food.y) {
+    score += 10;
+    updateStats();
+    spawnFood();
+    if (speed > 60) {
+      speed -= 2;
+      clearInterval(gameLoop);
+      gameLoop = setInterval(update, speed);
+    }
+  } else {
+    snake.pop();
+  }
+  
+  draw();
+}
+
+function draw() {
+  ctx.fillStyle = 'rgba(10,10,26,0.3)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  ctx.fillStyle = '#ff6b6b';
+  ctx.shadowBlur = 15;
+  ctx.shadowColor = '#ff6b6b';
+  ctx.fillRect(food.x * SIZE + 2, food.y * SIZE + 2, SIZE - 4, SIZE - 4);
+  ctx.shadowBlur = 0;
+  
+  snake.forEach((seg, i) => {
+    const alpha = 1 - (i / snake.length) * 0.5;
+    const gradient = ctx.createLinearGradient(
+      seg.x * SIZE, seg.y * SIZE,
+      (seg.x + 1) * SIZE, (seg.y + 1) * SIZE
+    );
+    gradient.addColorStop(0, `rgba(107,255,107,${alpha})`);
+    gradient.addColorStop(1, `rgba(0,212,255,${alpha})`);
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(seg.x * SIZE + 1, seg.y * SIZE + 1, SIZE - 2, SIZE - 2);
+    
+    if (i === 0) {
+      ctx.fillStyle = '#fff';
+      const eyeX = seg.x * SIZE + SIZE / 2 + dir.x * 4;
+      const eyeY = seg.y * SIZE + SIZE / 2 + dir.y * 4;
+      ctx.beginPath();
+      ctx.arc(eyeX - 3, eyeY - 3, 2, 0, Math.PI * 2);
+      ctx.arc(eyeX + 3, eyeY - 3, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+}
+
+function updateStats() {
+  scoreEl.textContent = score;
+  lengthEl.textContent = snake.length;
+}
+
+function gameOver() {
+  clearInterval(gameLoop);
+  
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem('snake_high', highScore);
+    highEl.textContent = highScore;
+    winMsgEl.textContent = '新紀錄！你係貪食蛇之王！👑';
+  } else {
+    winMsgEl.textContent = winMessages[Math.floor(Math.random() * winMessages.length)];
+  }
+  
+  finalScoreEl.textContent = score;
+  finalLengthEl.textContent = snake.length;
+  
+  setTimeout(() => {
+    winOverlay.classList.add('show');
+  }, 300);
+}
+
+function restart() {
+  init();
+}
+
+document.addEventListener('keydown', e => {
+  switch(e.key) {
+    case 'ArrowUp': case 'w': case 'W': setDir(0, -1); break;
+    case 'ArrowDown': case 's': case 'S': setDir(0, 1); break;
+    case 'ArrowLeft': case 'a': case 'A': setDir(-1, 0); break;
+    case 'ArrowRight': case 'd': case 'D': setDir(1, 0); break;
+  }
+});
+
+let touchStartX = 0, touchStartY = 0;
+canvas.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+});
+
+canvas.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) > Math.abs(dy)) {
+    setDir(dx > 0 ? 1 : -1, 0);
+  } else {
+    setDir(0, dy > 0 ? 1 : -1);
+  }
+});
+
+init();
+draw();
+</script>
+
+</body>
+</html>
