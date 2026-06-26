@@ -462,6 +462,22 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
     </div>
   </div>
 
+  <div class="section-label">🌐 實用小工具</div>
+  <div class="tool-grid">
+    <div class="card tool-sm" id="translateTrigger">
+      <span class="ts-emoji">🌐</span>
+      <span class="ts-label">AI 翻譯</span>
+    </div>
+    <div class="card tool-sm" id="issTrigger">
+      <span class="ts-emoji">📡</span>
+      <span class="ts-label">ISS 追蹤</span>
+    </div>
+    <div class="card tool-sm" id="worldClockTrigger">
+      <span class="ts-emoji">⏰</span>
+      <span class="ts-label">世界時鐘</span>
+    </div>
+  </div>
+
 </div>
 
 <!-- Footer -->
@@ -962,5 +978,220 @@ document.getElementById('settingsOverlay').addEventListener('click', function(e)
 })();
 
 </script>
+
+<!-- ══════ AI Translate Modal ══════ -->
+<div id="translateModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;max-width:520px;width:100%;padding:24px;border:1px solid rgba(255,255,255,0.08);max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <h2 style="font-size:1.3em;color:#fff;">🌐 AI 翻譯</h2>
+      <button id="translateClose" style="width:32px;height:32px;border:none;border-radius:50%;background:rgba(255,255,255,0.06);color:#888;font-size:1.1em;cursor:pointer;">✕</button>
+    </div>
+    <p style="color:#666;font-size:0.75em;margin-bottom:12px;">OpenRouter + Gemma 4（免費）· 支援多語言</p>
+    <textarea id="trInput" rows="4" placeholder="輸入要翻譯嘅文字..." style="width:100%;padding:14px;background:rgba(255,255,255,0.06);border:1px solid #333;border-radius:10px;color:#fff;font-size:1em;font-family:inherit;outline:none;resize:vertical;margin-bottom:10px;"></textarea>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <select id="trLang" style="flex:1;padding:12px;background:rgba(255,255,255,0.06);border:1px solid #333;border-radius:10px;color:#fff;font-size:0.95em;font-family:inherit;">
+        <option value="英文">🇬🇧 英文</option>
+        <option value="繁體中文">🇭🇰 繁體中文</option>
+        <option value="簡體中文">🇨🇳 簡體中文</option>
+        <option value="日文">🇯🇵 日文</option>
+        <option value="韓文">🇰🇷 韓文</option>
+        <option value="法文">🇫🇷 法文</option>
+        <option value="西班牙文">🇪🇸 西班牙文</option>
+        <option value="德文">🇩🇪 德文</option>
+      </select>
+      <button id="trGo" style="padding:12px 20px;border:none;border-radius:10px;background:linear-gradient(135deg,#ff6b9d,#a29bfe);color:#fff;font-weight:700;cursor:pointer;">翻譯</button>
+    </div>
+    <div id="trResult" style="display:none;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:16px;">
+      <div style="color:#888;font-size:0.75em;margin-bottom:6px;">翻譯結果</div>
+      <div id="trOutput" style="color:#e0e0e0;font-size:0.95em;line-height:1.6;"></div>
+    </div>
+    <div id="trLoading" style="display:none;text-align:center;padding:20px;color:#888;">翻譯中...</div>
+  </div>
+</div>
+
+<!-- ══════ ISS Tracker Modal ══════ -->
+<div id="issModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;max-width:480px;width:100%;padding:24px;border:1px solid rgba(255,255,255,0.08);max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <h2 style="font-size:1.3em;color:#fff;">📡 ISS 追蹤</h2>
+      <button id="issClose" style="width:32px;height:32px;border:none;border-radius:50%;background:rgba(255,255,255,0.06);color:#888;font-size:1.1em;cursor:pointer;">✕</button>
+    </div>
+    <p style="color:#666;font-size:0.75em;margin-bottom:16px;">國際太空站實時位置 · NASA Open Notify API</p>
+    <div style="text-align:center;padding:20px 0;">
+      <div style="font-size:3em;margin-bottom:8px;">🛰️</div>
+      <div id="issCoord" style="font-size:1.1em;color:#fff;font-weight:600;">載入中...</div>
+      <div id="issSpeed" style="color:#888;font-size:0.85em;margin-top:6px;"></div>
+      <div id="issAlt" style="color:#888;font-size:0.85em;margin-top:2px;"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">
+      <div style="background:rgba(107,255,107,0.06);border:1px solid rgba(107,255,107,0.15);border-radius:10px;padding:14px;text-align:center;">
+        <div style="color:#888;font-size:0.7em;">緯度</div>
+        <div id="issLat" style="color:#6bff6b;font-size:1.2em;font-weight:700;margin-top:4px;">--</div>
+      </div>
+      <div style="background:rgba(162,155,254,0.06);border:1px solid rgba(162,155,254,0.15);border-radius:10px;padding:14px;text-align:center;">
+        <div style="color:#888;font-size:0.7em;">經度</div>
+        <div id="issLon" style="color:#a29bfe;font-size:1.2em;font-weight:700;margin-top:4px;">--</div>
+      </div>
+    </div>
+    <a id="issMap" href="#" target="_blank" style="display:block;text-align:center;padding:12px;background:linear-gradient(135deg,#6bff6b,#00d4ff);color:#0a0a1a;border-radius:10px;text-decoration:none;font-weight:700;margin-top:12px;">🗺️ 喺地圖睇</a>
+    <div style="color:#666;font-size:0.7em;text-align:center;margin-top:12px;" id="issTime">最後更新: --</div>
+  </div>
+</div>
+
+<!-- ══════ World Clock Modal ══════ -->
+<div id="worldClockModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;max-width:480px;width:100%;padding:24px;border:1px solid rgba(255,255,255,0.08);max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <h2 style="font-size:1.3em;color:#fff;">⏰ 世界時鐘</h2>
+      <button id="worldClockClose" style="width:32px;height:32px;border:none;border-radius:50%;background:rgba(255,255,255,0.06);color:#888;font-size:1.1em;cursor:pointer;">✕</button>
+    </div>
+    <p style="color:#666;font-size:0.75em;margin-bottom:16px;">全球主要城市時間對比</p>
+    <div id="clockList" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+</div>
+
+
+<script>
+// ══════ AI Translate ══════
+(function(){
+  var modal = document.getElementById('translateModal');
+  document.getElementById('translateTrigger').onclick = function(){ modal.style.display='flex'; };
+  document.getElementById('translateClose').onclick = function(){ modal.style.display='none'; };
+  modal.onclick = function(e){ if(e.target===this) modal.style.display='none'; };
+  
+  document.getElementById('trGo').onclick = async function(){
+    var text = document.getElementById('trInput').value.trim();
+    if(!text){ alert('請輸入要翻譯嘅文字'); return; }
+    var lang = document.getElementById('trLang').value;
+    var result = document.getElementById('trResult');
+    var output = document.getElementById('trOutput');
+    var loading = document.getElementById('trLoading');
+    
+    var endpoint = localStorage.getItem('sono_api_endpoint') || 'https://openrouter.ai/api/v1/chat/completions';
+    var key = localStorage.getItem('sono_api_key') || '';
+    var model = localStorage.getItem('sono_api_model') || 'google/gemma-4-31b-it:free';
+    
+    if(!key){
+      output.textContent = '⚠️ 請先喺 AI 聊天框嘅 ⚙️ 設定入面輸入 API Key';
+      result.style.display = 'block';
+      return;
+    }
+    
+    result.style.display = 'none';
+    loading.style.display = 'block';
+    
+    try {
+      var res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+        body: JSON.stringify({
+          model: model,
+          messages: [{ role: 'user', content: 'Translate the following text to ' + lang + '. Only return the translation, nothing else:\n\n' + text }]
+        })
+      });
+      var data = await res.json();
+      var translated = data.choices && data.choices[0] ? data.choices[0].message.content : '翻譯失敗';
+      output.textContent = translated;
+      result.style.display = 'block';
+    } catch(e) {
+      output.textContent = '錯誤: ' + e.message;
+      result.style.display = 'block';
+    }
+    loading.style.display = 'none';
+  };
+})();
+
+// ══════ ISS Tracker ══════
+(function(){
+  var modal = document.getElementById('issModal');
+  var timer = null;
+  
+  document.getElementById('issTrigger').onclick = function(){
+    modal.style.display='flex';
+    fetchISS();
+    timer = setInterval(fetchISS, 5000);
+  };
+  document.getElementById('issClose').onclick = function(){
+    modal.style.display='none';
+    if(timer) clearInterval(timer);
+    timer = null;
+  };
+  modal.onclick = function(e){
+    if(e.target===this){
+      modal.style.display='none';
+      if(timer) clearInterval(timer);
+      timer = null;
+    }
+  };
+  
+  async function fetchISS(){
+    try {
+      var res = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
+      var d = await res.json();
+      document.getElementById('issLat').textContent = d.latitude.toFixed(4) + '°';
+      document.getElementById('issLon').textContent = d.longitude.toFixed(4) + '°';
+      document.getElementById('issCoord').textContent = d.latitude.toFixed(2) + ', ' + d.longitude.toFixed(2);
+      document.getElementById('issSpeed').textContent = '速度: ' + Math.round(d.velocity) + ' km/h';
+      document.getElementById('issAlt').textContent = '高度: ' + Math.round(d.altitude) + ' km';
+      document.getElementById('issMap').href = 'https://www.google.com/maps?q=' + d.latitude + ',' + d.longitude + '&z=4';
+      document.getElementById('issTime').textContent = '最後更新: ' + new Date(d.timestamp * 1000).toLocaleTimeString('zh-HK');
+    } catch(e) {
+      document.getElementById('issCoord').textContent = '載入失敗';
+    }
+  }
+})();
+
+// ══════ World Clock ══════
+(function(){
+  var modal = document.getElementById('worldClockModal');
+  var timer = null;
+  var cities = [
+    { name: '🇭🇰 香港', tz: 'Asia/Hong_Kong' },
+    { name: '🇹🇼 台北', tz: 'Asia/Taipei' },
+    { name: '🇯🇵 東京', tz: 'Asia/Tokyo' },
+    { name: '🇰🇷 首爾', tz: 'Asia/Seoul' },
+    { name: '🇨🇳 上海', tz: 'Asia/Shanghai' },
+    { name: '🇬🇧 倫敦', tz: 'Europe/London' },
+    { name: '🇺🇸 紐約', tz: 'America/New_York' },
+    { name: '🇺🇸 洛杉磯', tz: 'America/Los_Angeles' },
+    { name: '🇦🇺 悉尼', tz: 'Australia/Sydney' },
+    { name: '🇦🇪 杜拜', tz: 'Asia/Dubai' }
+  ];
+  
+  document.getElementById('worldClockTrigger').onclick = function(){
+    modal.style.display='flex';
+    renderClocks();
+    timer = setInterval(renderClocks, 1000);
+  };
+  document.getElementById('worldClockClose').onclick = function(){
+    modal.style.display='none';
+    if(timer) clearInterval(timer);
+    timer = null;
+  };
+  modal.onclick = function(e){
+    if(e.target===this){
+      modal.style.display='none';
+      if(timer) clearInterval(timer);
+      timer = null;
+    }
+  };
+  
+  function renderClocks(){
+    var list = document.getElementById('clockList');
+    var now = new Date();
+    var html = cities.map(function(c){
+      var time = now.toLocaleTimeString('zh-HK', { timeZone: c.tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+      var date = now.toLocaleDateString('zh-HK', { timeZone: c.tz, month: 'short', day: 'numeric', weekday: 'short' });
+      var isHK = c.tz === 'Asia/Hong_Kong';
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid ' + (isHK ? 'rgba(255,107,157,0.3)' : 'rgba(255,255,255,0.06)') + ';border-radius:10px;">' +
+        '<div><div style="color:#fff;font-weight:600;font-size:0.95em;">' + c.name + '</div><div style="color:#888;font-size:0.75em;margin-top:2px;">' + date + '</div></div>' +
+        '<div style="color:' + (isHK ? '#ff6b9d' : '#6bff6b') + ';font-size:1.3em;font-weight:700;font-family:monospace;">' + time + '</div>' +
+      '</div>';
+    }).join('');
+    list.innerHTML = html;
+  }
+})();
+</script>
+
 </body>
 </html>
