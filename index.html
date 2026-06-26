@@ -128,9 +128,66 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 .card.toolbox:hover { border-color: #00d4ff; box-shadow: 0 10px 30px rgba(0,212,255,0.12); }
 .card.tool-sm { border-radius: 12px; padding: 14px 12px; cursor: pointer; transition: all 0.25s; text-align: center; min-width: 90px; flex: 1; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 6px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); }
 .card.tool-sm:hover { background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.25); transform: translateY(-2px); }
-.card.tool-sm .ts-emoji { font-size: 1.6em; }
-.card.tool-sm .ts-label { font-size: 0.75em; color: #ccc; font-weight: 600; }
-.tool-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.card.tool-sm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 8px 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.card.tool-sm:hover {
+  transform: translateY(-4px);
+}
+.card.tool-sm .ts-icon-box {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  transition: all 0.3s;
+}
+.card.tool-sm:hover .ts-icon-box {
+  background: linear-gradient(135deg, rgba(162,155,254,0.2), rgba(255,107,157,0.2));
+  border-color: rgba(162,155,254,0.4);
+  box-shadow: 0 4px 20px rgba(162,155,254,0.3);
+}
+.card.tool-sm .ts-emoji {
+  font-size: 2em;
+  line-height: 1;
+}
+.card.tool-sm .ts-label {
+  font-size: 0.75em;
+  color: #ccc;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+@media (max-width: 600px) {
+  .tool-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .card.tool-sm .ts-icon-box {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+  }
+  .card.tool-sm .ts-emoji {
+    font-size: 1.8em;
+  }
+}
 .card.ai-card { border-top: 3px solid #a29bfe; }
 .card.ai-card:hover { border-color: #a29bfe; box-shadow: 0 10px 30px rgba(162,155,254,0.12); }
 .coming-soon { display: inline-block; background: rgba(255,255,255,0.06); color: #666; font-size: 0.72em; padding: 3px 10px; border-radius: 10px; margin-top: 8px; }
@@ -436,35 +493,35 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
   <div class="section-label">🛠️ 實用工具</div>
   <div class="tool-grid">
     <div class="card tool-sm" id="weatherTrigger">
-      <span class="ts-emoji">🌤️</span>
+      <div class="ts-icon-box"><span class="ts-emoji">🌤️</span></div>
       <span class="ts-label">全球天氣</span>
     </div>
     <div class="card tool-sm" id="currencyTrigger">
-      <span class="ts-emoji">💰</span>
+      <div class="ts-icon-box"><span class="ts-emoji">💰</span></div>
       <span class="ts-label">貨幣匯率</span>
     </div>
     <div class="card tool-sm" id="searchTrigger">
-      <span class="ts-emoji">🔍</span>
+      <div class="ts-icon-box"><span class="ts-emoji">🔍</span></div>
       <span class="ts-label">Sono 搜尋</span>
     </div>
     <div class="card tool-sm" id="translateTrigger">
-      <span class="ts-emoji">🌐</span>
+      <div class="ts-icon-box"><span class="ts-emoji">🌐</span></div>
       <span class="ts-label">AI 翻譯</span>
     </div>
     <div class="card tool-sm" id="issTrigger">
-      <span class="ts-emoji">📡</span>
+      <div class="ts-icon-box"><span class="ts-emoji">📡</span></div>
       <span class="ts-label">ISS 追蹤</span>
     </div>
     <div class="card tool-sm" id="worldClockTrigger">
-      <span class="ts-emoji">⏰</span>
+      <div class="ts-icon-box"><span class="ts-emoji">⏰</span></div>
       <span class="ts-label">世界時鐘</span>
     </div>
     <div class="card tool-sm" id="qrTrigger">
-      <span class="ts-emoji">📱</span>
+      <div class="ts-icon-box"><span class="ts-emoji">📱</span></div>
       <span class="ts-label">QR Code 生成</span>
     </div>
     <div class="card tool-sm" id="mapTrigger">
-      <span class="ts-emoji">🗺️</span>
+      <div class="ts-icon-box"><span class="ts-emoji">🗺️</span></div>
       <span class="ts-label">世界地圖</span>
     </div>
   </div>
@@ -472,15 +529,15 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
   <div class="section-label">🤖 AI 工具</div>
   <div class="tool-grid">
     <div class="card tool-sm" id="sonoChatTrigger">
-      <span class="ts-emoji">💬</span>
+      <div class="ts-icon-box"><span class="ts-emoji">💬</span></div>
       <span class="ts-label">Sono Chat</span>
     </div>
     <div class="card tool-sm" id="sonoCreateTrigger">
-      <span class="ts-emoji">🎨</span>
+      <div class="ts-icon-box"><span class="ts-emoji">🎨</span></div>
       <span class="ts-label">Sono 創作</span>
     </div>
     <div class="card tool-sm">
-      <span class="ts-emoji">🧠</span>
+      <div class="ts-icon-box"><span class="ts-emoji">🧠</span></div>
       <span class="ts-label">Sono 分析</span>
     </div>
   </div>
@@ -488,7 +545,7 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
   <div class="section-label">🎪 娛樂工具</div>
   <div class="tool-grid">
     <div class="card tool-sm" id="ghostTrigger">
-      <span class="ts-emoji">👻</span>
+      <div class="ts-icon-box"><span class="ts-emoji">👻</span></div>
       <span class="ts-label">靈體探測</span>
     </div>
   </div>
