@@ -172,6 +172,9 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
   .game-header { padding: 14px 14px; }
 }
 </style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 <div class="container">
@@ -463,6 +466,10 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
     <div class="card tool-sm" id="ghostTrigger">
       <span class="ts-emoji">👻</span>
       <span class="ts-label">靈體探測</span>
+    </div>
+    <div class="card tool-sm" id="mapTrigger">
+      <span class="ts-emoji">🗺️</span>
+      <span class="ts-label">世界地圖</span>
     </div>
   </div>
 
@@ -1402,6 +1409,165 @@ document.getElementById('settingsOverlay').addEventListener('click', function(e)
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = 'rgba(0,20,0,0.5)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+})();
+</script>
+
+
+<!-- ══════ World Map Modal ══════ -->
+<div id="mapModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:linear-gradient(135deg,#0a0a1a,#1a1a2e);border-radius:16px;max-width:600px;width:100%;height:90vh;padding:20px;border:1px solid rgba(107,255,107,0.2);display:flex;flex-direction:column;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="font-size:1.3em;color:#fff;">🗺️ 世界地圖</h2>
+      <button id="mapClose" style="width:32px;height:32px;border:none;border-radius:50%;background:rgba(255,255,255,0.06);color:#888;font-size:1.1em;cursor:pointer;">✕</button>
+    </div>
+    
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <input type="text" id="mapSearch" placeholder="搜尋城市..." style="flex:1;padding:10px 14px;background:rgba(255,255,255,0.06);border:1px solid #333;border-radius:8px;color:#fff;font-size:0.9em;outline:none;">
+      <button id="mapSearchBtn" style="padding:10px 16px;border:none;border-radius:8px;background:linear-gradient(135deg,#6bff6b,#00d4ff);color:#0a0a1a;font-weight:700;cursor:pointer;">🔍</button>
+    </div>
+    
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+      <button class="map-preset" data-lat="22.3193" data-lon="114.1694" style="padding:6px 12px;border:1px solid #333;border-radius:6px;background:transparent;color:#888;font-size:0.8em;cursor:pointer;">🇭🇰 香港</button>
+      <button class="map-preset" data-lat="35.6762" data-lon="139.6503" style="padding:6px 12px;border:1px solid #333;border-radius:6px;background:transparent;color:#888;font-size:0.8em;cursor:pointer;">🇯🇵 東京</button>
+      <button class="map-preset" data-lat="40.7128" data-lon="-74.0060" style="padding:6px 12px;border:1px solid #333;border-radius:6px;background:transparent;color:#888;font-size:0.8em;cursor:pointer;">🇺🇸 紐約</button>
+      <button class="map-preset" data-lat="51.5074" data-lon="-0.1278" style="padding:6px 12px;border:1px solid #333;border-radius:6px;background:transparent;color:#888;font-size:0.8em;cursor:pointer;">🇬🇧 倫敦</button>
+      <button class="map-preset" data-lat="48.8566" data-lon="2.3522" style="padding:6px 12px;border:1px solid #333;border-radius:6px;background:transparent;color:#888;font-size:0.8em;cursor:pointer;">🇫🇷 巴黎</button>
+      <button class="map-preset" data-lat="-33.8688" data-lon="151.2093" style="padding:6px 12px;border:1px solid #333;border-radius:6px;background:transparent;color:#888;font-size:0.8em;cursor:pointer;">🇦🇺 悉尼</button>
+    </div>
+    
+    <div id="mapContainer" style="flex:1;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);"></div>
+    
+    <div id="mapInfo" style="margin-top:12px;padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;display:none;">
+      <div style="color:#888;font-size:0.75em;">📍 位置</div>
+      <div id="mapLocation" style="color:#fff;font-weight:600;margin-top:4px;"></div>
+      <div id="mapCoord" style="color:#6bff6b;font-size:0.85em;margin-top:4px;font-family:monospace;"></div>
+    </div>
+    
+    <div style="color:#555;font-size:0.7em;text-align:center;margin-top:12px;">OpenStreetMap + Nominatim · Click 地圖加 marker</div>
+  </div>
+</div>
+
+
+<script>
+// ══════ World Map ══════
+(function(){
+  var modal = document.getElementById('mapModal');
+  var map = null;
+  var marker = null;
+  
+  document.getElementById('mapTrigger').onclick = function(){
+    modal.style.display = 'flex';
+    if(!map){
+      initMap();
+    } else {
+      map.invalidateSize();
+    }
+  };
+  
+  document.getElementById('mapClose').onclick = function(){
+    modal.style.display = 'none';
+  };
+  
+  modal.onclick = function(e){
+    if(e.target === modal) modal.style.display = 'none';
+  };
+  
+  function initMap(){
+    map = L.map('mapContainer').setView([22.3193, 114.1694], 3);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 18
+    }).addTo(map);
+    
+    // Click to add marker
+    map.on('click', function(e){
+      addMarker(e.latlng.lat, e.latlng.lng);
+    });
+    
+    // Preset buttons
+    document.querySelectorAll('.map-preset').forEach(function(btn){
+      btn.onclick = function(){
+        var lat = parseFloat(this.dataset.lat);
+        var lon = parseFloat(this.dataset.lon);
+        map.setView([lat, lon], 10);
+        addMarker(lat, lon);
+      };
+    });
+    
+    // Search button
+    document.getElementById('mapSearchBtn').onclick = searchCity;
+    document.getElementById('mapSearch').onkeypress = function(e){
+      if(e.key === 'Enter') searchCity();
+    };
+    
+    // Initial marker for Hong Kong
+    addMarker(22.3193, 114.1694, '香港 Hong Kong');
+  }
+  
+  function addMarker(lat, lon, name){
+    if(marker) map.removeLayer(marker);
+    
+    marker = L.marker([lat, lon]).addTo(map);
+    
+    var info = document.getElementById('mapInfo');
+    var location = document.getElementById('mapLocation');
+    var coord = document.getElementById('mapCoord');
+    
+    coord.textContent = lat.toFixed(4) + ', ' + lon.toFixed(4);
+    
+    if(name){
+      location.textContent = name;
+      info.style.display = 'block';
+    } else {
+      // Reverse geocode
+      reverseGeocode(lat, lon, function(placeName){
+        location.textContent = placeName || '未知位置';
+        info.style.display = 'block';
+      });
+    }
+  }
+  
+  function searchCity(){
+    var query = document.getElementById('mapSearch').value.trim();
+    if(!query) return;
+    
+    var btn = document.getElementById('mapSearchBtn');
+    btn.textContent = '⏳';
+    btn.disabled = true;
+    
+    fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(query) + '&format=json&limit=1')
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        if(data.length > 0){
+          var place = data[0];
+          var lat = parseFloat(place.lat);
+          var lon = parseFloat(place.lon);
+          map.setView([lat, lon], 10);
+          addMarker(lat, lon, place.display_name);
+        } else {
+          alert('搵唔到呢個地方');
+        }
+      })
+      .catch(function(err){
+        alert('搜尋失敗: ' + err.message);
+      })
+      .finally(function(){
+        btn.textContent = '🔍';
+        btn.disabled = false;
+      });
+  }
+  
+  function reverseGeocode(lat, lon, callback){
+    fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lon + '&format=json')
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        callback(data.display_name || null);
+      })
+      .catch(function(){
+        callback(null);
+      });
   }
 })();
 </script>
