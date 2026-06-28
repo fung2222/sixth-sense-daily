@@ -128,29 +128,18 @@
 .sc-sub-body .quote p { color:#ddd; }
 .sc-sub-body strong { color:#a29bfe; }
 
-  .float-nav { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; }
-  .float-nav.show { opacity: 1; visibility: visible; }
-  .float-nav a { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.1em; box-shadow: 0 4px 15px rgba(0,0,0,0.35); transition: transform 0.2s; }
-  .float-nav a:hover { transform: translateY(-3px); }
-  .float-nav .fn-prev { background: rgba(255,107,155,0.9); color: #fff; }
-  .float-nav .fn-home { background: linear-gradient(135deg, #ff6b9d, #a29bfe); color: #fff; font-size: 0.85em; font-weight: 700; width: 48px; height: 48px; }
-  .float-nav .fn-next { background: rgba(162,155,254,0.9); color: #fff; }
 
-  .float-nav { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; }
-  .float-nav.show { opacity: 1; visibility: visible; }
-  .float-nav a { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.1em; box-shadow: 0 4px 15px rgba(0,0,0,0.35); transition: transform 0.2s; }
-  .float-nav a:hover { transform: translateY(-3px); }
-  .float-nav .fn-prev { background: rgba(255,107,155,0.9); color: #fff; }
-  .float-nav .fn-home { background: linear-gradient(135deg, #ff6b9d, #a29bfe); color: #fff; font-size: 0.85em; font-weight: 700; width: 48px; height: 48px; }
-  .float-nav .fn-next { background: rgba(162,155,254,0.9); color: #fff; }
 
-  .float-nav { position: fixed; right: 20px; bottom: 180px; display: flex; flex-direction: column; gap: 8px; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; align-items: center; }
+
+
+  .float-nav { position: fixed; right: 20px; bottom: 180px; left: auto; display: flex; flex-direction: column; gap: 8px; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; align-items: center; }
   .float-nav.show { opacity: 1; visibility: visible; }
-  .float-nav a { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 0.9em; box-shadow: 0 3px 12px rgba(0,0,0,0.3); transition: transform 0.2s; }
+  .float-nav a, .float-nav span { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 0.9em; box-shadow: 0 3px 12px rgba(0,0,0,0.3); color: #fff; }
   .float-nav a:hover { transform: scale(1.1); }
-  .float-nav .fn-prev { background: rgba(255,107,155,0.85); color: #fff; }
-  .float-nav .fn-home { background: linear-gradient(135deg, #ff6b9d, #a29bfe); color: #fff; font-size: 0.75em; font-weight: 700; width: 42px; height: 42px; }
-  .float-nav .fn-next { background: rgba(162,155,254,0.85); color: #fff; }
+  .float-nav .fn-prev { background: rgba(255,107,155,0.85); }
+  .float-nav .fn-home { background: linear-gradient(135deg, #ff6b9d, #a29bfe); font-size: 0.75em; font-weight: 700; width: 42px; height: 42px; }
+  .float-nav .fn-next { background: rgba(162,155,254,0.85); }
+  .float-nav .fn-disabled { opacity: 0.2; cursor: default; background: rgba(255,255,255,0.1); }
 </style>
 <script>
 /* Accordion: only one open at a time */
@@ -451,12 +440,12 @@
   <p style="margin-top:4px; color:#444;font-size:0.75em;">報告生成時間：2026年6月23日</p>
 
 <a href="#" class="back-to-top" id="backToTop" title="回到最頂">TOP</a>
-<div class="float-nav" id="floatNav"><a href="../" class="fn-home" title="首頁">首頁</a><a href="sono_20260624.html" class="fn-next" title="下一日">▶</a></div>
+<div class="float-nav" id="floatNav"><span class="fn-disabled">◀</span><a href="../" class="fn-home" title="首頁">首頁</a><a href="sono_20260624.html" class="fn-next" title="下一日">▶</a></div>
 
 <script>
   var fn = document.getElementById('floatNav');
   window.addEventListener('scroll', function() {
-      if(fn) if(fn) fn.classList.toggle('show', window.scrollY > 300);
+      if(fn) if(fn) if(fn)fn.classList.toggle('show', window.scrollY > 300);
     var b = document.getElementById('backToTop');
     b.classList.toggle('show', window.pageYOffset > 300);
   });
