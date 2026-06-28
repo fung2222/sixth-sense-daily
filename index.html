@@ -614,6 +614,10 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
       <div class="ts-icon-box"><span class="ts-emoji">🗺️</span></div>
       <span class="ts-label">世界地圖</span>
     </div>
+    <div class="card tool-sm" id="timerTrigger">
+      <div class="ts-icon-box"><span class="ts-emoji">⏱️</span></div>
+      <span class="ts-label">番茄計時</span>
+    </div>
   </div>
 
   <div class="section-label">🤖 AI 工具</div>
@@ -1380,6 +1384,33 @@ document.getElementById('settingsOverlay').addEventListener('click', function(e)
   </div>
 </div>
 
+<!-- ══════ Pomodoro Timer Modal ══════ -->
+<div id="timerModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:linear-gradient(135deg,#0a0a1a,#1a1a2e);border-radius:16px;max-width:400px;width:100%;padding:24px;border:1px solid rgba(255,107,155,0.2);max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <h2 style="font-size:1.3em;color:#fff;">⏱️ 番茄計時器</h2>
+      <button id="timerClose" style="width:32px;height:32px;border:none;border-radius:50%;background:rgba(255,255,255,0.06);color:#888;font-size:1.1em;cursor:pointer;">✕</button>
+    </div>
+    
+    <div id="timerDisplay" style="text-align:center;font-size:4em;font-weight:900;color:#fff;letter-spacing:4px;margin:20px 0;font-variant-numeric:tabular-nums;">25:00</div>
+    
+    <div id="timerLabel" style="text-align:center;color:#888;font-size:0.85em;margin-bottom:16px;">🍅 專注模式</div>
+    
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;">
+      <button class="timer-preset active" data-min="25" data-label="🍅 專注" style="padding:8px 14px;border:1px solid #333;border-radius:20px;background:rgba(255,107,155,0.15);color:#ff6b9d;font-size:0.8em;cursor:pointer;">🍅 25分</button>
+      <button class="timer-preset" data-min="5" data-label="☕ 小休" style="padding:8px 14px;border:1px solid #333;border-radius:20px;background:transparent;color:#888;font-size:0.8em;cursor:pointer;">☕ 5分</button>
+      <button class="timer-preset" data-min="15" data-label="🛌 大休" style="padding:8px 14px;border:1px solid #333;border-radius:20px;background:transparent;color:#888;font-size:0.8em;cursor:pointer;">🛌 15分</button>
+    </div>
+    
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button id="timerStart" style="flex:1;padding:12px;border:none;border-radius:25px;background:linear-gradient(135deg,#ff6b9d,#c44569);color:#fff;font-size:1em;cursor:pointer;font-weight:700;">▶ 開始</button>
+      <button id="timerReset" style="width:50px;padding:12px;border:1px solid #333;border-radius:25px;background:transparent;color:#888;font-size:1em;cursor:pointer;">↺</button>
+    </div>
+    
+    <p style="text-align:center;color:#555;font-size:0.7em;margin-top:14px;">專注 25 分鐘 → 小休 5 分鐘 → 專注 25 分鐘 → 大休 15 分鐘</p>
+  </div>
+</div>
+
 <!-- ══════ Ghost Detector Modal ══════ -->
 <div id="ghostModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;">
   <div style="background:linear-gradient(135deg,#0a0a1a,#1a1a2e);border-radius:16px;max-width:480px;width:100%;padding:24px;border:1px solid rgba(107,255,107,0.2);max-height:90vh;overflow-y:auto;">
@@ -1447,6 +1478,98 @@ document.getElementById('settingsOverlay').addEventListener('click', function(e)
     a.download = 'qr-code.png';
     a.click();
   };
+})();
+
+// ══════ Pomodoro Timer ══════
+(function(){
+  var modal = document.getElementById('timerModal');
+  var display = document.getElementById('timerDisplay');
+  var label = document.getElementById('timerLabel');
+  var startBtn = document.getElementById('timerStart');
+  var resetBtn = document.getElementById('timerReset');
+  var interval = null;
+  var totalSec = 25 * 60;
+  var remaining = totalSec;
+  var running = false;
+
+  document.getElementById('timerTrigger').onclick = function(){ modal.style.display='flex'; };
+  document.getElementById('timerClose').onclick = function(){ modal.style.display='none'; stopTimer(); };
+  modal.onclick = function(e){ if(e.target===this){ modal.style.display='none'; stopTimer(); }};
+
+  function updateDisplay(){
+    var m = Math.floor(remaining / 60);
+    var s = remaining % 60;
+    display.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  }
+
+  function stopTimer(){
+    if(interval){ clearInterval(interval); interval = null; }
+    running = false;
+    startBtn.textContent = '▶ 開始';
+    startBtn.style.background = 'linear-gradient(135deg,#ff6b9d,#c44569)';
+  }
+
+  function playBeep(){
+    try {
+      var ctx = new (window.AudioContext||window.webkitAudioContext)();
+      var osc = ctx.createOscillator();
+      var g = ctx.createGain();
+      osc.connect(g); g.connect(ctx.destination);
+      osc.frequency.value = 880;
+      osc.type = 'sine';
+      g.gain.value = 0.3;
+      osc.start();
+      setTimeout(function(){ osc.stop(); }, 200);
+      setTimeout(function(){ osc.start(); }, 300);
+      setTimeout(function(){ osc.stop(); }, 500);
+      setTimeout(function(){ osc.start(); }, 600);
+      setTimeout(function(){ osc.stop(); setTimeout(function(){ ctx.close(); }, 500); }, 800);
+    } catch(e){}
+  }
+
+  startBtn.onclick = function(){
+    if(running){
+      stopTimer();
+      return;
+    }
+    running = true;
+    startBtn.textContent = '⏸ 暫停';
+    startBtn.style.background = 'linear-gradient(135deg,#ffd93d,#ff8c00)';
+    interval = setInterval(function(){
+      remaining--;
+      updateDisplay();
+      if(remaining <= 0){
+        stopTimer();
+        playBeep();
+      }
+    }, 1000);
+  };
+
+  resetBtn.onclick = function(){
+    stopTimer();
+    remaining = totalSec;
+    updateDisplay();
+  };
+
+  document.querySelectorAll('.timer-preset').forEach(function(btn){
+    btn.onclick = function(){
+      document.querySelectorAll('.timer-preset').forEach(function(b){
+        b.classList.remove('active');
+        b.style.background = 'transparent';
+        b.style.color = '#888';
+      });
+      this.classList.add('active');
+      this.style.background = 'rgba(255,107,155,0.15)';
+      this.style.color = '#ff6b9d';
+      stopTimer();
+      totalSec = parseInt(this.dataset.min) * 60;
+      remaining = totalSec;
+      label.textContent = this.dataset.label + '模式';
+      updateDisplay();
+    };
+  });
+
+  updateDisplay();
 })();
 
 // ══════ Ghost Detector ══════
