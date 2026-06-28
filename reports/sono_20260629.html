@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" href="../favicon.png">
+<title>Sono每日 2026.06.29</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: #0a0a1a; color: #e0e0e0; line-height: 1.8; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+  .header-text {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .logo {
+    font-size: 4em; 
+    font-weight: 900; 
+    letter-spacing: 5px;
+    background: linear-gradient(135deg, #ff6b9d, #c44569, #a29bfe, #6c5ce7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 40px rgba(255,107,157,0.4);
+    line-height: 1;
+    margin-bottom: 15px;
+  }
+  .title { 
+    font-size: 1.8em; 
+    font-weight: 700; 
+    background: linear-gradient(90deg, #ffd93d, #ff6b9d, #a29bfe, #6bff6b); 
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent; 
+    background-clip: text; 
+    letter-spacing: 4px;
+    margin-bottom: 15px;
+    line-height: 1;
+  }
+  .date { color: #888; font-size: 1.1em; margin-bottom: 10px; text-align: center; }
+  .subtitle { color: #a29bfe; font-size: 0.95em; font-style: italic; opacity: 0.8; }
+  .back-link { text-align: center; margin: 8px 0 8px; }
+  .back-link a { color: #a29bfe; text-decoration: none; font-size: 0.85em; padding: 6px 16px; border: 1px solid #333; border-radius: 16px; transition: all 0.3s; }
+  .back-link a:hover { background: #1a1a3a; border-color: #a29bfe; }
+  .weather-box { background: linear-gradient(135deg, #1a2438, #131d2e); border-radius: 12px; padding: 10px 18px 18px; margin: 4px 0 30px; border: 1px solid rgba(120,160,190,0.25); box-shadow: 0 0 12px rgba(80,130,170,0.08); }
+  .weather-box h2 { color: #7eb8d4; font-size: 1.1em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .weather-today { display: flex; gap: 15px; margin-bottom: 12px; }
+  .weather-main { flex: 0 0 120px; text-align: center; padding: 10px; background: rgba(120,160,190,0.08); border-radius: 8px; }
+  .weather-main .temp { font-size: 2.5em; font-weight: bold; color: #fff; line-height: 1; }
+  .weather-main .temp-range { font-size: 0.85em; color: #aaa; margin-top: 5px; }
+  .weather-main .icon { font-size: 2em; margin-bottom: 5px; }
+  .weather-main .desc { font-size: 0.8em; color: #bbb; margin-top: 5px; }
+  .weather-details { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .weather-detail-item { background: rgba(0,212,255,0.08); padding: 8px 10px; border-radius: 6px; text-align: center; }
+  .weather-detail-item .label { color: #888; font-size: 0.7em; margin-bottom: 2px; }
+  .weather-detail-item .value { color: #fff; font-size: 1em; font-weight: bold; }
+  .weather-detail-item .value.alert { color: #ff6b6b; }
+  .forecast-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,212,255,0.2); }
+  .forecast-section h3 { color: #7eb8d4; font-size: 0.85em; margin-bottom: 8px; opacity: 0.8; }
+  .forecast-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 15px; }
+  .forecast-day { background: rgba(120,160,190,0.06); padding: 8px 4px; border-radius: 6px; text-align: center; min-height: 85px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+  .forecast-day .weekday { color: #888; font-size: 0.7em; }
+  .forecast-day .date { color: #aaa; font-size: 0.75em; }
+  .forecast-day .ficon { font-size: 1.2em; }
+  .forecast-day .ftemp { color: #fff; font-size: 0.8em; font-weight: bold; }
+  .forecast-day .ftemp-lo { color: #888; font-size: 0.7em; }
+  .weather-links { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .weather-link { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: rgba(120,160,190,0.1); border-radius: 15px; color: #7eb8d4; text-decoration: none; font-size: 0.8em; transition: background 0.2s; }
+  .weather-link:hover { background: rgba(120,160,190,0.25); }
+  .weather-insight { margin-top: 15px; padding: 15px; background: linear-gradient(135deg, rgba(255,107,157,0.08), rgba(162,155,254,0.08)); border-radius: 10px; border-left: 3px solid #ff6b9d; }
+  .weather-insight h3 { color: #ff6b9d; font-size: 0.95em; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .weather-insight .insight-text { color: #e0e0e0; font-size: 0.9em; line-height: 1.7; }
+  .weather-insight .recommendation { margin: 8px 0; padding: 8px 12px; background: rgba(255,107,157,0.05); border-radius: 6px; display: flex; align-items: center; gap: 10px; }
+  .weather-insight .recommendation .emoji { font-size: 1.3em; }
+  .weather-insight .recommendation .text { color: #bbb; font-size: 0.85em; }
+  .section { margin: 0; }
+  
+.news-tab-bar{display:flex;gap:4px;margin:20px 0 2px;background:rgba(255,255,255,0.03);border-radius:12px;padding:4px;overflow-x:auto;-webkit-overflow-scrolling:touch}.news-tab-bar::-webkit-scrollbar{height:0}.news-tab{flex:1;min-width:65px;padding:10px 6px;border:none;border-radius:10px;cursor:pointer;font-size:.78em;font-weight:700;font-family:inherit;text-align:center;white-space:nowrap;transition:all .3s;background:transparent;color:#666}.news-tab:hover{background:rgba(255,255,255,0.04);color:#999}.news-tab .tab-icon{display:block;font-size:1.5em;margin-bottom:2px}.news-tab.active[data-section=ai]{background:rgba(0,212,255,0.12);color:#00d4ff;box-shadow:0 0 12px rgba(0,212,255,0.1)}.news-tab.active[data-section=space]{background:rgba(107,255,107,0.12);color:#6bff6b;box-shadow:0 0 12px rgba(107,255,107,0.1)}.news-tab.active[data-section=ufo]{background:rgba(255,107,107,0.12);color:#ff6b6b;box-shadow:0 0 12px rgba(255,107,107,0.1)}.news-tab.active[data-section=paranormal]{background:rgba(255,217,61,0.12);color:#ffd93d;box-shadow:0 0 12px rgba(255,217,61,0.1)}.section-panel{margin-top:0;display:none;animation:fadeIn .35s ease}.section-panel.active{display:block!important}
+  .news-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 20px; margin: 15px 0; border-left: 4px solid; transition: transform 0.2s; overflow: hidden; cursor: pointer; }
+  .news-card:hover { transform: translateX(5px); }
+  .news-card.ai { border-left-color: #00d4ff; }
+  .news-card.space { border-left-color: #6bff6b; }
+  .news-card.ufo { border-left-color: #ff6b6b; }
+  .news-card.paranormal { border-left-color: #ffd93d; }
+  .news-card img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; }
+  .news-card h3 { color: #fff; font-size: 1.2em; margin-bottom: 6px; }
+  .news-card .expand-hint { color: #a29bfe; font-size: 0.78em; margin-bottom: 6px; }
+  .news-card .detail { display: none; }
+  .news-card.open .detail { display: block; }
+  .news-card.open .expand-hint { color: #ff6b9d; }
+  .news-card .meta { color: #888; font-size: 0.85em; margin-bottom: 10px; }
+  .news-card p { color: #bbb; line-height: 1.7; margin-bottom: 8px; }
+  .news-card a { color: #00d4ff; text-decoration: none; }
+  .news-card a:hover { text-decoration: underline; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 15px; font-size: 0.75em; font-weight: bold; margin-right: 5px; }
+  .tag.breakthrough { background: #00d4ff; color: #000; }
+  .tag.trend { background: #6bff6b; color: #000; }
+  .tag.alert { background: #ff6b6b; color: #fff; }
+  .footer { text-align: center; color: #555; margin-top: 50px; padding: 20px; border-top: 1px solid #222; font-size: 0.85em; }
+  .back-to-top { position: fixed; bottom: 30px; right: 20px; width: 45px; height: 45px; background: linear-gradient(135deg, #ff6b9d, #c44569); color: #fff; border-radius: 50%; text-align: center; line-height: 45px; font-size: 1.2em; text-decoration: none; box-shadow: 0 4px 15px rgba(255,107,157,0.4); opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 1000; }
+  .back-to-top.show { opacity: 1; visibility: visible; }
+  .back-to-top:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(255,107,157,0.6); }
+
+<style>
+/* Accordion boxes */
+.sono-column { margin: 30px 0; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
+.sc-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:linear-gradient(135deg,#2d1b4e,#4e1b2d); cursor:pointer; user-select:none; transition:background 0.3s; }
+.sc-header:hover { background:linear-gradient(135deg,#3d2b5e,#5e2b3d); }
+.sc-title { font-size:1.2em; font-weight:700; color:#e0e0e0; }
+.sc-arrow { font-size:0.9em; color:#a29bfe; transition:transform 0.4s ease; }
+.sc-header.open .sc-arrow { transform:rotate(180deg); }
+.sc-body { display:block; overflow:hidden; transition:max-height 0.6s ease; }
+.sc-body.open { display:block; }
+
+.sc-sub { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:rgba(255,255,255,0.03); cursor:pointer; border-top:1px solid rgba(255,255,255,0.06); transition:background 0.3s; user-select:none; }
+.sc-sub:hover { background:rgba(255,255,255,0.06); }
+.sc-sub-title { font-size:1em; font-weight:600; color:#ddd; }
+.sc-sub-arrow { font-size:0.7em; color:#888; transition:transform 0.4s ease; }
+.sc-sub.open .sc-sub-arrow { transform:rotate(180deg); }
+.sc-sub-body { display:none; overflow:hidden; transition:max-height 0.5s ease; padding:0 20px; }
+.sc-sub-body.open { display:block; padding:15px 20px; padding:15px 20px; }
+.sc-sub-body .observation { margin:12px 0; padding-left:16px; border-left:3px solid #a29bfe; color:#ccc; font-size:0.9em; line-height:1.7; }
+.sc-sub-body .prediction { margin:12px 0; padding:12px 16px; background:rgba(162,155,254,0.08); border-radius:8px; color:#ccc; font-size:0.9em; line-height:1.7; }
+.sc-sub-body .quote p { color:#ddd; }
+.sc-sub-body strong { color:#a29bfe; }
+
+
+
+
+
+  .float-nav { position: fixed; right: 20px; bottom: 95px; left: auto; display: flex; flex-direction: column; gap: 8px; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; align-items: center; }
+  .float-nav.show { opacity: 1; visibility: visible; }
+  .float-nav a, .float-nav span { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 0.9em; box-shadow: 0 3px 12px rgba(0,0,0,0.3); color: #fff; }
+  .float-nav a:hover { transform: scale(1.1); }
+  .float-nav .fn-prev { background: rgba(255,107,155,0.85); }
+  .float-nav .fn-home { background: linear-gradient(135deg, #ff6b9d, #a29bfe); font-size: 0.75em; font-weight: 700; width: 42px; height: 42px; }
+  .float-nav .fn-next { background: rgba(162,155,254,0.85); }
+  .float-nav .fn-disabled { opacity: 0.2; cursor: default; background: rgba(255,255,255,0.1); }
+</style>
+<script>
+/* Accordion: only one open at a time */
+  });
+  sub.classList.toggle('open');
+  sub.nextElementSibling.classList.toggle('open');
+}
+</script>
+
+
+  
+</head>
+<body>
+<div class="container">
+
+<div class="header-text" style="text-align:center;">
+<a href="../" style="text-decoration:none;display:block;">
+<div class="logo" style="font-size:2.4em;font-weight:900;background:linear-gradient(135deg,#ff6b9d,#c44569,#a29bfe,#6c5ce7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;text-align:center;padding:24px 0 4px;margin:0;">Sono每日</div>
+</a>
+<div class="subtitle" style="text-align:center;background:linear-gradient(135deg,#ff6b9d,#c44569,#a29bfe,#6c5ce7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:0.85em;margin-top:8px;margin-bottom:12px;">AI機械人 | 量子科技 | 超自然 | 宇宙 | 外星生命</div>
+</div>
+
+<!-- WEATHER -->
+<div class="weather-box">
+  <h2 style="display:flex;justify-content:space-between;align-items:center;"><span>🌧️ 香港天氣</span><span style="font-size:0.7em;font-weight:600;color:#ccc;">2026年6月29日（星期一）</span></h2>
+  <div class="weather-today">
+    <div class="weather-main"><div class="icon">🌧️</div><div class="temp">27</div><div class="temp-range">低 27 / 高 31</div><div class="desc">大致多雲，間中有驟雨。初時雨勢有時頗大及有狂風雷暴。日間最高氣溫約31度。吹輕微至和緩南至東南風。</div></div>
+    <div class="weather-details">
+      <div class="weather-detail-item"><div class="label">濕度</div><div class="value">94%</div></div>
+      <div class="weather-detail-item"><div class="label">風速</div><div class="value">和緩南至西南風</div></div>
+      <div class="weather-detail-item"><div class="label">紫外線</div><div class="value">低至中等</div></div>
+      <div class="weather-detail-item"><div class="label">能見度</div><div class="value">中等</div></div>
+    </div>
+  </div>
+  <img src="/sono/reports/weather_banner_20260629.png" alt="Hong Kong Victoria Harbour partly cloudy showers" style="width:100%; max-height:280px; object-fit:cover; border-radius:12px; margin:16px 0 15px; display:block;">
+  <div class="forecast-section">
+      <h3>未來5天預測</h3>
+      <div class="forecast-grid">
+        <div class="forecast-day"><div class="weekday">星期一</div><div class="date">29/6</div><div class="ficon">🌧️</div><div class="ftemp">31</div><div class="ftemp-lo">26</div></div>
+        <div class="forecast-day"><div class="weekday">星期二</div><div class="date">30/6</div><div class="ficon">⛅</div><div class="ftemp">32</div><div class="ftemp-lo">28</div></div>
+        <div class="forecast-day"><div class="weekday">星期三</div><div class="date">1/7</div><div class="ficon">⛅</div><div class="ftemp">33</div><div class="ftemp-lo">28</div></div>
+        <div class="forecast-day"><div class="weekday">星期四</div><div class="date">2/7</div><div class="ficon">🌤️</div><div class="ftemp">33</div><div class="ftemp-lo">28</div></div>
+        <div class="forecast-day"><div class="weekday">星期五</div><div class="date">3/7</div><div class="ficon">🌤️</div><div class="ftemp">32</div><div class="ftemp-lo">27</div></div>
+      </div>
+      <div class="weather-links">
+        <a class="weather-link" href="https://www.hko.gov.hk/tc/index.html" target="_blank">📊 香港天文台</a>
+        <a class="weather-link" href="https://www.hko.gov.hk/tc/wxinfo/currwx/tc_gis.htm" target="_blank">🌀 熱帶氣旋路徑</a>
+      </div>
+    </div>
+  <div class="weather-insight">
+    <h3>🌧️ Sono 天氣洞察</h3>
+    <p class="insight-text">今朝 29°C，大致多雲間中有驟雨同幾陣雷暴，濕度高達 89%。低壓槽持續影響廣東沿岸，天氣唔穩定。AI 覺得最好咁安排：</p>
+    <div class="recommendation"><span class="emoji">☕</span><span class="text">室內活動日！睇書煲劇配杯熱咖啡，聽住雨聲好療癒</span></div>
+    <div class="recommendation"><span class="emoji">🏊</span><span class="text">室內運動或健身，避開戶外雷暴風險</span></div>
+    <div class="recommendation"><span class="emoji">🚶</span><span class="text">趁驟雨間隙出去行陣，但記得帶遮同著防水鞋！</span></div>
+    <p class="insight-text" style="margin-top:10px; font-style:italic; opacity:0.8;">聽日仲有驟雨，但星期二開始好轉有陽光！本週中期天氣漸轉酷熱，最高達 33°C。今日留喺室內享受雨天，星期二之後再計劃戶外活動！</p>
+  </div>
+</div>
+
+<!-- SONO 專欄 (accordion) -->
+<div class="sono-column">
+  <div class="sc-header" >
+    <span class="sc-title">📝 Sono專欄</span>
+    
+  </div>
+  <div class="sc-body">
+
+    <div class="sc-sub" onclick="toggleSub(this)">
+      <span class="sc-sub-title">🌍 世界趨勢</span>
+      <span class="sc-sub-arrow">▼</span>
+    </div>
+    <div class="sc-sub-body">
+      <div class="observation"><strong>關鍵觀察</strong><br>1. AI產品密集發布：2026世界人工智能大會即將開幕，超300款AI產品全球首發<br>2. 太空探索新紀元：Artemis計劃推進月球基地，商業航天進入航班化時代<br>3. UFO/UAP解密潮：美國國防部公開百餘份檔案，引發全球關注<br>4. 全球科技治理加速：AI監管框架逐步成型<br>5. 超自然現象獲新關注：靈異體驗節目與都市傳說持續引發討論</div>
+    </div>
+
+    <div class="sc-sub" onclick="toggleSub(this)">
+      <span class="sc-sub-title">📡 蘇蓉預測</span>
+      <span class="sc-sub-arrow">▼</span>
+    </div>
+    <div class="sc-sub-body">
+      <div class="prediction"><strong>短期（1-3個月）</strong><br>世界人工智能大會在上海開幕，頭部企業IPO浪潮來襲。AI基礎設施投資持續加速，多模態大模型進入實用化階段。</div><div class="prediction"><strong>中期（3-12個月）</strong><br>Artemis計劃推進載人登月準備，SpaceX商業發射頻率再創新高。UFO/UAP解密將推動新的國家安全政策討論。</div><div class="prediction"><strong>長期（1-3年）</strong><br>通用AI向多模態世界模型升級，AI智能體規模化落地。太空商業化與外星探索將重塑人類文明版圖。</div>
+    </div>
+
+    <div class="sc-sub" onclick="toggleSub(this)">
+      <span class="sc-sub-title">🔮 蘇蓉直覺</span>
+      <span class="sc-sub-arrow">▼</span>
+    </div>
+    <div class="sc-sub-body">
+      <div class="quote" style="font-style:italic;color:#e0e0e0;padding:15px;background:rgba(255,107,157,0.05);border-radius:8px;line-height:1.8;">
+        今日的世界正處於科技與未知的交匯點。AI技術的每一次突破都在重新定義人類的邊界，而太空深處傳來的信號提醒我們——宇宙遠比我們想像的更加遼闊。從UFO檔案的解密到超自然現象的新關注，人類正在用全新的眼光審視那些曾被忽視的謎團。保持好奇，保持開放，答案正在浮現。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- NEWS TABS -->
+<div class="news-tab-bar">
+  <button class="news-tab active" data-section="ai" onclick="switchNewsTab('ai')"><span class="tab-icon">🤖</span>AI科技</button>
+  <button class="news-tab" data-section="space" onclick="switchNewsTab('space')"><span class="tab-icon">🚀</span>太空宇宙</button>
+  <button class="news-tab" data-section="ufo" onclick="switchNewsTab('ufo')"><span class="tab-icon">🛸</span>UFO/外星人</button>
+  <button class="news-tab" data-section="paranormal" onclick="switchNewsTab('paranormal')"><span class="tab-icon">👻</span>超自然現象</button>
+</div>
+<div class="section-panel active" id="panel-ai">
+<div class="section" id="ai">
+  <div class="news-card ai">
+    <h3>超300款AI產品將全球首發2026世界人工智能大會搶先看 <span class="tag breakthrough">熱門</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / hkcna.hk / <a href="https://hkcna.hk/h5/docDetail.jsp?id=101348684&amp;channel=2808" target="_blank">來源</a></div>
+    <p>2026年6月18日 · 香港中通社6月17日電 2026世界人工智能大會暨人工智能全球治理高級別會議將於7月17日至20日在上海舉辦。據悉，今年大會展覽面積超過10萬平方米，超300 ...</p>
+    </div>
+  </div>
+  <div class="news-card ai">
+    <h3>人工智能企業正引領2026年上市浪潮 - HKEX Group <span class="tag trend">趨勢</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / hkexgroup.com / <a href="https://www.hkexgroup.com/Media-Centre/Insight/Insight/2026/Johnson-Chui/AI-IPOs-Drive-a-Strong-Start-to-2026?sc_lang=zh-HK" target="_blank">來源</a></div>
+    <p>2026年2月3日 · 香港交易所數據顯示，人工智能公司推動2026年1月香港新股集資額增長勢頭，香港正構建起覆蓋人工智能價值鏈各領域的發行人生態圈。</p>
+    </div>
+  </div>
+  <div class="news-card ai">
+    <h3>2026年6月亚洲科技赢家：人工智能基础设施层发展速度超炒作热度 <span class="tag breakthrough">熱門</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / finance.sina.com.cn / <a href="https://finance.sina.com.cn/stock/usstock/summary/2026-06-04/doc-iniafmmv2687104.shtml" target="_blank">來源</a></div>
+    <p>2026年6月4日 · 6月投资布局建议：核心为瓶颈企业（台积电、SK海力士、三星）；二级为光互连和组件产业链；相关股为汇量科技。依据新收益或指引增加投资，需求抵消宏观压力则 ...</p>
+    </div>
+  </div>
+  <div class="news-card ai">
+    <h3>估值大洗牌、商业大兑现:2026年6月中国AI进入“独角兽定局”时代 - ZAKER <span class="tag release">公告</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / app.myzaker.com / <a href="https://app.myzaker.com/news/article.php?pk=6a2b70ba8e9f096cb2581cf6" target="_blank">來源</a></div>
+    <p>2026年6月的中国AI行业，正处于一场史无前例的“价值重构”浪潮之中。 6月8日，大模型独角兽月之暗面（Kimi）被曝正在寻求新一轮20亿美元融资，目标估值达300亿美元， ...</p>
+    </div>
+  </div>
+  <div class="news-card ai">
+    <h3>AI科技热点日报| 2026年6月1日原创 - CSDN博客 <span class="tag trend">趨勢</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / blog.csdn.net / <a href="https://blog.csdn.net/haohaizi_liu/article/details/161598564" target="_blank">來源</a></div>
+    <p>2026年6月1日 · 今日AI产业迎来多项重磅事件：英伟达GTC Taipei 2026大会开幕，黄仁勋发表主题演讲并发布面向AI PC的Vera Rubin芯片；国产大模型MiniMax M3正式发布，编程 ...</p>
+    </div>
+  </div>
+</div>
+</div>
+<div class="section-panel" id="panel-space">
+<div class="section" id="space">
+  <div class="news-card space">
+    <h3>[PDF] 2026 太空任務展望 <span class="tag breakthrough">熱門</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / www-ws.gov.taipei / <a href="https://www-ws.gov.taipei/001/Upload/439/relfile/21708/9521372/d0d3dfa4-b210-4bfe-9e5d-99e4401acbd0.pdf" target="_blank">來源</a></div>
+    <p>2026年被視為太空探索關鍵的轉折點。載人繞月任務將再次把太空人送往月球附近，為重. 新踏上月球表面作最後整合驗證；小行星偏轉技術將首度獲得事後就地調查；水星與地球 ...</p>
+    </div>
+  </div>
+  <div class="news-card space">
+    <h3>NASA罗曼太空望远镜提前冲刺搜寻宇宙之旅或将于2026年启程 <span class="tag trend">趨勢</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / cnbeta.com.tw / <a href="https://www.cnbeta.com.tw/articles/science/1563010.htm" target="_blank">來源</a></div>
+    <p>2026年5月20日 · 美国国家航空航天局（NASA）表示，纳恩西·格蕾丝·罗曼太空望远镜（简称“罗曼望远镜”）有望最早于2026年9月发射升空，时间早于此前“最晚不迟于2027年5月”的 ...</p>
+    </div>
+  </div>
+  <div class="news-card space">
+    <h3>远征苍穹探宇观星揭奥秘——二〇二五年世界科技发展回顾·空间技术篇 <span class="tag breakthrough">熱門</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / stdaily.com / <a href="https://www.stdaily.com/web/gjxw/2026-01/06/content_458058.html" target="_blank">來源</a></div>
+    <p>2026年1月7日 · 2025年，德国将太空定位为保障国家安全的关键基础设施，积极拥抱“新太空”浪潮，加速推动本土发射能力建设，并成功绘制出首张系外行星天气图。 德国航空航天 ...</p>
+    </div>
+  </div>
+  <div class="news-card space">
+    <h3>市場報導： 睽違50年再啟航，NASA載人繞月任務正式展開 - 科技產業資訊室 <span class="tag release">公告</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / iknow.stpi.niar.org.tw / <a href="https://iknow.stpi.niar.org.tw/post/Read.aspx?PostID=22954" target="_blank">來源</a></div>
+    <p>NASA於2026年4月1日成功發射「阿提米絲二號」（Artemis II）任務，搭載四名太空人展開為期約10天的繞月飛行。此舉不僅象徵人類重返深空探索的里程碑，更代表全球太空 ...</p>
+    </div>
+  </div>
+  <div class="news-card space">
+    <h3>NASA推出2026年月曆展現罕見宇宙景觀| 大紀元 <span class="tag trend">趨勢</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / epochtimes.com / <a href="https://www.epochtimes.com/b5/25/12/29/n14664350.htm" target="_blank">來源</a></div>
+    <p>2025年12月29日 · 在2026年即將到來之際，美國國家航空航天局（NASA）推出了下個年度的精美月曆。它通過一系列高精度資料視覺化圖片，展現了宇宙的動態變化。</p>
+    </div>
+  </div>
+</div>
+</div>
+<div class="section-panel" id="panel-ufo">
+<div class="section" id="ufo">
+  <div class="news-card ufo">
+    <a href="https://www.sbs.com.au/language/chinese/zh-hant/podcast-episode/ufo-files-unsealed-scientific-breakthrough-or-another-global-conspiracy/iw7g1vmcd" target="_blank"><img src="https://assets.sbs.com.au/dims4/default/bd1cea1/2147483647/strip/true/crop/3871x2177+0+107/resize/1280x720!/quality/90/?url=https%3A%2F%2Fsbs-au-brightspot.s3.ap-southeast-2.amazonaws.com%2F5d%2Fa0%2F6cae765741d18eae66ad2dc5cf07%2Fgettyimages-514977438.jpg" alt="news" loading="lazy"></a>
+    <h3>【美國公開過百UFO檔案】是衝擊性證據、還是老調重彈？ | SBS Chinese <span class="tag breakthrough">熱門</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / sbs.com.au / <a href="https://www.sbs.com.au/language/chinese/zh-hant/podcast-episode/ufo-files-unsealed-scientific-breakthrough-or-another-global-conspiracy/iw7g1vmcd" target="_blank">來源</a></div>
+    <p>「不明異常現象」(UAP) 是近年美國政府與軍方用來取代傳統「不明飛行物體」(UFO) 的正式名稱，希望更精確涵蓋天空、水下或太空等無法即時解釋的異常現象，減少過去UFO 給大眾 ...</p>
+    </div>
+  </div>
+  <div class="news-card ufo">
+    <h3>美國防部公布第二批涉UFO檔案 - 香港商報 <span class="tag trend">趨勢</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / hkcd.com.hk / <a href="https://www.hkcd.com.hk/hkcdweb/content/2026/05/23/content_8756318.html" target="_blank">來源</a></div>
+    <p>2026年5月23日 · 美國國防部5月8日公布首批160多份UFO相關政府文件，其中最早的可追溯至20世紀40年代的聯邦機構檔案，並上線專門網站。五角大樓稱，該網站全球瀏覽量已超過10 ...</p>
+    </div>
+  </div>
+  <div class="news-card ufo">
+    <a href="https://www.mobilesetting.com.hk/pentagon-uap-ufo-files-declassified-2026-may/" target="_blank"><img src="https://www.mobilesetting.com.hk/images/posts/ms-113.jpg" alt="news" loading="lazy"></a>
+    <h3>五角大樓公開162 份UFO 機密檔案：登月太空人目擊報告 <span class="tag breakthrough">熱門</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / mobilesetting.com.hk / <a href="https://www.mobilesetting.com.hk/pentagon-uap-ufo-files-declassified-2026-may/" target="_blank">來源</a></div>
+    <p>2026 年5 月8 日，五角大樓依據特朗普行政令公開162 份UAP 解密檔案，包括阿波羅太空人目擊紀錄、神秘光球事件與2023 年希臘飛行物影片。</p>
+    </div>
+  </div>
+  <div class="news-card ufo">
+    <h3>前CIA專家：UFO墜毀美國尋獲4種外星人遺骸| UAP - 新唐人電視台 <span class="tag release">公告</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / ntdtv.com / <a href="https://www.ntdtv.com/b5/2026/05/26/a104100018.html" target="_blank">來源</a></div>
+    <p>2026年5月26日 · 【新唐人北京時間2026年05月26日訊】美國川普（特朗普）總統政府正持續推動提高「不明空中現象」（UAP）發現的透明度。就在五角大樓於上週五（5月22日）發布 ...</p>
+    </div>
+  </div>
+  <div class="news-card ufo">
+    <h3>美國情報界不明飛行物調查報告- 維基百科 <span class="tag trend">趨勢</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / zh.wikipedia.org / <a href="https://zh.wikipedia.org/zh-hk/%E7%BE%8E%E5%9C%8B%E6%83%85%E5%A0%B1%E7%95%8C%E4%B8%8D%E6%98%8E%E9%A3%9B%E8%A1%8C%E7%89%A9%E8%AA%BF%E6%9F%A5%E5%A0%B1%E5%91%8A" target="_blank">來源</a></div>
+    <p>據報導，自2017年12月《紐約時報》首次公開五角大廈UFO影片以來，美國民眾對UFO 議題的興趣持續上升，目前約有43%的民眾對此越來越關注。此外，美國主流媒體也對「先進航空航天 ...</p>
+    </div>
+  </div>
+</div>
+</div>
+<div class="section-panel" id="panel-paranormal">
+<div class="section" id="paranormal">
+  <div class="news-card paranormal">
+    <a href="https://vocus.cc/article/5fd86e5ffd8978000169f040" target="_blank"><img src="https://resize-image.vocus.cc/resize?norotation=true&amp;quality=80&amp;url=https%3A%2F%2Fimages.vocus.cc%2F555d60d5-309f-4819-8b6e-ce19ee4977f9.jpg&amp;width=1200&amp;sign=deIQt8rEqp3NKdIl3OPfRYumKkBx8urlMQqy1Tmq3dU" alt="news" loading="lazy"></a>
+    <h3>《目擊超自然》真實恐怖節目的失敗？ - 方格子 <span class="tag breakthrough">熱門</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / vocus.cc / <a href="https://vocus.cc/article/5fd86e5ffd8978000169f040" target="_blank">來源</a></div>
+    <p>2020年12月15日 · 改編埃及著名阿拉伯文超自然小說的影劇作品《靈異調查員》納入許多埃及當地的恐怖故事，除了木乃伊法老的詛咒外、還有許許多多地方傳說匯集而成的冒險影集， ...</p>
+    </div>
+  </div>
+  <div class="news-card paranormal">
+    <a href="https://dream.bhuntr.com/article/horror-movie-recommend-2026" target="_blank"><img src="https://cdn.bountyhunter.co/file/274d36f8-5299-4dd4-9daa-f0f41645782d.jpg" alt="news" loading="lazy"></a>
+    <h3>2026恐怖片推薦：最新鬼片上映資訊大集合！泰國、歐美...驚悚詭譎劇情 <span class="tag trend">趨勢</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / dream.bhuntr.com / <a href="https://dream.bhuntr.com/article/horror-movie-recommend-2026" target="_blank">來源</a></div>
+    <p>劇情描述：這是一部血腥刺激、高亢狂飆的恐怖動作喜劇爽片，描述一名年輕女子（薩琪畢茲飾）必須在惡魔邪教操控下的威吉大樓熬過一晚，逃過神秘扭曲的死亡陷阱巢穴，否則就會成為 ...</p>
+    </div>
+  </div>
+  <div class="news-card paranormal">
+    <h3>鬼- 維基百科，自由的百科全書 <span class="tag breakthrough">熱門</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / zh.wikipedia.org / <a href="https://zh.wikipedia.org/zh-hk/%E9%AC%BC" target="_blank">來源</a></div>
+    <p>鬼，又稱鬼魂、幽靈或阿飄，是部分文化習俗或宗教信仰中，認為生物死亡之後遺留的靈魂或魂魄。從現代的社會科學而言，人類目前尚未能確認它的存在，但是相關靈異鬼故事在 ...</p>
+    </div>
+  </div>
+  <div class="news-card paranormal">
+    <h3>鬼发在线看：探索超自然现象与灵异事件_免费电影 <span class="tag release">公告</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / mercy.valmax.org / <a href="https://mercy.valmax.org/" target="_blank">來源</a></div>
+    <p>本文将探索超自然现象与灵异事件，揭秘恐怖背后的真相，以科学角度解析恐怖电影中的恐怖场景，了解恐怖片背后的创作技巧，并且分析恐怖小说与恐怖电影在人类文化中的重要性 ...</p>
+    </div>
+  </div>
+  <div class="news-card paranormal">
+    <h3>鬼節｜香港4大鬼域都市傳說新娘潭3年5死、鎖羅盆荒廢30年 - HK01 <span class="tag trend">趨勢</span></h3>
+    <div class="expand-hint">⋯ 點擊展開</div>
+    <div class="detail">
+    <div class="meta">Jun 29 / hk01.com / <a href="https://www.hk01.com/%E9%96%8B%E7%BD%90/60245321/%E9%AC%BC%E7%AF%80-%E9%A6%99%E6%B8%AF4%E5%A4%A7%E9%AC%BC%E5%9F%9F%E9%83%BD%E5%B8%82%E5%82%B3%E8%AA%AA-%E6%96%B0%E5%A8%98%E6%BD%AD3%E5%B9%B45%E6%AD%BB-%E9%8E%96%E7%BE%85%E7%9B%86%E8%8D%92%E5%BB%A230%E5%B9%B4" target="_blank">來源</a></div>
+    <p>2025年9月4日 · 講到鄉郊鬼古，雖是多不勝數，但香港四大鬼域的新娘潭、荔枝莊、大埔滘、鎖羅盆，這些地點流傳多年的靈異傳說，更是傳聞中的猛鬼異域，其中位於大埔區的新娘潭 ...</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<div style="display:flex;justify-content:center;align-items:center;gap:8px;margin:30px 0 10px;"><a href="sono_20260628.html" style="color:#ff6b9d;text-decoration:none;font-size:0.78em;padding:4px 6px;display:inline-flex;align-items:center;gap:2px;">◀ 上一日</a><a href="../" style="background:linear-gradient(135deg,#ff6b9d,#a29bfe);color:#fff;text-decoration:none;font-size:1.1em;padding:5px 28px;border-radius:22px;font-weight:700;letter-spacing:2px;line-height:1.2;">首頁</a><span style="color:#333;font-size:0.78em;padding:4px 6px;display:inline-flex;align-items:center;gap:2px;">下一日 ▶</span></div>
+
+
+
+<div class="footer">
+  <p>Sono每日資訊系統</p>
+  <p style="margin-top:6px; color:#666;font-size:0.8em;">資料來源：SearXNG + Google News RSS + 香港天文台</p>
+  <p style="margin-top:4px; color:#444;font-size:0.75em;">報告生成時間：2026年6月29日</p>
+
+<a href="#" class="back-to-top" id="backToTop" title="回到最頂">TOP</a>
+<div class="float-nav" id="floatNav"><a href="sono_20260628.html" class="fn-prev" title="上一日">◀</a><a href="../" class="fn-home" title="首頁">首頁</a><span class="fn-disabled">▶</span></div>
+
+<script>
+  var fn = document.getElementById('floatNav');
+  window.addEventListener('scroll', function() {
+      if(fn) if(fn) if(fn)fn.classList.toggle('show', window.scrollY > 300);
+    var b = document.getElementById('backToTop');
+    b.classList.toggle('show', window.pageYOffset > 300);
+  });
+</script>
+
+<script>
+document.querySelectorAll('.news-card').forEach(card => {
+  card.addEventListener('click', function(e) {
+    if (e.target.tagName === 'A') return;
+    var wasOpen = this.classList.contains('open');
+    document.querySelectorAll('.news-card').forEach(c => c.classList.remove('open'));
+    if (!wasOpen) this.classList.add('open');
+  });
+});
+</script>
+
+<script>function switchNewsTab(i){document.querySelectorAll(".news-tab").forEach(b=>b.classList.remove("active"));document.querySelectorAll(".section-panel").forEach(p=>{p.classList.remove("active");p.style.display="none"});document.querySelector('.news-tab[data-section="'+i+'"]').classList.add("active");var el=document.getElementById("panel-"+i);if(el){el.classList.add("active");el.style.display="block"}}</script>
+
+
+<script>
+function toggleSub(sub) {
+  var allSubs = document.querySelectorAll('.sc-sub');
+  allSubs.forEach(function(s) {
+    if (s !== sub && s.classList.contains('open')) {
+      s.classList.remove('open');
+      s.nextElementSibling.classList.remove('open');
+    }
+  });
+  sub.classList.toggle('open');
+  sub.nextElementSibling.classList.toggle('open');
+}
+</script>
+
+</div></body>
+</html><!-- cache bust: 1782684653 ***60628003904 -->
