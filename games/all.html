@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>遊戲庫 · Sono蘇蓉</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; line-height: 1.6; min-height: 100vh; }
+.container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding: 12px 0; }
+.back-btn { display: inline-flex; align-items: center; gap: 6px; color: #888; text-decoration: none; font-size: 0.95em; }
+.back-btn:hover { color: #fff; }
+.title { font-size: 1.8em; font-weight: 900; background: linear-gradient(135deg, #6bff6b, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.category { margin-bottom: 32px; }
+.category-title { font-size: 1.1em; font-weight: 700; color: #6bff6b; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.category-title::after { content: ''; flex: 1; height: 1px; background: rgba(107,255,107,0.2); }
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+}
+.game-card {
+  background: #1a1a2e;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 14px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  border-color: rgba(107,255,107,0.2);
+}
+.game-logo {
+  width: 100%;
+  height: 110px;
+  object-fit: contain;
+  margin-bottom: 10px;
+  background: #11111f;
+  border-radius: 10px;
+  padding: 12px;
+}
+.game-name { font-size: 1.05em; font-weight: 700; margin-bottom: 4px; }
+.game-tag {
+  display: inline-block;
+  font-size: 0.72em;
+  padding: 2px 9px;
+  border-radius: 20px;
+  background: rgba(107,255,107,0.12);
+  color: #6bff6b;
+  margin-top: auto;
+  align-self: flex-start;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <a href="../index.html" class="back-btn">← 返回 Sono</a>
+    <div class="title">遊戲庫</div>
+  </div>
+
+  <!-- 經典遊戲 -->
+  <div class="category">
+    <div class="category-title">🎮 經典遊戲</div>
+    <div class="game-grid">
+      <a href="../snake/" class="game-card">
+        <img src="snake.svg" class="game-logo" alt="貪食蛇">
+        <div class="game-name">貪食蛇</div>
+        <div class="game-tag">經典</div>
+      </a>
+      <a href="../2048/" class="game-card">
+        <img src="2048.svg" class="game-logo" alt="2048">
+        <div class="game-name">2048</div>
+        <div class="game-tag">數字</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 對戰遊戲 -->
+  <div class="category">
+    <div class="category-title">⚔️ 對戰遊戲</div>
+    <div class="game-grid">
+      <a href="../fighter/" class="game-card">
+        <img src="stickman-fighter.svg" class="game-logo" alt="火柴人格鬥">
+        <div class="game-name">火柴人格鬥</div>
+        <div class="game-tag">對戰</div>
+      </a>
+      <a href="../stickman-fighter-v1/" class="game-card">
+        <img src="stickman-fighter-v1.svg" class="game-logo" alt="Stickman Fighter">
+        <div class="game-name">Stickman Fighter</div>
+        <div class="game-tag">對戰</div>
+      </a>
+      <a href="../rps-battle/" class="game-card">
+        <img src="rock-paper-scissors.svg" class="game-logo" alt="剪刀石頭佈">
+        <div class="game-name">剪刀石頭佈</div>
+        <div class="game-tag">對戰</div>
+      </a>
+      <a href="../tictactoe/" class="game-card">
+        <img src="xo-three-doors.svg" class="game-logo" alt="井字遊戲">
+        <div class="game-name">井字遊戲</div>
+        <div class="game-tag">對戰</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 益智遊戲 -->
+  <div class="category">
+    <div class="category-title">🧠 益智遊戲</div>
+    <div class="game-grid">
+      <a href="../memory/" class="game-card">
+        <img src="memory-match.svg" class="game-logo" alt="記憶配對">
+        <div class="game-name">記憶配對</div>
+        <div class="game-tag">益智</div>
+      </a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
