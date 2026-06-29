@@ -804,11 +804,19 @@ function switchTab(tabName) {
 // ══════ Game Accordion ══════
 function toggleGame(header) {
   var item = header.parentElement;
-  var wasOpen = item.classList.contains('open');
-  // Close all
-  document.querySelectorAll('.game-item').forEach(function(el) { el.classList.remove('open'); });
-  // Toggle clicked (open if was closed, close if was open)
-  if (!wasOpen) item.classList.add('open');
+  var isCurrentlyOpen = item.classList.contains('open');
+
+  // Close all other items
+  document.querySelectorAll('.game-item').forEach(function(el) {
+    if (el !== item) el.classList.remove('open');
+  });
+
+  // Toggle only the clicked header
+  if (isCurrentlyOpen) {
+    item.classList.remove('open');
+  } else {
+    item.classList.add('open');
+  }
 }
 
 // ══════ Chat Widget ══════
