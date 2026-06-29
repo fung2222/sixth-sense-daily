@@ -1,0 +1,15 @@
+<svg class="game-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gmm" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6bff6b"/>
+      <stop offset="100%" stop-color="#00d4ff"/>
+    </linearGradient>
+  </defs>
+  <!-- Cards -->
+  <rect x="8" y="10" width="14" height="18" rx="2" fill="none" stroke="url(#gmm)" stroke-width="2"/>
+  <rect x="26" y="10" width="14" height="18" rx="2" fill="none" stroke="url(#gmm)" stroke-width="2"/>
+  <rect x="17" y="20" width="14" height="18" rx="2" fill="none" stroke="url(#gmm)" stroke-width="2"/>
+  <!-- Question marks -->
+  <text x="13" y="23" fill="url(#gmm)" font-size="8" font-weight="bold">?</text>
+  <text x="31" y="23" fill="url(#gmm)" font-size="8" font-weight="bold">?</text>
+</svg>
