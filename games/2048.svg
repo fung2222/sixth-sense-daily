@@ -1,17 +1,28 @@
 <svg class="game-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="g2048" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="gf7" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#6bff6b"/>
       <stop offset="100%" stop-color="#00d4ff"/>
     </linearGradient>
   </defs>
-  <!-- Grid -->
-  <rect x="8" y="8" width="32" height="32" rx="3" fill="none" stroke="url(#g2048)" stroke-width="2"/>
+  <!-- Background grid -->
+  <rect x="6" y="6" width="36" height="36" rx="4" fill="none" stroke="url(#gf7)" stroke-width="2"/>
   <!-- Tiles -->
-  <rect x="10" y="10" width="12" height="12" rx="2" fill="url(#g2048)" opacity="0.3"/>
-  <rect x="26" y="10" width="12" height="12" rx="2" fill="url(#g2048)" opacity="0.3"/>
-  <rect x="10" y="26" width="12" height="12" rx="2" fill="url(#g2048)" opacity="0.3"/>
-  <rect x="26" y="26" width="12" height="12" rx="2" fill="url(#g2048)" opacity="0.6"/>
-  <!-- 2048 text hint -->
-  <text x="24" y="35" fill="url(#g2048)" font-size="6" font-weight="bold" text-anchor="middle">2048</text>
+  <rect x="9" y="9" width="8" height="8" rx="2" fill="#feca57"/>
+  <text x="13" y="16" fill="#0a0a1a" font-size="5" font-weight="bold" text-anchor="middle">2</text>
+  
+  <rect x="19" y="9" width="8" height="8" rx="2" fill="#feca57"/>
+  <text x="23" y="16" fill="#0a0a1a" font-size="5" font-weight="bold" text-anchor="middle">4</text>
+  
+  <rect x="29" y="9" width="8" height="8" rx="2" fill="#feca57"/>
+  <text x="33" y="16" fill="#0a0a1a" font-size="5" font-weight="bold" text-anchor="middle">8</text>
+  
+  <rect x="9" y="19" width="8" height="8" rx="2" fill="#feca57"/>
+  <text x="13" y="26" fill="#0a0a1a" font-size="5" font-weight="bold" text-anchor="middle">16</text>
+  
+  <rect x="19" y="19" width="8" height="8" rx="2" fill="#feca57"/>
+  <text x="23" y="26" fill="#0a0a1a" font-size="5" font-weight="bold" text-anchor="middle">32</text>
+  
+  <rect x="29" y="19" width="8" height="8" rx="2" fill="#feca57"/>
+  <text x="33" y="26" fill="#0a0a1a" font-size="5" font-weight="bold" text-anchor="middle">64</text>
 </svg>

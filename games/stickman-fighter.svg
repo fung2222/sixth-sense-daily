@@ -1,12 +1,24 @@
-<svg class="game-logo" viewBox="0 0 48 48" fill="none">
-          <defs><linearGradient id="gf1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6bff6b"/><stop offset="100%" stop-color="#00d4ff"/></linearGradient></defs>
-          <circle cx="24" cy="10" r="5" stroke="url(#gf1)" stroke-width="2" fill="none"/>
-          <line x1="24" y1="15" x2="24" y2="30" stroke="url(#gf1)" stroke-width="2" stroke-linecap="round"/>
-          <line x1="24" y1="20" x2="14" y2="16" stroke="url(#gf1)" stroke-width="2" stroke-linecap="round"/>
-          <line x1="24" y1="20" x2="34" y2="24" stroke="url(#gf1)" stroke-width="2" stroke-linecap="round"/>
-          <line x1="24" y1="30" x2="16" y2="42" stroke="url(#gf1)" stroke-width="2" stroke-linecap="round"/>
-          <line x1="24" y1="30" x2="32" y2="42" stroke="url(#gf1)" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="32" cy="22" r="3" fill="#ff6b9d" opacity="0.9"/>
-          <circle cx="35" cy="18" r="2" fill="#ff6b9d" opacity="0.5"/>
-          <circle cx="30" cy="16" r="1.5" fill="#ff6b9d" opacity="0.4"/>
-        </svg>
+<svg class="game-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gf1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6bff6b"/>
+      <stop offset="100%" stop-color="#00d4ff"/>
+    </linearGradient>
+  </defs>
+  <!-- Head -->
+  <circle cx="24" cy="11" r="5.5" fill="#feca57" stroke="url(#gf1)" stroke-width="2.5"/>
+  <!-- Body -->
+  <line x1="24" y1="16.5" x2="24" y2="29" stroke="url(#gf1)" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Left punch -->
+  <line x1="24" y1="19" x2="12" y2="14" stroke="url(#gf1)" stroke-width="3" stroke-linecap="round"/>
+  <!-- Right guard -->
+  <line x1="24" y1="19" x2="34" y2="22" stroke="url(#gf1)" stroke-width="3" stroke-linecap="round"/>
+  <!-- Legs -->
+  <line x1="24" y1="29" x2="16" y2="41" stroke="url(#gf1)" stroke-width="3" stroke-linecap="round"/>
+  <line x1="24" y1="29" x2="32" y2="40" stroke="url(#gf1)" stroke-width="3" stroke-linecap="round"/>
+  <!-- Fist accent -->
+  <circle cx="11" cy="13" r="2.5" fill="#feca57"/>
+  <!-- Impact dots -->
+  <circle cx="8" cy="11" r="1.2" fill="#00d4ff" opacity="0.7"/>
+  <circle cx="9" cy="16" r="0.9" fill="#6bff6b" opacity="0.6"/>
+</svg>
