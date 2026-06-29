@@ -1,0 +1,14 @@
+<svg class="game-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gs" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6bff6b"/>
+      <stop offset="100%" stop-color="#00d4ff"/>
+    </linearGradient>
+  </defs>
+  <!-- Snake body -->
+  <path d="M8 24 Q14 14 24 24 Q34 34 40 24" fill="none" stroke="url(#gs)" stroke-width="4" stroke-linecap="round"/>
+  <!-- Head -->
+  <circle cx="40" cy="24" r="4" fill="url(#gs)"/>
+  <!-- Eye -->
+  <circle cx="42" cy="22" r="1.5" fill="#0a0a1a"/>
+</svg>

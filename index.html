@@ -2108,3 +2108,35 @@ result.innerHTML=html;time.innerHTML=`最後更新：${new Date().toLocaleTimeSt
 </html>
 <!-- MTR Modal -->
 <div id="mtr-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center;">
+    <!-- ── 貪食蛇 ── -->
+    <div class="game-item">
+      <div class="game-header" onclick="toggleGame(this)">
+        <img src="games/snake.svg" class="game-logo" alt="貪食蛇">
+        <div class="game-info">
+          <span class="game-name">貪食蛇</span>
+          <span class="game-tag">經典</span>
+        </div>
+        <svg class="game-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="game-body">
+        <p class="game-desc">經典貪食蛇 · 成長變長 · 避開自己 · 挑戰高分</p>
+        <a href="#" class="game-play-btn">▶ 開始遊戲</a>
+      </div>
+    </div>
+
+    <!-- ── 2048 ── -->
+    <div class="game-item">
+      <div class="game-header" onclick="toggleGame(this)">
+        <img src="games/2048.svg" class="game-logo" alt="2048">
+        <div class="game-info">
+          <span class="game-name">2048</span>
+          <span class="game-tag">數字</span>
+        </div>
+        <svg class="game-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="game-body">
+        <p class="game-desc">經典 2048 · 合併數字 · 挑戰 2048 · 策略思考</p>
+        <a href="#" class="game-play-btn">▶ 開始遊戲</a>
+      </div>
+    </div>
+

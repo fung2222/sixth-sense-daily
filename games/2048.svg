@@ -1,0 +1,17 @@
+<svg class="game-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g2048" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6bff6b"/>
+      <stop offset="100%" stop-color="#00d4ff"/>
+    </linearGradient>
+  </defs>
+  <!-- Grid -->
+  <rect x="8" y="8" width="32" height="32" rx="3" fill="none" stroke="url(#g2048)" stroke-width="2"/>
+  <!-- Tiles -->
+  <rect x="10" y="10" width="12" height="12" rx="2" fill="url(#g2048)" opacity="0.3"/>
+  <rect x="26" y="10" width="12" height="12" rx="2" fill="url(#g2048)" opacity="0.3"/>
+  <rect x="10" y="26" width="12" height="12" rx="2" fill="url(#g2048)" opacity="0.3"/>
+  <rect x="26" y="26" width="12" height="12" rx="2" fill="url(#g2048)" opacity="0.6"/>
+  <!-- 2048 text hint -->
+  <text x="24" y="35" fill="url(#g2048)" font-size="6" font-weight="bold" text-anchor="middle">2048</text>
+</svg>
