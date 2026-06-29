@@ -1424,6 +1424,20 @@ document.getElementById('holidayTrigger').onclick = function() {
   createModal(html);
 };
 </script>
+
+<script>
+function switchTab(tab) {
+  // Hide all panels
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  // Remove active from all buttons
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  
+  // Show selected panel
+  document.getElementById('tab-' + tab).classList.add('active');
+  // Activate button
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+}
+</script>
 </body>
 </html>
 <!-- MTR Modal -->
