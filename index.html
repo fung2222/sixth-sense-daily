@@ -804,20 +804,26 @@ function switchTab(tabName) {
 // ══════ Game Accordion ══════
 function toggleGame(header) {
   var item = header.parentElement;
-  var isCurrentlyOpen = item.classList.contains('open');
+  var wasOpen = item.classList.contains('open');
 
   // Close all other items
   document.querySelectorAll('.game-item').forEach(function(el) {
     if (el !== item) el.classList.remove('open');
   });
 
-  // Toggle only the clicked header
-  if (isCurrentlyOpen) {
-    item.classList.remove('open');
-  } else {
+  // Toggle the clicked one
+  if (!wasOpen) {
     item.classList.add('open');
   }
 }
+
+// Click anywhere on open card (except header) to close it
+document.addEventListener('click', function(e) {
+  var item = e.target.closest('.game-item');
+  if (item && item.classList.contains('open') && !e.target.closest('.game-header')) {
+    item.classList.remove('open');
+  }
+});
 
 // ══════ Chat Widget ══════
 var chatExpanded = false;
