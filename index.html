@@ -2610,6 +2610,86 @@ document.querySelectorAll('.card.tool-sm').forEach(function(card) {
 
 
 
+
+// ===== MTR 到站時間功能 =====
+const mtrStations = {
+  "荃灣線": ["中環", "金鐘", "尖沙咀", "佐敦", "旺角", "太子", "深水埗", "長沙灣", "荃灣"],
+  "觀塘線": ["調景嶺", "油塘", "藍田", "觀塘", "牛頭角", "九龍灣", "鑽石山", "黃大仙", "樂富", "九龍塘", "石硤尾"],
+  "港島線": ["堅尼地城", "香港大學", "西營盤", "上環", "中環", "金鐘", "灣仔", "銅鑼灣", "天后", "炮台山", "北角", "鰂魚涌", "太古", "西灣河", "筲箕灣", "杏花邨", "柴灣"],
+  "將軍澳線": ["北角", "鰂魚涌", "油塘", "調景嶺", "將軍澳", "坑口", "寶琳"],
+  "東鐵線": ["紅磡", "旺角東", "九龍塘", "大圍", "沙田", "火炭", "大學", "大埔墟", "太和", "粉嶺", "上水", "羅湖", "落馬洲"],
+  "西鐵線": ["紅磡", "尖東", "柯士甸", "南昌", "美孚", "荃灣西", "天水圍", "元朗", "朗屏", "錦上路", "西環"]
+};
+
+function updateMTRArrival() {
+  const line = document.getElementById('mtr-line').value;
+  const stationSelect = document.getElementById('mtr-station');
+  const result = document.getElementById('mtr-result');
+  
+  if (!line) {
+    stationSelect.innerHTML = '<option value="">請先選擇路線</option>';
+    result.innerHTML = '';
+    return;
+  }
+  
+  // 更新站點
+  stationSelect.innerHTML = '<option value="">請選擇站點</option>';
+  if (mtrStations[line]) {
+    mtrStations[line].forEach(st => {
+      const opt = document.createElement('option');
+      opt.value = st;
+      opt.textContent = st;
+      stationSelect.appendChild(opt);
+    });
+  }
+  
+  // 如果已有站點選擇，顯示到站時間
+  const station = stationSelect.value;
+  if (station) {
+    showArrivalTimes(line, station, result);
+  } else {
+    result.innerHTML = '<p style="color:#888; text-align:center; padding:20px 0;">請選擇站點以查看到站時間</p>';
+  }
+}
+
+function showArrivalTimes(line, station, resultDiv) {
+  const now = new Date();
+  const times = [];
+  
+  // 生成模擬到站時間（未來 3-18 分鐘）
+  for (let i = 0; i < 3; i++) {
+    const min = 3 + Math.floor(Math.random() * 15);
+    const arrival = new Date(now.getTime() + min * 60000);
+    times.push(arrival.toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit' }));
+  }
+  
+  let html = `<p style="color:#4ade80; font-weight:700; margin-bottom:8px;">${line} · ${station}</p>`;
+  html += `<div style="display:flex; flex-direction:column; gap:6px;">`;
+  times.forEach((t, i) => {
+    html += `<div style="background:rgba(255,255,255,0.06); padding:8px 12px; border-radius:8px; display:flex; justify-content:space-between;">
+      <span>🚇 往 ${i === 0 ? '中環' : i === 1 ? '荃灣' : '調景嶺'} 方向</span>
+      <span style="color:#6bff6b; font-weight:700;">${t}</span>
+    </div>`;
+  });
+  html += `</div>`;
+  html += `<p style="color:#666; font-size:0.75em; margin-top:10px; text-align:center;">最後更新：${now.toLocaleTimeString('zh-HK')}</p>`;
+  
+  resultDiv.innerHTML = html;
+}
+
+// 當站點改變時更新顯示
+document.addEventListener('DOMContentLoaded', function() {
+  const stationSelect = document.getElementById('mtr-station');
+  if (stationSelect) {
+    stationSelect.addEventListener('change', function() {
+      const line = document.getElementById('mtr-line').value;
+      const result = document.getElementById('mtr-result');
+      if (line && this.value) {
+        showArrivalTimes(line, this.value, result);
+      }
+    });
+  }
+});
 </script>
 
 <!-- MTR 到站時間 Modal -->
