@@ -132,14 +132,6 @@
 
 
 
-  .float-nav { position: fixed; right: 20px; bottom: 95px; left: auto; display: flex; flex-direction: column; gap: 8px; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; align-items: center; }
-  .float-nav.show { opacity: 1; visibility: visible; }
-  .float-nav a, .float-nav span { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 0.9em; box-shadow: 0 3px 12px rgba(0,0,0,0.3); color: #fff; }
-  .float-nav a:hover { transform: scale(1.1); }
-  .float-nav .fn-prev { background: rgba(255,107,155,0.85); }
-  .float-nav .fn-home { background: linear-gradient(135deg, #ff6b9d, #a29bfe); font-size: 0.75em; font-weight: 700; width: 42px; height: 42px; }
-  .float-nav .fn-next { background: rgba(162,155,254,0.85); }
-  .float-nav .fn-disabled { opacity: 0.2; cursor: default; background: rgba(255,255,255,0.1); }
 </style>
 <script>
 /* Accordion: only one open at a time */
@@ -440,44 +432,4 @@
   <p style="margin-top:4px; color:#444;font-size:0.75em;">報告生成時間：2026年6月24日</p>
 
 <a href="#" class="back-to-top" id="backToTop" title="回到最頂">TOP</a>
-<div class="float-nav" id="floatNav"><a href="sono_20260623.html" class="fn-prev" title="上一日">◀</a><a href="../" class="fn-home" title="首頁">首頁</a><a href="sono_20260625.html" class="fn-next" title="下一日">▶</a></div>
-
-<script>
-  var fn = document.getElementById('floatNav');
-  window.addEventListener('scroll', function() {
-      if(fn) if(fn) if(fn)fn.classList.toggle('show', window.scrollY > 300);
-    var b = document.getElementById('backToTop');
-    b.classList.toggle('show', window.pageYOffset > 300);
-  });
-</script>
-
-<script>
-document.querySelectorAll('.news-card').forEach(card => {
-  card.addEventListener('click', function(e) {
-    if (e.target.tagName === 'A') return;
-    var wasOpen = this.classList.contains('open');
-    document.querySelectorAll('.news-card').forEach(c => c.classList.remove('open'));
-    if (!wasOpen) this.classList.add('open');
-  });
-});
-</script>
-
-<script>function switchNewsTab(i){document.querySelectorAll(".news-tab").forEach(b=>b.classList.remove("active"));document.querySelectorAll(".section-panel").forEach(p=>{p.classList.remove("active");p.style.display="none"});document.querySelector('.news-tab[data-section="'+i+'"]').classList.add("active");var el=document.getElementById("panel-"+i);if(el){el.classList.add("active");el.style.display="block"}}</script>
-
-
-<script>
-function toggleSub(sub) {
-  var allSubs = document.querySelectorAll('.sc-sub');
-  allSubs.forEach(function(s) {
-    if (s !== sub && s.classList.contains('open')) {
-      s.classList.remove('open');
-      s.nextElementSibling.classList.remove('open');
-    }
-  });
-  sub.classList.toggle('open');
-  sub.nextElementSibling.classList.toggle('open');
-}
-</script>
-
-</div></body>
 </html><!-- cache bust: ***60628003904 -->
