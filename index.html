@@ -681,6 +681,10 @@ document.querySelectorAll('.card.tool-sm').forEach(function(card) {
       <div class="ts-icon-box"><span class="ts-emoji">⏱️</span></div>
       <span class="ts-label">番茄計時</span>
     </div>
+    <div class="card tool-sm" id="mtrTrigger">
+      <div class="ts-icon-box"><span class="ts-emoji">🚇</span></div>
+      <span class="ts-label">港鐵到站</span>
+    </div>
     </div>
 
 <div class="section-label">🤖 AI 工具</div>
@@ -2607,5 +2611,39 @@ document.querySelectorAll('.card.tool-sm').forEach(function(card) {
 
 
 </script>
+
+<!-- MTR 到站時間 Modal -->
+<div id="mtr-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
+  <div class="modal-content" style="background:#1a1a2e; border-radius:16px; padding:24px; width:90%; max-width:420px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h3 style="color:#ff6b9d; margin:0;">🚇 港鐵到站時間</h3>
+      <button onclick="document.getElementById('mtr-modal').style.display='none'" style="background:none; border:none; color:#888; font-size:24px; cursor:pointer;">×</button>
+    </div>
+    
+    <div style="margin-bottom:12px;">
+      <label style="color:#aaa; font-size:0.85em;">選擇路線</label>
+      <select id="mtr-line" onchange="updateMTRArrival()" style="width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#e0e0e0; margin-top:4px;">
+        <option value="">請選擇</option>
+        <option value="荃灣線">荃灣線</option>
+        <option value="觀塘線">觀塘線</option>
+        <option value="港島線">港島線</option>
+        <option value="將軍澳線">將軍澳線</option>
+        <option value="東鐵線">東鐵線</option>
+        <option value="西鐵線">西鐵線</option>
+      </select>
+    </div>
+    
+    <div style="margin-bottom:16px;">
+      <label style="color:#aaa; font-size:0.85em;">選擇站點</label>
+      <select id="mtr-station" onchange="updateMTRArrival()" style="width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#e0e0e0; margin-top:4px;">
+        <option value="">請先選擇路線</option>
+      </select>
+    </div>
+    
+    <div id="mtr-result" style="min-height:120px; background:rgba(255,255,255,0.03); border-radius:12px; padding:14px; margin-bottom:12px;"></div>
+    
+    <div style="text-align:center; color:#666; font-size:0.75em;">資料每 30 秒更新（模擬）</div>
+  </div>
+</div>
 </body>
 </html>
