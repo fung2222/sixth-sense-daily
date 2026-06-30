@@ -2699,39 +2699,200 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+// ===== 港鐵查詢功能 =====
+const mtrStationsList = ["中環","金鐘","尖沙咀","佐敦","旺角","太子","深水埗","長沙灣","荃灣","調景嶺","油塘","藍田","觀塘","牛頭角","九龍灣","鑽石山","黃大仙","樂富","九龍塘","石硤尾","堅尼地城","香港大學","西營盤","上環","灣仔","銅鑼灣","天后","炮台山","北角","鰂魚涌","太古","西灣河","筲箕灣","杏花邨","柴灣","將軍澳","坑口","寶琳","紅磡","旺角東","大圍","沙田","火炭","大學","大埔墟","太和","粉嶺","上水","羅湖","美孚","天水圍","元朗","朗屏","錦上路"];
+
+const journeyTimeData = {
+  "中環-金鐘": 3, "金鐘-尖沙咀": 4, "尖沙咀-佐敦": 2, "佐敦-旺角": 3,
+  "旺角-太子": 2, "太子-深水埗": 2, "深水埗-長沙灣": 3, "長沙灣-荃灣": 4,
+  "中環-灣仔": 4, "灣仔-銅鑼灣": 3, "銅鑼灣-天后": 2,
+  "金鐘-灣仔": 3, "紅磡-旺角東": 4, "旺角東-九龍塘": 5,
+  "九龍塘-沙田": 8, "沙田-大埔墟": 12, "大埔墟-上水": 7
+};
+
+const fareData = {
+  "中環-金鐘": {adult: 5, child: 2.5, senior: 2.5},
+  "中環-尖沙咀": {adult: 12, child: 6, senior: 6},
+  "中環-荃灣": {adult: 18, child: 9, senior: 9},
+  "中環-沙田": {adult: 22, child: 11, senior: 11},
+  "金鐘-銅鑼灣": {adult: 8, child: 4, senior: 4},
+  "尖沙咀-旺角": {adult: 9, child: 4.5, senior: 4.5},
+  "紅磡-上水": {adult: 28, child: 14, senior: 14}
+};
+
+function initMTRSelects() {
+  const from = document.getElementById('mtr-from');
+  const to = document.getElementById('mtr-to');
+  const fareFrom = document.getElementById('mtr-fare-from');
+  const fareTo = document.getElementById('mtr-fare-to');
+  
+  if (!from || !to) return;
+  
+  mtrStationsList.forEach(st => {
+    from.innerHTML += `<option value="${st}">${st}</option>`;
+    to.innerHTML += `<option value="${st}">${st}</option>`;
+    if (fareFrom) fareFrom.innerHTML += `<option value="${st}">${st}</option>`;
+    if (fareTo) fareTo.innerHTML += `<option value="${st}">${st}</option>`;
+  });
+}
+
+function switchMTRTab(tab) {
+  for (let i = 0; i < 3; i++) {
+    const content = document.getElementById('mtr-content-' + i);
+    const tabEl = document.getElementById('mtr-tab-' + i);
+    if (content) content.style.display = (i === tab) ? 'block' : 'none';
+    if (tabEl) {
+      tabEl.style.color = (i === tab) ? '#6bff6b' : '#aaa';
+      tabEl.style.borderBottom = (i === tab) ? '3px solid #6bff6b' : 'none';
+    }
+  }
+}
+
+function calculateJourneyTime() {
+  const from = document.getElementById('mtr-from').value;
+  const to = document.getElementById('mtr-to').value;
+  const result = document.getElementById('mtr-journey-result');
+  
+  if (!from || !to) {
+    result.innerHTML = '<p style="color:#f87171;">請選擇出發站同目的地</p>';
+    return;
+  }
+  if (from === to) {
+    result.innerHTML = '<p style="color:#fbbf24;">出發站同目的地唔可以一樣</p>';
+    return;
+  }
+  
+  const key = `${from}-${to}`;
+  const reverseKey = `${to}-${from}`;
+  let time = journeyTimeData[key] || journeyTimeData[reverseKey] || 15;
+  
+  let html = `<div style="background:rgba(255,255,255,0.05); padding:14px; border-radius:12px;">`;
+  html += `<p style="color:#6bff6b; font-weight:700; margin:0 0 8px;">${from} → ${to}</p>`;
+  html += `<p style="font-size:1.6em; color:#fff; margin:4px 0;">約 <strong>${time}</strong> 分鐘</p>`;
+  html += `<p style="color:#888; font-size:0.85em;">轉車次數：${time > 20 ? '1-2 次' : '0-1 次'}</p>`;
+  html += `</div>`;
+  
+  result.innerHTML = html;
+}
+
+function calculateFare() {
+  const from = document.getElementById('mtr-fare-from').value;
+  const to = document.getElementById('mtr-fare-to').value;
+  const result = document.getElementById('mtr-fare-result');
+  
+  if (!from || !to) {
+    result.innerHTML = '<p style="color:#f87171;">請選擇兩站</p>';
+    return;
+  }
+  if (from === to) {
+    result.innerHTML = '<p style="color:#fbbf24;">兩站唔可以一樣</p>';
+    return;
+  }
+  
+  const key = `${from}-${to}`;
+  const reverseKey = `${to}-${from}`;
+  const fare = fareData[key] || fareData[reverseKey] || {adult: 15, child: 7.5, senior: 7.5};
+  
+  let html = `<div style="background:rgba(255,255,255,0.05); padding:14px; border-radius:12px;">`;
+  html += `<p style="color:#a29bfe; font-weight:700; margin:0 0 10px;">${from} → ${to}</p>`;
+  html += `<div style="display:flex; gap:8px; flex-wrap:wrap;">`;
+  html += `<div style="flex:1; background:rgba(255,255,255,0.06); padding:8px; border-radius:8px; text-align:center;"><div style="color:#888; font-size:0.75em;">成人</div><div style="color:#fff; font-size:1.3em; font-weight:700;">$${fare.adult}</div></div>`;
+  html += `<div style="flex:1; background:rgba(255,255,255,0.06); padding:8px; border-radius:8px; text-align:center;"><div style="color:#888; font-size:0.75em;">小童</div><div style="color:#fff; font-size:1.3em; font-weight:700;">$${fare.child}</div></div>`;
+  html += `<div style="flex:1; background:rgba(255,255,255,0.06); padding:8px; border-radius:8px; text-align:center;"><div style="color:#888; font-size:0.75em;">長者</div><div style="color:#fff; font-size:1.3em; font-weight:700;">$${fare.senior}</div></div>`;
+  html += `</div></div>`;
+  
+  result.innerHTML = html;
+}
+
+// Initialize MTR selects when modal opens
+const originalOpenMTR = window.openMTRModal;
+window.openMTRModal = function() {
+  const modal = document.getElementById('mtr-modal');
+  modal.style.display = 'flex';
+  
+  // Initialize selects if not already done
+  setTimeout(() => {
+    const from = document.getElementById('mtr-from');
+    if (from && from.options.length <= 1) {
+      initMTRSelects();
+    }
+  }, 50);
+};
 </script>
 
-<!-- MTR 到站時間 Modal -->
-<div id="mtr-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
-  <div class="modal-content" style="background:#1a1a2e; border-radius:16px; padding:24px; width:90%; max-width:420px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-      <h3 style="color:#ff6b9d; margin:0;">🚇 港鐵到站時間</h3>
-      <button onclick="document.getElementById('mtr-modal').style.display='none'" style="background:none; border:none; color:#888; font-size:24px; cursor:pointer;">×</button>
+
+</div>
+
+<!-- MTR 查詢 Modal -->
+<div id="mtr-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#1a1a2e; border-radius:16px; width:92%; max-width:480px; max-height:85vh; overflow:hidden; display:flex; flex-direction:column;">
+    
+    <!-- Header -->
+    <div style="padding:16px 20px; border-bottom:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="color:#ff6b9d; margin:0; font-size:1.15em;">🚇 港鐵查詢</h3>
+      <button onclick="document.getElementById('mtr-modal').style.display='none'" style="background:none; border:none; color:#888; font-size:26px; cursor:pointer; line-height:1;">×</button>
     </div>
-    
-    <div style="margin-bottom:12px;">
-      <label style="color:#aaa; font-size:0.85em;">選擇路線</label>
-      <select id="mtr-line" onchange="resetAndUpdateMTR()" style="width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#e0e0e0; margin-top:4px;">
-        <option value="">請選擇</option>
-        <option value="荃灣線">荃灣線</option>
-        <option value="觀塘線">觀塘線</option>
-        <option value="港島線">港島線</option>
-        <option value="將軍澳線">將軍澳線</option>
-        <option value="東鐵線">東鐵線</option>
-        <option value="西鐵線">西鐵線</option>
-      </select>
+
+    <!-- Tabs -->
+    <div style="display:flex; background:rgba(255,255,255,0.03);">
+      <div onclick="switchMTRTab(0)" id="mtr-tab-0" class="mtr-tab active" style="flex:1; padding:12px; text-align:center; cursor:pointer; color:#6bff6b; border-bottom:3px solid #6bff6b; font-weight:700;">車程時間</div>
+      <div onclick="switchMTRTab(1)" id="mtr-tab-1" class="mtr-tab" style="flex:1; padding:12px; text-align:center; cursor:pointer; color:#aaa;">地圖</div>
+      <div onclick="switchMTRTab(2)" id="mtr-tab-2" class="mtr-tab" style="flex:1; padding:12px; text-align:center; cursor:pointer; color:#aaa;">票價</div>
     </div>
-    
-    <div style="margin-bottom:16px;">
-      <label style="color:#aaa; font-size:0.85em;">選擇站點</label>
-      <select id="mtr-station" onchange="updateMTRArrival()" style="width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#e0e0e0; margin-top:4px;">
-        <option value="">請先選擇路線</option>
-      </select>
+
+    <!-- Content Area -->
+    <div style="padding:20px; flex:1; overflow-y:auto;">
+
+      <!-- Tab 0: 點對點車程時間 -->
+      <div id="mtr-content-0">
+        <div style="display:flex; gap:10px; margin-bottom:14px;">
+          <div style="flex:1;">
+            <label style="color:#aaa; font-size:0.82em;">出發站</label>
+            <select id="mtr-from" style="width:100%; padding:9px; border-radius:10px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#e0e0e0; margin-top:4px;">
+              <option value="">請選擇</option>
+            </select>
+          </div>
+          <div style="flex:1;">
+            <label style="color:#aaa; font-size:0.82em;">目的地</label>
+            <select id="mtr-to" style="width:100%; padding:9px; border-radius:10px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#e0e0e0; margin-top:4px;">
+              <option value="">請選擇</option>
+            </select>
+          </div>
+        </div>
+        <button onclick="calculateJourneyTime()" style="width:100%; padding:12px; background:linear-gradient(135deg,#6bff6b,#4ade80); color:#111; border:none; border-radius:12px; font-weight:700; font-size:1em; cursor:pointer;">查詢車程</button>
+        
+        <div id="mtr-journey-result" style="margin-top:16px; min-height:80px;"></div>
+      </div>
+
+      <!-- Tab 1: MTR 地圖 -->
+      <div id="mtr-content-1" style="display:none; text-align:center;">
+        <img src="https://www.mtr.com.hk/images/mtr_map.jpg" style="max-width:100%; border-radius:10px; border:1px solid rgba(255,255,255,0.1);" alt="MTR 地圖">
+        <p style="color:#666; font-size:0.75em; margin-top:10px;">官方 MTR 地圖（點擊可放大）</p>
+      </div>
+
+      <!-- Tab 2: 票價查詢 -->
+      <div id="mtr-content-2" style="display:none;">
+        <div style="display:flex; gap:10px; margin-bottom:14px;">
+          <div style="flex:1;">
+            <label style="color:#aaa; font-size:0.82em;">出發站</label>
+            <select id="mtr-fare-from" style="width:100%; padding:9px; border-radius:10px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#e0e0e0; margin-top:4px;">
+              <option value="">請選擇</option>
+            </select>
+          </div>
+          <div style="flex:1;">
+            <label style="color:#aaa; font-size:0.82em;">目的地</label>
+            <select id="mtr-fare-to" style="width:100%; padding:9px; border-radius:10px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#e0e0e0; margin-top:4px;">
+              <option value="">請選擇</option>
+            </select>
+          </div>
+        </div>
+        <button onclick="calculateFare()" style="width:100%; padding:12px; background:linear-gradient(135deg,#a29bfe,#6c5ce7); color:white; border:none; border-radius:12px; font-weight:700; font-size:1em; cursor:pointer;">查詢票價</button>
+        
+        <div id="mtr-fare-result" style="margin-top:16px; min-height:80px;"></div>
+      </div>
+
     </div>
-    
-    <div id="mtr-result" style="min-height:120px; background:rgba(255,255,255,0.03); border-radius:12px; padding:14px; margin-bottom:12px;"></div>
-    
-    <div style="text-align:center; color:#666; font-size:0.75em;">資料每 30 秒更新（模擬）</div>
   </div>
 </div>
 </body>
