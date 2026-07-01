@@ -972,20 +972,10 @@ async function sendMessage() {
   // Update prompt bar
   document.getElementById('chatPrompt').textContent = text.length > 30 ? text.slice(0,30)+'…' : text;
 
-  // Get API config — default: xAI Grok (main) + OpenRouter Gemma fallback
-  var endpoint = localStorage.getItem('sono_api_endpoint') || 'https://api.x.ai/v1/chat/completions';
-  // Auto-fix old/broken endpoint
-  if (endpoint && !endpoint.includes('/chat/completions')) {
-    endpoint = 'https://api.x.ai/v1/chat/completions';
-    localStorage.setItem('sono_api_endpoint', endpoint);
-  }
+  // Get API config — OpenRouter only
+  var endpoint = localStorage.getItem('sono_api_endpoint') || 'https://openrouter.ai/api/v1/chat/completions';
   var apiKey = localStorage.getItem('sono_api_key') || '';
   var model = localStorage.getItem('sono_api_model') || 'meta-llama/llama-3.1-8b-instruct:free';
-  // Auto-fix old model names
-  if (model === 'google/gemini-2.0-flash-001' || model === 'meta-llama/llama-3.1-8b-instruct:free') {
-    model = 'grok-4';
-    localStorage.setItem('sono_api_model', model);
-  }
 
   if (!apiKey) {
     hideTyping();
@@ -998,10 +988,7 @@ async function sendMessage() {
   showTyping();
 
   // Fallback models list
-  var models = [
-    model,
-    'google/gemma-4-26b-a4b-it:free'
-  ];
+  var models = [ model ];
 
   var resp = null;
   var usedModel = null;
