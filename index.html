@@ -420,8 +420,8 @@ document.querySelectorAll('.card.tool-sm').forEach(function(card) {
     <label>API Key</label>
     <input type="password" id="apiKey" placeholder="sk-or-...">
     <label>Model</label>
-    <input type="text" id="apiModel" placeholder="google/gemma-4-31b-it:free">
-    <p class="hint">💡 已預設 OpenRouter + Gemma 4（免費）。想轉 model 可改，支援任何 OpenAI 兼容 API。</p>
+    <input type="text" id="apiModel" placeholder="grok-4">
+    <p class="hint">💡 已預設 xAI Grok-4（主模型）。Fallback 會自動用 OpenRouter Gemma 4。。想轉 model 可改，支援任何 OpenAI 兼容 API。</p>
     <div class="btn-row">
       <button class="btn-cancel" onclick="closeSettings()">取消</button>
       <button class="btn-save" onclick="saveSettings()">儲存</button>
@@ -972,18 +972,18 @@ async function sendMessage() {
   // Update prompt bar
   document.getElementById('chatPrompt').textContent = text.length > 30 ? text.slice(0,30)+'…' : text;
 
-  // Get API config — default: OpenRouter + Gemma 4 (free)
-  var endpoint = localStorage.getItem('sono_api_endpoint') || 'https://openrouter.ai/api/v1/chat/completions';
-  // Auto-fix any broken/old endpoint
+  // Get API config — default: xAI Grok (main) + OpenRouter Gemma fallback
+  var endpoint = localStorage.getItem('sono_api_endpoint') || 'https://api.x.ai/v1/chat/completions';
+  // Auto-fix old/broken endpoint
   if (endpoint && !endpoint.includes('/chat/completions')) {
-    endpoint = 'https://openrouter.ai/api/v1/chat/completions';
+    endpoint = 'https://api.x.ai/v1/chat/completions';
     localStorage.setItem('sono_api_endpoint', endpoint);
   }
   var apiKey = localStorage.getItem('sono_api_key') || '';
-  var model = localStorage.getItem('sono_api_model') || 'google/gemma-4-31b-it:free';
-  // Auto-fix old model name
-  if (model === 'google/gemini-2.0-flash-001') {
-    model = 'google/gemma-4-31b-it:free';
+  var model = localStorage.getItem('sono_api_model') || 'grok-4';
+  // Auto-fix old model names
+  if (model === 'google/gemini-2.0-flash-001' || model === 'google/gemma-4-31b-it:free') {
+    model = 'grok-4';
     localStorage.setItem('sono_api_model', model);
   }
 
