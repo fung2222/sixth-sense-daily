@@ -21,7 +21,8 @@ sono-repo/
 ├── 2048/, snake/, fighter/ ... ← 遊戲
 ├── tools/              ← 實用工具
 ├── scripts/
-│   └── search_today_news.py    ← 新聞搜尋輔助腳本
+│   ├── search_today_news.py    ← 新聞搜尋輔助腳本
+│   └── sono_daily_validator.py ← 自動除錯腳本
 └── images/, favicon.*  ← 靜態資源
 ```
 
@@ -168,6 +169,54 @@ sono-repo/
 
 ---
 
+## 🔍 自動除錯功能
+
+每次生成日報後，系統會自動運行除錯檢查，確保所有內容正確無誤。
+
+**除錯腳本**: `/opt/data/sono-repo/scripts/sono_daily_validator.py`
+
+**檢查項目**:
+- ✅ 檔案存在性（日報 + Banner）
+- ✅ 日期標題正確性
+- ✅ 天氣數據完整性（溫度/濕度/風速/紫外線/能見度）
+- ✅ Banner 圖片引用
+- ✅ Sono 專欄3個部分（世界趨勢/蘇蓉預測/蘇蓉直覺）
+- ✅ 新聞 Tabs 4個主題（AI/太空/UFO/超自然）
+- ✅ 新聞卡片數量（建議15-25個）
+- ✅ 導航系統連結（上一日/下一日是否指向存在嘅日期）
+- ✅ Footer 文字
+- ✅ HTML 結構完整性（div 標籤匹配）
+- ✅ 首頁連結
+- ✅ Git 狀態（有無未提交變更）
+
+**輸出示例**:
+```
+======================================================================
+Sono 每日除錯報告 - 20260701
+生成時間: 2026-07-01 06:00:00
+======================================================================
+
+✅ 通過 23 項檢查:
+  ✅ 日報檔案存在: sono_20260701.html (45231 bytes)
+  ✅ Banner 圖片存在: weather_banner_20260701.png (123456 bytes)
+  ✅ 日期標題正確: 2026年7月1日
+  ...
+
+⚠️ 發現 2 個警告:
+  ⚠️ 新聞卡片數量偏少: 12（建議20個）
+  ⚠️ Git 有 1 個未提交嘅變更
+
+======================================================================
+⚠️ 驗證通過（有警告）: 2 個警告
+```
+
+**自動執行**:
+- 每次 `sono_daily_automation.py` 完成後自動運行
+- 如果發現錯誤（❌），會顯示警告訊息
+- 警告（⚠️）唔會中斷流程，但建議檢查
+
+---
+
 ## ⚠️ 重要守則
 
 1. **23日係骨架參考** — 所有新日報以23日HTML結構為模板
@@ -187,6 +236,7 @@ sono-repo/
 |------|------|
 | 自動化腳本 | `/opt/data/scripts/sono_daily_automation.py` |
 | 新聞搜尋腳本 | `/opt/data/sono-repo/scripts/search_today_news.py` |
+| 自動除錯腳本 | `/opt/data/sono-repo/scripts/sono_daily_validator.py` |
 | SearXNG 搜尋 | `/opt/data/searx_html_search.py` |
 | GitHub Token | `/opt/data/.gh_b64` |
 | Repo | `/opt/data/sono-repo/` |
