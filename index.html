@@ -36,7 +36,7 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 .chat-bar .chat-avatar { width: 38px; height: 38px; border-radius: 50%; background-color: #0a0a1a; background-image: url('chat-avatar.png'); background-size: 85%; background-position: center; background-repeat: no-repeat; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); }
 .chat-bar .chat-prompt { flex: 1; color: #666; font-size: 0.92em; }
 .chat-bar .chat-actions { display: flex; gap: 4px; }
-.chat-bar .chat-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(255,255,255,0.06); color: #888; cursor: pointer; font-size: 0.9em; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+.chat-bar .chat-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(255,255,255,0.06); color: #ccc; cursor: pointer; font-size: 0.9em; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
 .chat-bar .chat-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
 /* Chat body (hidden by default) */
@@ -52,12 +52,12 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 /* Message bubbles */
 .msg { max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 0.9em; line-height: 1.6; animation: msgIn 0.25s ease; word-break: break-word; }
 @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-.msg.assistant { align-self: flex-start; background: rgba(255,255,255,0.06); border-bottom-left-radius: 4px; color: #ddd; }
+.msg.assistant { align-self: flex-start; background: rgba(255,255,255,0.06); border-bottom-left-radius: 4px; color: #f0f0f0; }
 .msg.user { align-self: flex-end; background: linear-gradient(135deg, #ff6b9d, #c44569); border-bottom-right-radius: 4px; color: #fff; }
-.msg.system { align-self: center; background: transparent; color: #555; font-size: 0.8em; text-align: center; max-width: 100%; }
-.msg.typing { align-self: flex-start; background: rgba(255,255,255,0.06); border-bottom-left-radius: 4px; color: #888; }
+.msg.system { align-self: center; background: transparent; color: #aaa; font-size: 0.8em; text-align: center; max-width: 100%; }
+.msg.typing { align-self: flex-start; background: rgba(255,255,255,0.06); border-bottom-left-radius: 4px; color: #ccc; }
 .msg.typing .dots { display: flex; gap: 4px; }
-.msg.typing .dots span { width: 6px; height: 6px; border-radius: 50%; background: #888; animation: bounce 1.4s infinite ease-in-out; }
+.msg.typing .dots span { width: 6px; height: 6px; border-radius: 50%; background: #ccc; animation: bounce 1.4s infinite ease-in-out; }
 .msg.typing .dots span:nth-child(2) { animation-delay: 0.15s; }
 .msg.typing .dots span:nth-child(3) { animation-delay: 0.3s; }
 @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
@@ -66,7 +66,7 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 .chat-input-wrap { display: flex; gap: 4px; padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.06); }
 .chat-input-wrap input { flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #e0e0e0; font-size: 0.9em; font-family: inherit; outline: none; transition: border-color 0.2s; }
 .chat-input-wrap input:focus { border-color: #ff6b9d; }
-.chat-input-wrap input::placeholder { color: #555; }
+.chat-input-wrap input::placeholder { color: #aaa; }
 .chat-input-wrap .send-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: linear-gradient(135deg, #ff6b9d, #c44569); color: #fff; cursor: pointer; font-size: 1em; transition: all 0.2s; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .chat-input-wrap .send-btn:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(255,107,157,0.35); }
 .chat-input-wrap .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
@@ -88,7 +88,7 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 /* ══════ Tab Bar ══════ */
 .tab-bar { display: flex; gap: 4px; margin: 4px 0 0; background: rgba(255,255,255,0.03); border-radius: 14px; padding: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .tab-bar::-webkit-scrollbar { height: 0; }
-.tab-btn { flex: 1; min-width: 90px; padding: 8px 14px; border: none; border-radius: 11px; cursor: pointer; font-size: 0.9em; font-weight: 700; font-family: inherit; transition: all 0.3s; text-align: center; white-space: nowrap; background: transparent; color: #888; }
+.tab-btn { flex: 1; min-width: 90px; padding: 8px 14px; border: none; border-radius: 11px; cursor: pointer; font-size: 0.9em; font-weight: 700; font-family: inherit; transition: all 0.3s; text-align: center; white-space: nowrap; background: transparent; color: #ccc; }
 .tab-btn:hover { background: rgba(255,255,255,0.04); color: #aaa; }
 .tab-btn .tab-emoji { display: block; font-size: 1.8em; margin-bottom: 1px; }
 .tab-btn .tab-label { font-size: 1.27em; }
@@ -109,8 +109,8 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 .report-item .info { flex: 1; margin-left: 10px; }
 .report-item .info h3 { font-size: 1em; color: #fff; margin-bottom: 1px; }
 .report-item .info .weekday { font-size: 0.82em; color: #a29bfe; margin-bottom: 3px; }
-.report-item .info .desc { font-size: 0.82em; color: #888; }
-.report-item .arrow { font-size: 1.4em; color: #555; }
+.report-item .info .desc { font-size: 0.82em; color: #ccc; }
+.report-item .arrow { font-size: 1.4em; color: #aaa; }
 .report-history-link { text-align: center; margin-top: 20px; }
 .report-history-link a { color: #a29bfe; text-decoration: none; border: 1px solid #333; padding: 8px 20px; border-radius: 20px; transition: all 0.3s; font-size: 0.9em; }
 .report-history-link a:hover { background: #1a1a3a; border-color: #a29bfe; }
@@ -121,7 +121,7 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 .card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
 .card .card-emoji { font-size: 2.2em; margin-bottom: 10px; display: block; }
 .card h4 { font-size: 1.05em; color: #fff; margin-bottom: 5px; }
-.card p { font-size: 0.84em; color: #888; line-height: 1.5; }
+.card p { font-size: 0.84em; color: #ccc; line-height: 1.5; }
 .card.games   { border-top: 3px solid #6bff6b; }
 .card.games:hover   { border-color: #6bff6b; box-shadow: 0 10px 30px rgba(107,255,107,0.12); }
 .card.toolbox { border-top: 3px solid #00d4ff; }
@@ -225,18 +225,18 @@ body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'PingFan
 .game-info { flex: 1; display: flex; flex-direction: column; gap: 3px; }
 .game-name { font-size: 1.05em; font-weight: 700; color: #e0e0e0; }
 .game-tag { font-size: 0.7em; font-weight: 600; color: #6bff6b; background: rgba(107,255,107,0.1); padding: 2px 8px; border-radius: 8px; align-self: flex-start; }
-.game-chevron { width: 20px; height: 20px; color: #555; flex-shrink: 0; transition: transform 0.3s; }
+.game-chevron { width: 20px; height: 20px; color: #aaa; flex-shrink: 0; transition: transform 0.3s; }
 .game-item.open .game-chevron { transform: rotate(180deg); color: #6bff6b; }
 .game-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease; padding: 0 18px; }
 .game-item.open .game-body { max-height: 120px; padding: 0 18px 16px; }
-.game-desc { font-size: 0.85em; color: #888; line-height: 1.6; margin-bottom: 12px; }
+.game-desc { font-size: 0.85em; color: #ccc; line-height: 1.6; margin-bottom: 12px; }
 .game-play-btn { display: inline-flex; align-items: center; gap: 4px; padding: 8px 20px; background: linear-gradient(135deg, #6bff6b, #00d4ff); color: #0a0a1a; border-radius: 20px; font-size: 0.85em; font-weight: 700; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
 .game-play-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(107,255,107,0.3); }
 
 .section-label { font-size: 0.78em; color: #ccc; text-transform: uppercase; letter-spacing: 1px; margin: 16px 0 10px; padding-left: 4px; }
 
 /* Footer */
-.footer { text-align: center; padding: 40px 20px; color: #555; font-size: 0.85em; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
+.footer { text-align: center; padding: 40px 20px; color: #aaa; font-size: 0.85em; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
 @media (max-width: 600px) {
   .logo { font-size: 2.2em; }
