@@ -420,7 +420,7 @@ document.querySelectorAll('.card.tool-sm').forEach(function(card) {
     <label>API Key</label>
     <input type="password" id="apiKey" placeholder="sk-or-...">
     <label>Model</label>
-    <input type="text" id="apiModel" placeholder="grok-4">
+    <input type="text" id="apiModel" placeholder="google/gemma-4-31b-it:free">
     <p class="hint">💡 已預設 xAI Grok-4（主模型）。Fallback 會自動用 OpenRouter Gemma 4。。想轉 model 可改，支援任何 OpenAI 兼容 API。</p>
     <div class="btn-row">
       <button class="btn-cancel" onclick="closeSettings()">取消</button>
@@ -980,7 +980,7 @@ async function sendMessage() {
     localStorage.setItem('sono_api_endpoint', endpoint);
   }
   var apiKey = localStorage.getItem('sono_api_key') || '';
-  var model = localStorage.getItem('sono_api_model') || 'grok-4';
+  var model = localStorage.getItem('sono_api_model') || 'google/gemma-4-31b-it:free';
   // Auto-fix old model names
   if (model === 'google/gemini-2.0-flash-001' || model === 'google/gemma-4-31b-it:free') {
     model = 'grok-4';
@@ -1080,7 +1080,7 @@ function closeSettings() {
 function saveSettings() {
   localStorage.setItem('sono_api_endpoint', document.getElementById('apiEndpoint').value.trim());
   localStorage.setItem('sono_api_key', document.getElementById('apiKey').value.trim());
-  localStorage.setItem('sono_api_model', document.getElementById('apiModel').value.trim() || 'gpt-4o');
+  localStorage.setItem('sono_api_model', document.getElementById('apiModel').value.trim() || 'google/gemma-4-31b-it:free');
   closeSettings();
   if (!chatExpanded) toggleChat();
   setTimeout(function() {
